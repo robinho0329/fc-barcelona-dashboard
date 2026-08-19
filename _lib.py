@@ -28,13 +28,27 @@ PLOT = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
 # ---------------------------------------------------------------- 데이터/자산
 
 @st.cache_data
+def _parquet_cached(path_str: str, stamp: float) -> pd.DataFrame:
+    p = Path(path_str)
+    return pd.read_parquet(p) if p.exists() else pd.DataFrame()
+
+
+def load_parquet(path: Path) -> pd.DataFrame:
+    """parquet 로더.
+
+    수정 시각을 캐시 키에 넣는다. 경로만 키로 쓰면 수집 스크립트를 다시 돌려
+    파일이 바뀌어도 옛 내용이 계속 나온다. 파일이 없으면 빈 DataFrame.
+    """
+    stamp = path.stat().st_mtime if path.exists() else 0.0
+    return _parquet_cached(str(path), stamp)
+
+
 def load_seasons() -> pd.DataFrame:
-    return pd.read_parquet(PROCESSED / "club_season.parquet")
+    return load_parquet(PROCESSED / "club_season.parquet")
 
 
-@st.cache_data
 def load_clasico() -> pd.DataFrame:
-    cl = pd.read_parquet(PROCESSED / "clasico.parquet")
+    cl = load_parquet(PROCESSED / "clasico.parquet").copy()
     cl["decade"] = cl["Season"].str[:3] + "0s"
     return cl
 
@@ -205,6 +219,21 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .legend-honors span{display:block;color:var(--gold);font-size:.66rem;letter-spacing:.12em;
       text-transform:uppercase;font-weight:800;margin-bottom:.25rem;}
 
+/* 감독 카드 — 사진이 없는 감독은 이니셜로 채운다 */
+.mg-card img{height:132px;object-position:top center;}
+.mg-initial{font-size:1.9rem;font-weight:850;color:var(--gold);letter-spacing:.04em;
+      height:132px;background:linear-gradient(150deg,#0d2038,#081426);}
+.mg-hero-initial{display:flex;align-items:center;justify-content:center;height:250px;
+      font-size:4rem;font-weight:850;color:var(--gold);letter-spacing:.05em;
+      border-radius:14px;border:1px solid var(--line);border-bottom:4px solid var(--grana);
+      background:linear-gradient(150deg,#0d2038,#081426);}
+
+/* 감독 한 줄 평 */
+.mg-note{color:#c3d2e6;font-size:.94rem;line-height:1.75;margin:.2rem 0 1rem;
+      padding:.95rem 1.2rem;border-radius:12px;border:1px solid var(--line);
+      border-left:4px solid var(--gold);
+      background:linear-gradient(150deg,rgba(13,32,56,.7),rgba(8,20,38,.7));}
+
 /* 갤러리 — 클라시코 역사 이미지 */
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
 .gallery figure{margin:0;border-radius:14px;overflow:hidden;background:var(--panel2);
@@ -323,18 +352,26 @@ def pitch_layout(height: int = 470, **kw) -> dict:
     return base
 
 
-@st.cache_data
 def load_sb(name: str) -> pd.DataFrame:
     """StatsBomb 집계 parquet. 아직 수집 전이면 빈 DataFrame."""
-    p = PROCESSED.parent / "statsbomb" / f"{name}.parquet"
-    return pd.read_parquet(p) if p.exists() else pd.DataFrame()
+    return load_parquet(PROCESSED.parent / "statsbomb" / f"{name}.parquet")
+
+
+def load_understat() -> pd.DataFrame:
+    """Understat 슛. StatsBomb이 끊긴 2021/22 이후를 잇는다."""
+    return load_parquet(PROCESSED.parent / "understat" / "shots.parquet")
 
 
 @st.cache_data
-def load_fbref(stat: str) -> pd.DataFrame:
-    """FBref 시즌별 parquet을 한 종류씩 합친다. 시즌마다 열 구성이 조금씩 다르다."""
-    d = PROCESSED.parent / "fbref"
-    files = sorted(d.glob(f"{stat}_*.parquet")) if d.exists() else []
+def _concat_cached(key: str, files: tuple[str, ...]) -> pd.DataFrame:
     if not files:
         return pd.DataFrame()
     return pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
+
+
+def load_dir(dirname: str, pattern: str = "*.parquet") -> pd.DataFrame:
+    """디렉터리 안 parquet을 모두 합친다. 파일 목록과 수정 시각이 캐시 키다."""
+    d = PROCESSED.parent / dirname
+    files = sorted(d.glob(pattern)) if d.exists() else []
+    key = "|".join(f"{f.name}:{f.stat().st_mtime}" for f in files)
+    return _concat_cached(key, tuple(str(f) for f in files))

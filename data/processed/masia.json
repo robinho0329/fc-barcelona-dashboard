@@ -1,0 +1,2671 @@
+{
+ "lluis carreras": {
+  "name": "Lluís Carreras",
+  "tm_id": "16593",
+  "b_seasons": [
+   "1990/91",
+   "1991/92",
+   "1992/93"
+  ]
+ },
+ "delfi geli": {
+  "name": "Delfí Geli",
+  "tm_id": "172357",
+  "b_seasons": [
+   "1990/91"
+  ]
+ },
+ "pep guardiola": {
+  "name": "Pep Guardiola",
+  "tm_id": "5950",
+  "b_seasons": [
+   "1990/91",
+   "1991/92"
+  ]
+ },
+ "mikel roteta": {
+  "name": "Mikel Roteta",
+  "tm_id": "7779",
+  "b_seasons": [
+   "1991/92",
+   "1992/93",
+   "1993/94"
+  ]
+ },
+ "sergi barjuan": {
+  "name": "Sergi Barjuan",
+  "tm_id": "8063",
+  "b_seasons": [
+   "1991/92",
+   "1992/93",
+   "1993/94"
+  ]
+ },
+ "oscar garcia": {
+  "name": "Óscar García",
+  "tm_id": "7897",
+  "b_seasons": [
+   "1991/92",
+   "1992/93",
+   "1993/94"
+  ]
+ },
+ "thomas christiansen": {
+  "name": "Thomas Christiansen",
+  "tm_id": "722",
+  "b_seasons": [
+   "1991/92",
+   "1992/93",
+   "1993/94",
+   "1995/96"
+  ]
+ },
+ "ronnie ekelund": {
+  "name": "Ronnie Ekelund",
+  "tm_id": "168498",
+  "b_seasons": [
+   "1992/93",
+   "1993/94",
+   "1995/96"
+  ]
+ },
+ "jordi cruijff": {
+  "name": "Jordi Cruijff",
+  "tm_id": "7436",
+  "b_seasons": [
+   "1992/93",
+   "1993/94",
+   "1994/95"
+  ]
+ },
+ "quique alvarez": {
+  "name": "Quique Álvarez",
+  "tm_id": "7832",
+  "b_seasons": [
+   "1993/94",
+   "1994/95",
+   "1995/96",
+   "1996/97"
+  ]
+ },
+ "albert celades": {
+  "name": "Albert Celades",
+  "tm_id": "7521",
+  "b_seasons": [
+   "1993/94",
+   "1994/95",
+   "1995/96"
+  ]
+ },
+ "ivan de la pena": {
+  "name": "Iván de la Peña",
+  "tm_id": "8037",
+  "b_seasons": [
+   "1993/94",
+   "1994/95",
+   "1995/96"
+  ]
+ },
+ "roger garcia": {
+  "name": "Roger García",
+  "tm_id": "7891",
+  "b_seasons": [
+   "1994/95",
+   "1995/96"
+  ]
+ },
+ "juan carlos moreno": {
+  "name": "Juan Carlos Moreno",
+  "tm_id": "51575",
+  "b_seasons": [
+   "1994/95",
+   "1995/96",
+   "1996/97"
+  ]
+ },
+ "igor korneev": {
+  "name": "Igor Korneev",
+  "tm_id": "8011",
+  "b_seasons": [
+   "1994/95"
+  ]
+ },
+ "javi moreno": {
+  "name": "Javi Moreno",
+  "tm_id": "7768",
+  "b_seasons": [
+   "1995/96",
+   "1996/97"
+  ]
+ },
+ "srdjan pecelj": {
+  "name": "Srdjan Pecelj",
+  "tm_id": "27993",
+  "b_seasons": [
+   "1996/97"
+  ]
+ },
+ "carles puyol": {
+  "name": "Carles Puyol",
+  "tm_id": "7594",
+  "b_seasons": [
+   "1996/97",
+   "1997/98",
+   "1998/99",
+   "1999/00"
+  ]
+ },
+ "gerard lopez": {
+  "name": "Gerard López",
+  "tm_id": "7599",
+  "b_seasons": [
+   "1996/97"
+  ]
+ },
+ "jofre mateu": {
+  "name": "Jofre Mateu",
+  "tm_id": "8134",
+  "b_seasons": [
+   "1996/97",
+   "1997/98",
+   "1998/99",
+   "1999/00",
+   "2001/02"
+  ]
+ },
+ "patrick suffo": {
+  "name": "Patrick Suffo",
+  "tm_id": "6939",
+  "b_seasons": [
+   "1996/97"
+  ]
+ },
+ "iban cuadrado": {
+  "name": "Ibán Cuadrado",
+  "tm_id": "7990",
+  "b_seasons": [
+   "1997/98",
+   "1998/99",
+   "1999/00",
+   "2000/01"
+  ]
+ },
+ "gabri": {
+  "name": "Gabri",
+  "tm_id": "7598",
+  "b_seasons": [
+   "1997/98",
+   "1998/99",
+   "1999/00"
+  ]
+ },
+ "xavi": {
+  "name": "Xavi",
+  "tm_id": "7607",
+  "b_seasons": [
+   "1997/98",
+   "1998/99",
+   "1999/00"
+  ]
+ },
+ "mario rosas": {
+  "name": "Mario Rosas",
+  "tm_id": "51412",
+  "b_seasons": [
+   "1997/98",
+   "1998/99",
+   "1999/00"
+  ]
+ },
+ "luis garcia": {
+  "name": "Luis García",
+  "tm_id": "7920",
+  "b_seasons": [
+   "1997/98",
+   "1998/99"
+  ]
+ },
+ "albert jorquera": {
+  "name": "Albert Jorquera",
+  "tm_id": "7915",
+  "b_seasons": [
+   "1998/99",
+   "1999/00",
+   "2002/03",
+   "2003/04"
+  ]
+ },
+ "pepe reina": {
+  "name": "Pepe Reina",
+  "tm_id": "7825",
+  "b_seasons": [
+   "1999/00",
+   "2000/01"
+  ]
+ },
+ "thiago motta": {
+  "name": "Thiago Motta",
+  "tm_id": "7602",
+  "b_seasons": [
+   "1999/00",
+   "2000/01",
+   "2001/02"
+  ]
+ },
+ "mikel arteta": {
+  "name": "Mikel Arteta",
+  "tm_id": "7451",
+  "b_seasons": [
+   "1999/00",
+   "2000/01"
+  ]
+ },
+ "roberto trashorras": {
+  "name": "Roberto Trashorras",
+  "tm_id": "7923",
+  "b_seasons": [
+   "1999/00",
+   "2000/01",
+   "2001/02",
+   "2002/03"
+  ]
+ },
+ "victor valdes": {
+  "name": "Víctor Valdés",
+  "tm_id": "7589",
+  "b_seasons": [
+   "2000/01",
+   "2001/02",
+   "2002/03"
+  ]
+ },
+ "fernando navarro": {
+  "name": "Fernando Navarro",
+  "tm_id": "7593",
+  "b_seasons": [
+   "2000/01",
+   "2001/02",
+   "2003/04"
+  ]
+ },
+ "andres iniesta": {
+  "name": "Andrés Iniesta",
+  "tm_id": "7600",
+  "b_seasons": [
+   "2000/01",
+   "2001/02",
+   "2002/03"
+  ]
+ },
+ "oleguer": {
+  "name": "Oleguer",
+  "tm_id": "7916",
+  "b_seasons": [
+   "2001/02",
+   "2002/03",
+   "2003/04"
+  ]
+ },
+ "jordi lopez": {
+  "name": "Jordi López",
+  "tm_id": "15463",
+  "b_seasons": [
+   "2001/02"
+  ]
+ },
+ "david sanchez": {
+  "name": "David Sánchez",
+  "tm_id": "58147",
+  "b_seasons": [
+   "2001/02",
+   "2002/03"
+  ]
+ },
+ "ruben martinez": {
+  "name": "Rubén Martínez",
+  "tm_id": "8184",
+  "b_seasons": [
+   "2002/03",
+   "2003/04",
+   "2004/05",
+   "2005/06",
+   "2006/07"
+  ]
+ },
+ "rodri": {
+  "name": "Rodri",
+  "tm_id": "8163",
+  "b_seasons": [
+   "2002/03",
+   "2003/04",
+   "2004/05",
+   "2005/06"
+  ]
+ },
+ "dani fernandez": {
+  "name": "Dani Fernández",
+  "tm_id": "10183",
+  "b_seasons": [
+   "2002/03",
+   "2003/04",
+   "2004/05",
+   "2005/06"
+  ]
+ },
+ "joan verdu": {
+  "name": "Joan Verdú",
+  "tm_id": "28005",
+  "b_seasons": [
+   "2002/03",
+   "2003/04",
+   "2004/05",
+   "2005/06"
+  ]
+ },
+ "sergio garcia": {
+  "name": "Sergio García",
+  "tm_id": "7922",
+  "b_seasons": [
+   "2002/03",
+   "2003/04"
+  ]
+ },
+ "dani guiza": {
+  "name": "Dani Güiza",
+  "tm_id": "8186",
+  "b_seasons": [
+   "2002/03"
+  ]
+ },
+ "tiago calvano": {
+  "name": "Tiago Calvano",
+  "tm_id": "32479",
+  "b_seasons": [
+   "2003/04",
+   "2004/05"
+  ]
+ },
+ "cristian hidalgo": {
+  "name": "Cristian Hidalgo",
+  "tm_id": "8155",
+  "b_seasons": [
+   "2003/04",
+   "2004/05",
+   "2005/06"
+  ]
+ },
+ "lionel messi": {
+  "name": "Lionel Messi",
+  "tm_id": "28003",
+  "b_seasons": [
+   "2003/04",
+   "2004/05"
+  ]
+ },
+ "oriol riera": {
+  "name": "Oriol Riera",
+  "tm_id": "71671",
+  "b_seasons": [
+   "2003/04",
+   "2004/05",
+   "2005/06"
+  ]
+ },
+ "dani fragoso": {
+  "name": "Dani Fragoso",
+  "tm_id": "9777",
+  "b_seasons": [
+   "2004/05",
+   "2005/06",
+   "2006/07"
+  ]
+ },
+ "jordi gomez": {
+  "name": "Jordi Gómez",
+  "tm_id": "39010",
+  "b_seasons": [
+   "2004/05",
+   "2005/06",
+   "2006/07"
+  ]
+ },
+ "paco montanes": {
+  "name": "Paco Montañés",
+  "tm_id": "40442",
+  "b_seasons": [
+   "2004/05",
+   "2005/06",
+   "2006/07"
+  ]
+ },
+ "javito": {
+  "name": "Javito",
+  "tm_id": "28004",
+  "b_seasons": [
+   "2004/05",
+   "2005/06"
+  ]
+ },
+ "manu lanzarote": {
+  "name": "Manu Lanzarote",
+  "tm_id": "8730",
+  "b_seasons": [
+   "2004/05"
+  ]
+ },
+ "andrea orlandi": {
+  "name": "Andrea Orlandi",
+  "tm_id": "29117",
+  "b_seasons": [
+   "2005/06",
+   "2006/07"
+  ]
+ },
+ "oier olazabal": {
+  "name": "Oier Olazábal",
+  "tm_id": "8176",
+  "b_seasons": [
+   "2006/07",
+   "2007/08",
+   "2008/09",
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "alberto botia": {
+  "name": "Alberto Botía",
+  "tm_id": "53077",
+  "b_seasons": [
+   "2006/07",
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "marc crosas": {
+  "name": "Marc Crosas",
+  "tm_id": "54164",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "nano": {
+  "name": "Nano",
+  "tm_id": "58018",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "victor vazquez": {
+  "name": "Víctor Vázquez",
+  "tm_id": "35813",
+  "b_seasons": [
+   "2006/07",
+   "2007/08",
+   "2008/09",
+   "2009/10",
+   "2010/11"
+  ]
+ },
+ "toni calvo": {
+  "name": "Toni Calvo",
+  "tm_id": "52063",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "jeffren": {
+  "name": "Jeffrén",
+  "tm_id": "53309",
+  "b_seasons": [
+   "2006/07",
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "pedro": {
+  "name": "Pedro",
+  "tm_id": "65278",
+  "b_seasons": [
+   "2006/07",
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "bojan krkic": {
+  "name": "Bojan Krkic",
+  "tm_id": "44675",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "giovani dos santos": {
+  "name": "Giovani dos Santos",
+  "tm_id": "44674",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "thaer bawab": {
+  "name": "Thaer Bawab",
+  "tm_id": "40480",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "luciano becchio": {
+  "name": "Luciano Becchio",
+  "tm_id": "71020",
+  "b_seasons": [
+   "2006/07"
+  ]
+ },
+ "chico flores": {
+  "name": "Chico Flores",
+  "tm_id": "51681",
+  "b_seasons": [
+   "2007/08"
+  ]
+ },
+ "jonathan dos santos": {
+  "name": "Jonathan dos Santos",
+  "tm_id": "60445",
+  "b_seasons": [
+   "2007/08",
+   "2008/09",
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "sergio busquets": {
+  "name": "Sergio Busquets",
+  "tm_id": "65230",
+  "b_seasons": [
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "xavi torres": {
+  "name": "Xavi Torres",
+  "tm_id": "65301",
+  "b_seasons": [
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "victor sanchez": {
+  "name": "Víctor Sánchez",
+  "tm_id": "63290",
+  "b_seasons": [
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "thiago alcantara": {
+  "name": "Thiago Alcántara",
+  "tm_id": "60444",
+  "b_seasons": [
+   "2007/08",
+   "2008/09",
+   "2009/10",
+   "2010/11"
+  ]
+ },
+ "abraham gonzalez": {
+  "name": "Abraham González",
+  "tm_id": "65243",
+  "b_seasons": [
+   "2007/08",
+   "2008/09"
+  ]
+ },
+ "dani toribio": {
+  "name": "Dani Toribio",
+  "tm_id": "65303",
+  "b_seasons": [
+   "2007/08"
+  ]
+ },
+ "gai assulin": {
+  "name": "Gai Assulin",
+  "tm_id": "38412",
+  "b_seasons": [
+   "2007/08",
+   "2008/09",
+   "2009/10"
+  ]
+ },
+ "iago falque": {
+  "name": "Iago Falque",
+  "tm_id": "59340",
+  "b_seasons": [
+   "2007/08"
+  ]
+ },
+ "jordi masip": {
+  "name": "Jordi Masip",
+  "tm_id": "65263",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13",
+   "2013/14"
+  ]
+ },
+ "ruben mino": {
+  "name": "Rubén Miño",
+  "tm_id": "65266",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "andreu fontas": {
+  "name": "Andreu Fontàs",
+  "tm_id": "65237",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11"
+  ]
+ },
+ "carles planas": {
+  "name": "Carles Planas",
+  "tm_id": "66099",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13",
+   "2013/14"
+  ]
+ },
+ "martin montoya": {
+  "name": "Martín Montoya",
+  "tm_id": "68645",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "oriol romeu": {
+  "name": "Oriol Romeu",
+  "tm_id": "66100",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11"
+  ]
+ },
+ "rayo": {
+  "name": "Rayo",
+  "tm_id": "72934",
+  "b_seasons": [
+   "2008/09"
+  ]
+ },
+ "nolito": {
+  "name": "Nolito",
+  "tm_id": "70934",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11"
+  ]
+ },
+ "ruben rochina": {
+  "name": "Rubén Rochina",
+  "tm_id": "67548",
+  "b_seasons": [
+   "2008/09",
+   "2009/10",
+   "2010/11"
+  ]
+ },
+ "armando lozano": {
+  "name": "Armando Lozano",
+  "tm_id": "29068",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "marc muniesa": {
+  "name": "Marc Muniesa",
+  "tm_id": "74228",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "sergi gomez": {
+  "name": "Sergi Gómez",
+  "tm_id": "92947",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13",
+   "2013/14"
+  ]
+ },
+ "marc bartra": {
+  "name": "Marc Bartra",
+  "tm_id": "99922",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "ilie sanchez": {
+  "name": "Ilie Sánchez",
+  "tm_id": "65298",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13",
+   "2013/14"
+  ]
+ },
+ "sergi roberto": {
+  "name": "Sergi Roberto",
+  "tm_id": "85370",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "javier espinosa": {
+  "name": "Javier Espinosa",
+  "tm_id": "128219",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12",
+   "2012/13",
+   "2013/14"
+  ]
+ },
+ "marti riverola": {
+  "name": "Martí Riverola",
+  "tm_id": "143863",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "jonathan soriano": {
+  "name": "Jonathan Soriano",
+  "tm_id": "7893",
+  "b_seasons": [
+   "2009/10",
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "abraham minero": {
+  "name": "Abraham Minero",
+  "tm_id": "95483",
+  "b_seasons": [
+   "2010/11"
+  ]
+ },
+ "ivan balliu": {
+  "name": "Iván Balliu",
+  "tm_id": "85295",
+  "b_seasons": [
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "gus ledes": {
+  "name": "Gus Ledes",
+  "tm_id": "139352",
+  "b_seasons": [
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "rafinha": {
+  "name": "Rafinha",
+  "tm_id": "129473",
+  "b_seasons": [
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "cristian tello": {
+  "name": "Cristian Tello",
+  "tm_id": "141834",
+  "b_seasons": [
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "saul berjon": {
+  "name": "Saúl Berjón",
+  "tm_id": "74954",
+  "b_seasons": [
+   "2010/11"
+  ]
+ },
+ "carlos carmona": {
+  "name": "Carlos Carmona",
+  "tm_id": "71394",
+  "b_seasons": [
+   "2010/11",
+   "2011/12"
+  ]
+ },
+ "gerard deulofeu": {
+  "name": "Gerard Deulofeu",
+  "tm_id": "129476",
+  "b_seasons": [
+   "2010/11",
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "patric": {
+  "name": "Patric",
+  "tm_id": "126729",
+  "b_seasons": [
+   "2011/12",
+   "2012/13",
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "alejandro grimaldo": {
+  "name": "Alejandro Grimaldo",
+  "tm_id": "193082",
+  "b_seasons": [
+   "2011/12",
+   "2012/13",
+   "2013/14",
+   "2014/15",
+   "2015/16"
+  ]
+ },
+ "kiko femenia": {
+  "name": "Kiko Femenía",
+  "tm_id": "76467",
+  "b_seasons": [
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "uri rosell": {
+  "name": "Uri Rosell",
+  "tm_id": "166628",
+  "b_seasons": [
+   "2011/12"
+  ]
+ },
+ "isaac cuenca": {
+  "name": "Isaac Cuenca",
+  "tm_id": "176285",
+  "b_seasons": [
+   "2011/12"
+  ]
+ },
+ "cristian lobato": {
+  "name": "Cristian Lobato",
+  "tm_id": "175787",
+  "b_seasons": [
+   "2011/12",
+   "2012/13"
+  ]
+ },
+ "miguel banuz": {
+  "name": "Miguel Bañuz",
+  "tm_id": "193073",
+  "b_seasons": [
+   "2012/13",
+   "2013/14"
+  ]
+ },
+ "fabrice ondoa": {
+  "name": "Fabrice Ondoa",
+  "tm_id": "220999",
+  "b_seasons": [
+   "2012/13",
+   "2014/15",
+   "2015/16"
+  ]
+ },
+ "david lomban": {
+  "name": "David Lombán",
+  "tm_id": "63723",
+  "b_seasons": [
+   "2012/13"
+  ]
+ },
+ "edgar ie": {
+  "name": "Edgar Ié",
+  "tm_id": "191987",
+  "b_seasons": [
+   "2012/13",
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "macky bagnack": {
+  "name": "Macky Bagnack",
+  "tm_id": "166662",
+  "b_seasons": [
+   "2012/13",
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "robert costa": {
+  "name": "Robert Costa",
+  "tm_id": "166656",
+  "b_seasons": [
+   "2012/13",
+   "2014/15",
+   "2015/16"
+  ]
+ },
+ "xavi quintilla": {
+  "name": "Xavi Quintillà",
+  "tm_id": "204102",
+  "b_seasons": [
+   "2012/13",
+   "2013/14",
+   "2014/15",
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "sergi samper": {
+  "name": "Sergi Samper",
+  "tm_id": "181112",
+  "b_seasons": [
+   "2012/13",
+   "2013/14",
+   "2014/15",
+   "2015/16"
+  ]
+ },
+ "jordi quintilla": {
+  "name": "Jordi Quintillà",
+  "tm_id": "166679",
+  "b_seasons": [
+   "2012/13"
+  ]
+ },
+ "joel huertas": {
+  "name": "Joel Huertas",
+  "tm_id": "223731",
+  "b_seasons": [
+   "2012/13"
+  ]
+ },
+ "luis alberto": {
+  "name": "Luis Alberto",
+  "tm_id": "128220",
+  "b_seasons": [
+   "2012/13"
+  ]
+ },
+ "joan roman": {
+  "name": "Joan Román",
+  "tm_id": "121411",
+  "b_seasons": [
+   "2012/13",
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "miguel angel sainzmaza": {
+  "name": "Miguel Ángel Sainz-Maza",
+  "tm_id": "142034",
+  "b_seasons": [
+   "2012/13"
+  ]
+ },
+ "adama traore": {
+  "name": "Adama Traoré",
+  "tm_id": "204103",
+  "b_seasons": [
+   "2012/13",
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "sergio araujo": {
+  "name": "Sergio Araujo",
+  "tm_id": "110366",
+  "b_seasons": [
+   "2012/13"
+  ]
+ },
+ "adrian ortola": {
+  "name": "Adrián Ortolá",
+  "tm_id": "142033",
+  "b_seasons": [
+   "2013/14",
+   "2014/15",
+   "2015/16",
+   "2017/18"
+  ]
+ },
+ "lucas gafarot": {
+  "name": "Lucas Gafarot",
+  "tm_id": "234555",
+  "b_seasons": [
+   "2013/14",
+   "2014/15",
+   "2016/17"
+  ]
+ },
+ "joan campins": {
+  "name": "Joan Campins",
+  "tm_id": "254477",
+  "b_seasons": [
+   "2013/14",
+   "2014/15",
+   "2015/16"
+  ]
+ },
+ "edu bedia": {
+  "name": "Edu Bedia",
+  "tm_id": "74764",
+  "b_seasons": [
+   "2013/14"
+  ]
+ },
+ "david babunski": {
+  "name": "David Babunski",
+  "tm_id": "133628",
+  "b_seasons": [
+   "2013/14",
+   "2014/15",
+   "2015/16"
+  ]
+ },
+ "wilfrid kaptoum": {
+  "name": "Wilfrid Kaptoum",
+  "tm_id": "256120",
+  "b_seasons": [
+   "2013/14",
+   "2014/15",
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "denis suarez": {
+  "name": "Denis Suárez",
+  "tm_id": "165007",
+  "b_seasons": [
+   "2013/14"
+  ]
+ },
+ "mohamed el ouriachi": {
+  "name": "Mohamed El Ouriachi",
+  "tm_id": "242280",
+  "b_seasons": [
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "dani nieto": {
+  "name": "Dani Nieto",
+  "tm_id": "67544",
+  "b_seasons": [
+   "2013/14"
+  ]
+ },
+ "munir el haddadi": {
+  "name": "Munir El Haddadi",
+  "tm_id": "223725",
+  "b_seasons": [
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "antonio sanabria": {
+  "name": "Antonio Sanabria",
+  "tm_id": "234523",
+  "b_seasons": [
+   "2013/14"
+  ]
+ },
+ "sandro ramirez": {
+  "name": "Sandro Ramírez",
+  "tm_id": "199369",
+  "b_seasons": [
+   "2013/14",
+   "2014/15"
+  ]
+ },
+ "jose aurelio suarez": {
+  "name": "José Aurelio Suárez",
+  "tm_id": "223720",
+  "b_seasons": [
+   "2014/15",
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "rodri tarin": {
+  "name": "Rodri Tarín",
+  "tm_id": "203617",
+  "b_seasons": [
+   "2014/15",
+   "2015/16",
+   "2016/17",
+   "2017/18"
+  ]
+ },
+ "sergi palencia": {
+  "name": "Sergi Palencia",
+  "tm_id": "268176",
+  "b_seasons": [
+   "2014/15",
+   "2015/16",
+   "2016/17",
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "diawandou diagne": {
+  "name": "Diawandou Diagne",
+  "tm_id": "228658",
+  "b_seasons": [
+   "2014/15",
+   "2016/17"
+  ]
+ },
+ "gerard gumbau": {
+  "name": "Gerard Gumbau",
+  "tm_id": "268670",
+  "b_seasons": [
+   "2014/15",
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "alen halilovic": {
+  "name": "Alen Halilovic",
+  "tm_id": "226074",
+  "b_seasons": [
+   "2014/15"
+  ]
+ },
+ "bicho": {
+  "name": "Bicho",
+  "tm_id": "217145",
+  "b_seasons": [
+   "2014/15"
+  ]
+ },
+ "juan camara": {
+  "name": "Juan Cámara",
+  "tm_id": "162039",
+  "b_seasons": [
+   "2014/15",
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "jokin ezkieta": {
+  "name": "Jokin Ezkieta",
+  "tm_id": "379548",
+  "b_seasons": [
+   "2015/16",
+   "2016/17",
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "borja lopez": {
+  "name": "Borja López",
+  "tm_id": "214770",
+  "b_seasons": [
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "fali": {
+  "name": "Fali",
+  "tm_id": "252667",
+  "b_seasons": [
+   "2015/16",
+   "2016/17",
+   "2017/18"
+  ]
+ },
+ "juan antonio ros": {
+  "name": "Juan Antonio Ros",
+  "tm_id": "256018",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "moi delgado": {
+  "name": "Moi Delgado",
+  "tm_id": "260230",
+  "b_seasons": [
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "enric franquesa": {
+  "name": "Enric Franquesa",
+  "tm_id": "282700",
+  "b_seasons": [
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "godswill ekpolo": {
+  "name": "Godswill Ekpolo",
+  "tm_id": "223727",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "alex carbonell": {
+  "name": "Àlex Carbonell",
+  "tm_id": "262389",
+  "b_seasons": [
+   "2015/16",
+   "2016/17",
+   "2022/23"
+  ]
+ },
+ "theo chendri": {
+  "name": "Théo Chendri",
+  "tm_id": "265319",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "seungho paik": {
+  "name": "Seung-ho Paik",
+  "tm_id": "282689",
+  "b_seasons": [
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "carles alena": {
+  "name": "Carles Aleñá",
+  "tm_id": "284854",
+  "b_seasons": [
+   "2015/16",
+   "2016/17",
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "robert goncalves": {
+  "name": "Robert Gonçalves",
+  "tm_id": "288500",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "aitor cantalapiedra": {
+  "name": "Aitor Cantalapiedra",
+  "tm_id": "323740",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "alberto perea": {
+  "name": "Alberto Perea",
+  "tm_id": "99559",
+  "b_seasons": [
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "seungwoo lee": {
+  "name": "Seung-woo Lee",
+  "tm_id": "280239",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "carles perez": {
+  "name": "Carles Pérez",
+  "tm_id": "282810",
+  "b_seasons": [
+   "2015/16",
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "salva chamorro": {
+  "name": "Salva Chamorro",
+  "tm_id": "191820",
+  "b_seasons": [
+   "2015/16"
+  ]
+ },
+ "dani romera": {
+  "name": "Dani Romera",
+  "tm_id": "271451",
+  "b_seasons": [
+   "2015/16",
+   "2016/17"
+  ]
+ },
+ "rafa mujica": {
+  "name": "Rafa Mujica",
+  "tm_id": "361504",
+  "b_seasons": [
+   "2015/16",
+   "2016/17",
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "inaki pena": {
+  "name": "Iñaki Peña",
+  "tm_id": "283170",
+  "b_seasons": [
+   "2016/17",
+   "2018/19",
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "sergi puig": {
+  "name": "Sergi Puig",
+  "tm_id": "293387",
+  "b_seasons": [
+   "2016/17",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "josep martinez": {
+  "name": "Josep Martínez",
+  "tm_id": "388516",
+  "b_seasons": [
+   "2016/17"
+  ]
+ },
+ "marlon": {
+  "name": "Marlon",
+  "tm_id": "273236",
+  "b_seasons": [
+   "2016/17"
+  ]
+ },
+ "jose antonio martinez": {
+  "name": "José Antonio Martínez",
+  "tm_id": "311287",
+  "b_seasons": [
+   "2016/17",
+   "2017/18"
+  ]
+ },
+ "adria vilanova": {
+  "name": "Adrià Vilanova",
+  "tm_id": "282696",
+  "b_seasons": [
+   "2016/17"
+  ]
+ },
+ "marc cucurella": {
+  "name": "Marc Cucurella",
+  "tm_id": "284857",
+  "b_seasons": [
+   "2016/17",
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "dani morer": {
+  "name": "Dani Morer",
+  "tm_id": "282726",
+  "b_seasons": [
+   "2016/17",
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "uri busquets": {
+  "name": "Uri Busquets",
+  "tm_id": "282721",
+  "b_seasons": [
+   "2016/17",
+   "2017/18",
+   "2018/19",
+   "2020/21"
+  ]
+ },
+ "jesus alfaro": {
+  "name": "Jesús Alfaro",
+  "tm_id": "154559",
+  "b_seasons": [
+   "2016/17",
+   "2017/18"
+  ]
+ },
+ "nili perdomo": {
+  "name": "Nili Perdomo",
+  "tm_id": "282671",
+  "b_seasons": [
+   "2016/17"
+  ]
+ },
+ "jordi mboula": {
+  "name": "Jordi Mboula",
+  "tm_id": "331498",
+  "b_seasons": [
+   "2016/17"
+  ]
+ },
+ "marc cardona": {
+  "name": "Marc Cardona",
+  "tm_id": "443222",
+  "b_seasons": [
+   "2016/17",
+   "2017/18"
+  ]
+ },
+ "jeremy guillemenot": {
+  "name": "Jérémy Guillemenot",
+  "tm_id": "290016",
+  "b_seasons": [
+   "2016/17"
+  ]
+ },
+ "abel ruiz": {
+  "name": "Abel Ruiz",
+  "tm_id": "340376",
+  "b_seasons": [
+   "2016/17",
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "david costas": {
+  "name": "David Costas",
+  "tm_id": "276111",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "jorge cuenca": {
+  "name": "Jorge Cuenca",
+  "tm_id": "494880",
+  "b_seasons": [
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "santiago bueno": {
+  "name": "Santiago Bueno",
+  "tm_id": "438001",
+  "b_seasons": [
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "chumi": {
+  "name": "Chumi",
+  "tm_id": "333361",
+  "b_seasons": [
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "sergio gomez": {
+  "name": "Sergio Gómez",
+  "tm_id": "366930",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "juan miranda": {
+  "name": "Juan Miranda",
+  "tm_id": "341227",
+  "b_seasons": [
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "samu araujo": {
+  "name": "Samu Araújo",
+  "tm_id": "279090",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "marcus mcguane": {
+  "name": "Marcus McGuane",
+  "tm_id": "340320",
+  "b_seasons": [
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "martin hongla": {
+  "name": "Martin Hongla",
+  "tm_id": "398808",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "inigo ruiz de galarreta": {
+  "name": "Iñigo Ruiz de Galarreta",
+  "tm_id": "126751",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "christian rivera": {
+  "name": "Christian Rivera",
+  "tm_id": "374077",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "monchu": {
+  "name": "Monchu",
+  "tm_id": "282727",
+  "b_seasons": [
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "riqui puig": {
+  "name": "Riqui Puig",
+  "tm_id": "331511",
+  "b_seasons": [
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "vitinho": {
+  "name": "Vitinho",
+  "tm_id": "323944",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "alex collado": {
+  "name": "Álex Collado",
+  "tm_id": "282722",
+  "b_seasons": [
+   "2017/18",
+   "2018/19",
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "jose manuel arnaiz": {
+  "name": "José Manuel Arnáiz",
+  "tm_id": "364603",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "matias nahuel": {
+  "name": "Matías Nahuel",
+  "tm_id": "263843",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "ballou tabla": {
+  "name": "Ballou Tabla",
+  "tm_id": "408886",
+  "b_seasons": [
+   "2017/18",
+   "2018/19"
+  ]
+ },
+ "david concha": {
+  "name": "David Concha",
+  "tm_id": "304250",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "choco lozano": {
+  "name": "Choco Lozano",
+  "tm_id": "131275",
+  "b_seasons": [
+   "2017/18"
+  ]
+ },
+ "alejandro marques": {
+  "name": "Alejandro Marqués",
+  "tm_id": "525602",
+  "b_seasons": [
+   "2017/18",
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "lazar carevic": {
+  "name": "Lazar Carević",
+  "tm_id": "344457",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "arnau tenas": {
+  "name": "Arnau Tenas",
+  "tm_id": "466783",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21",
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "ronald araujo": {
+  "name": "Ronald Araujo",
+  "tm_id": "480267",
+  "b_seasons": [
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "roman tugarinov": {
+  "name": "Roman Tugarinov",
+  "tm_id": "503851",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "ignasi vilarrasa": {
+  "name": "Ignasi Vilarrasa",
+  "tm_id": "581701",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "moussa wague": {
+  "name": "Moussa Wagué",
+  "tm_id": "364240",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "oscar mingueza": {
+  "name": "Óscar Mingueza",
+  "tm_id": "331505",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "sergi rosanas": {
+  "name": "Sergi Rosanas",
+  "tm_id": "466797",
+  "b_seasons": [
+   "2018/19",
+   "2020/21",
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "jandro orellana": {
+  "name": "Jandro Orellana",
+  "tm_id": "388548",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "nico gonzalez": {
+  "name": "Nico González",
+  "tm_id": "466805",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "alasana manneh": {
+  "name": "Alasana Manneh",
+  "tm_id": "435807",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "josep calavera": {
+  "name": "Josep Calavera",
+  "tm_id": "408472",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "lucas de vega": {
+  "name": "Lucas de Vega",
+  "tm_id": "388555",
+  "b_seasons": [
+   "2018/19",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "antonio jesus": {
+  "name": "Antonio Jesús",
+  "tm_id": "466803",
+  "b_seasons": [
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "merveil ndockyt": {
+  "name": "Merveil Ndockyt",
+  "tm_id": "398886",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "konrad de la fuente": {
+  "name": "Konrad de la Fuente",
+  "tm_id": "466809",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "kike saverio": {
+  "name": "Kike Saverio",
+  "tm_id": "388519",
+  "b_seasons": [
+   "2018/19",
+   "2019/20"
+  ]
+ },
+ "ansu fati": {
+  "name": "Ansu Fati",
+  "tm_id": "466810",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "nils mortimer": {
+  "name": "Nils Mortimer",
+  "tm_id": "466812",
+  "b_seasons": [
+   "2018/19",
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "gabriel novaes": {
+  "name": "Gabriel Novaes",
+  "tm_id": "649055",
+  "b_seasons": [
+   "2018/19"
+  ]
+ },
+ "ramon vila": {
+  "name": "Ramón Vila",
+  "tm_id": "624905",
+  "b_seasons": [
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "santiago ramos mingo": {
+  "name": "Santiago Ramos Mingo",
+  "tm_id": "688593",
+  "b_seasons": [
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "xavier mbuyamba": {
+  "name": "Xavier Mbuyamba",
+  "tm_id": "640432",
+  "b_seasons": [
+   "2019/20"
+  ]
+ },
+ "mika marmol": {
+  "name": "Mika Mármol",
+  "tm_id": "617060",
+  "b_seasons": [
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "jose marsa": {
+  "name": "José Marsà",
+  "tm_id": "563139",
+  "b_seasons": [
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "sergio akieme": {
+  "name": "Sergio Akieme",
+  "tm_id": "355627",
+  "b_seasons": [
+   "2019/20"
+  ]
+ },
+ "mike van beijnen": {
+  "name": "Mike van Beijnen",
+  "tm_id": "540271",
+  "b_seasons": [
+   "2019/20"
+  ]
+ },
+ "alvaro sanz": {
+  "name": "Álvaro Sanz",
+  "tm_id": "466806",
+  "b_seasons": [
+   "2019/20",
+   "2020/21",
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "ludovit reis": {
+  "name": "Ludovit Reis",
+  "tm_id": "490884",
+  "b_seasons": [
+   "2019/20"
+  ]
+ },
+ "matheus pereira": {
+  "name": "Matheus Pereira",
+  "tm_id": "323934",
+  "b_seasons": [
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "ilaix moriba": {
+  "name": "Ilaix Moriba",
+  "tm_id": "617074",
+  "b_seasons": [
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "hiroki abe": {
+  "name": "Hiroki Abe",
+  "tm_id": "489063",
+  "b_seasons": [
+   "2019/20",
+   "2020/21",
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "peque fernandez": {
+  "name": "Peque Fernández",
+  "tm_id": "639733",
+  "b_seasons": [
+   "2019/20",
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "rey manaj": {
+  "name": "Rey Manaj",
+  "tm_id": "308278",
+  "b_seasons": [
+   "2019/20",
+   "2020/21"
+  ]
+ },
+ "coke carrillo": {
+  "name": "Coke Carrillo",
+  "tm_id": "581640",
+  "b_seasons": [
+   "2020/21"
+  ]
+ },
+ "arnau comas": {
+  "name": "Arnau Comas",
+  "tm_id": "388542",
+  "b_seasons": [
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "roger riera": {
+  "name": "Roger Riera",
+  "tm_id": "199371",
+  "b_seasons": [
+   "2020/21"
+  ]
+ },
+ "igor gomes": {
+  "name": "Igor Gomes",
+  "tm_id": "689640",
+  "b_seasons": [
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "alejandro balde": {
+  "name": "Alejandro Balde",
+  "tm_id": "636688",
+  "b_seasons": [
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "moussa ndiaye": {
+  "name": "Moussa Ndiaye",
+  "tm_id": "649022",
+  "b_seasons": [
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "andres solano": {
+  "name": "Andrés Solano",
+  "tm_id": "461618",
+  "b_seasons": [
+   "2020/21"
+  ]
+ },
+ "gavi": {
+  "name": "Gavi",
+  "tm_id": "646740",
+  "b_seasons": [
+   "2020/21",
+   "2021/22"
+  ]
+ },
+ "gustavo maia": {
+  "name": "Gustavo Maia",
+  "tm_id": "752560",
+  "b_seasons": [
+   "2020/21"
+  ]
+ },
+ "ilias akhomach": {
+  "name": "Ilias Akhomach",
+  "tm_id": "709969",
+  "b_seasons": [
+   "2020/21",
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "diego lopez": {
+  "name": "Diego López",
+  "tm_id": "617081",
+  "b_seasons": [
+   "2020/21"
+  ]
+ },
+ "angel alarcon": {
+  "name": "Ángel Alarcón",
+  "tm_id": "646739",
+  "b_seasons": [
+   "2020/21",
+   "2022/23",
+   "2023/24"
+  ]
+ },
+ "joaquin zeballos": {
+  "name": "Joaquín Zeballos",
+  "tm_id": "319429",
+  "b_seasons": [
+   "2020/21"
+  ]
+ },
+ "arnau rafus": {
+  "name": "Arnau Rafús",
+  "tm_id": "636686",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "ander astralaga": {
+  "name": "Ander Astralaga",
+  "tm_id": "709955",
+  "b_seasons": [
+   "2021/22",
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "chadi riad": {
+  "name": "Chadi Riad",
+  "tm_id": "689637",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "arnau sola": {
+  "name": "Arnau Solà",
+  "tm_id": "636697",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "alex valle": {
+  "name": "Álex Valle",
+  "tm_id": "709957",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "alpha diounkou": {
+  "name": "Alpha Diounkou",
+  "tm_id": "554175",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "marc casado": {
+  "name": "Marc Casadó",
+  "tm_id": "636695",
+  "b_seasons": [
+   "2021/22",
+   "2022/23",
+   "2023/24"
+  ]
+ },
+ "kays ruizatil": {
+  "name": "Kays Ruiz-Atil",
+  "tm_id": "538045",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "aleix garrido": {
+  "name": "Aleix Garrido",
+  "tm_id": "709966",
+  "b_seasons": [
+   "2021/22",
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "arnau casas": {
+  "name": "Arnau Casas",
+  "tm_id": "709958",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "diego almeida": {
+  "name": "Diego Almeida",
+  "tm_id": "636687",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "abde ezzalzouli": {
+  "name": "Abde Ezzalzouli",
+  "tm_id": "724520",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "fabio blanco": {
+  "name": "Fabio Blanco",
+  "tm_id": "648909",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "zacarias ghailan": {
+  "name": "Zacarías Ghailán",
+  "tm_id": "617083",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "juanda fuentes": {
+  "name": "Juanda Fuentes",
+  "tm_id": "636701",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "estanis pedrola": {
+  "name": "Estanis Pedrola",
+  "tm_id": "913539",
+  "b_seasons": [
+   "2021/22",
+   "2022/23"
+  ]
+ },
+ "ferran jutgla": {
+  "name": "Ferran Jutglà",
+  "tm_id": "599231",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "angel rodado": {
+  "name": "Ángel Rodado",
+  "tm_id": "440332",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "jordi escobar": {
+  "name": "Jordi Escobar",
+  "tm_id": "568155",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "peque polo": {
+  "name": "Peque Polo",
+  "tm_id": "605527",
+  "b_seasons": [
+   "2021/22"
+  ]
+ },
+ "nil ruiz": {
+  "name": "Nil Ruiz",
+  "tm_id": "946256",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "diego kochen": {
+  "name": "Diego Kochen",
+  "tm_id": "938144",
+  "b_seasons": [
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "aron yaakobishvili": {
+  "name": "Áron Yaakobishvili",
+  "tm_id": "938145",
+  "b_seasons": [
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "alexis olmedo": {
+  "name": "Alexis Olmedo",
+  "tm_id": "938150",
+  "b_seasons": [
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "sergi dominguez": {
+  "name": "Sergi Domínguez",
+  "tm_id": "741258",
+  "b_seasons": [
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "roman vega": {
+  "name": "Román Vega",
+  "tm_id": "875947",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "julian araujo": {
+  "name": "Julián Araujo",
+  "tm_id": "513970",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "alvaro nunez": {
+  "name": "Álvaro Núñez",
+  "tm_id": "626953",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "gerard hernandez": {
+  "name": "Gerard Hernández",
+  "tm_id": "741254",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "moha moukhliss": {
+  "name": "Moha Moukhliss",
+  "tm_id": "495622",
+  "b_seasons": [
+   "2022/23",
+   "2023/24"
+  ]
+ },
+ "txus alba": {
+  "name": "Txus Alba",
+  "tm_id": "627218",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "unai hernandez": {
+  "name": "Unai Hernández",
+  "tm_id": "970633",
+  "b_seasons": [
+   "2022/23",
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "pablo torre": {
+  "name": "Pablo Torre",
+  "tm_id": "720038",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "emre demir": {
+  "name": "Emre Demir",
+  "tm_id": "637669",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "lucas roman": {
+  "name": "Lucas Román",
+  "tm_id": "990202",
+  "b_seasons": [
+   "2022/23",
+   "2023/24"
+  ]
+ },
+ "luismi cruz": {
+  "name": "Luismi Cruz",
+  "tm_id": "610461",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "lamine yamal": {
+  "name": "Lamine Yamal",
+  "tm_id": "937958",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "roberto fernandez": {
+  "name": "Roberto Fernández",
+  "tm_id": "720518",
+  "b_seasons": [
+   "2022/23"
+  ]
+ },
+ "victor barbera": {
+  "name": "Víctor Barberá",
+  "tm_id": "789145",
+  "b_seasons": [
+   "2022/23",
+   "2024/25"
+  ]
+ },
+ "marc guiu": {
+  "name": "Marc Guiu",
+  "tm_id": "938158",
+  "b_seasons": [
+   "2022/23",
+   "2023/24"
+  ]
+ },
+ "marc vidal": {
+  "name": "Marc Vidal",
+  "tm_id": "541621",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "pau cubarsi": {
+  "name": "Pau Cubarsí",
+  "tm_id": "962110",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "mikayil faye": {
+  "name": "Mikayil Faye",
+  "tm_id": "666974",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "mamadou mbacke": {
+  "name": "Mamadou Mbacke",
+  "tm_id": "898751",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "gerard martin": {
+  "name": "Gerard Martín",
+  "tm_id": "705395",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "alvaro cortes": {
+  "name": "Álvaro Cortés",
+  "tm_id": "924610",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "andres cuenca": {
+  "name": "Andrés Cuenca",
+  "tm_id": "962111",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "albert navarro": {
+  "name": "Albert Navarro",
+  "tm_id": "962154",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "hector fort": {
+  "name": "Héctor Fort",
+  "tm_id": "937955",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "marc bernal": {
+  "name": "Marc Bernal",
+  "tm_id": "1018920",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "pau prim": {
+  "name": "Pau Prim",
+  "tm_id": "937956",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "guille fernandez": {
+  "name": "Guille Fernández",
+  "tm_id": "1050120",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "cristo munoz": {
+  "name": "Cristo Muñoz",
+  "tm_id": "834468",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "brian farinas": {
+  "name": "Brian Fariñas",
+  "tm_id": "938154",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "fermin lopez": {
+  "name": "Fermín López",
+  "tm_id": "636703",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "noah darvich": {
+  "name": "Noah Darvich",
+  "tm_id": "897480",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "juan hernandez": {
+  "name": "Juan Hernández",
+  "tm_id": "962118",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "naim garcia": {
+  "name": "Naim García",
+  "tm_id": "715683",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "jaume cuellar": {
+  "name": "Jaume Cuéllar",
+  "tm_id": "466808",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "iker goujon": {
+  "name": "Iker Goujón",
+  "tm_id": "607841",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "dani rodriguez": {
+  "name": "Dani Rodríguez",
+  "tm_id": "834470",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "nil caldero": {
+  "name": "Nil Calderó",
+  "tm_id": "834471",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "pau victor": {
+  "name": "Pau Víctor",
+  "tm_id": "707572",
+  "b_seasons": [
+   "2023/24"
+  ]
+ },
+ "diego percan": {
+  "name": "Diego Percan",
+  "tm_id": "828338",
+  "b_seasons": [
+   "2023/24",
+   "2024/25"
+  ]
+ },
+ "eder aller": {
+  "name": "Eder Aller",
+  "tm_id": "1066202",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "leo saca": {
+  "name": "Leo Saca",
+  "tm_id": "1008261",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "jofre torrents": {
+  "name": "Jofre Torrents",
+  "tm_id": "1009765",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "david oduro": {
+  "name": "David Oduro",
+  "tm_id": "1051724",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "landry farre": {
+  "name": "Landry Farré",
+  "tm_id": "938148",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "xavi espart": {
+  "name": "Xavi Espart",
+  "tm_id": "1018912",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "pedro soma": {
+  "name": "Pedro Soma",
+  "tm_id": "994266",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "quim junyent": {
+  "name": "Quim Junyent",
+  "tm_id": "962113",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "pedro rodriguez": {
+  "name": "Pedro Rodríguez",
+  "tm_id": "1066205",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "toni fernandez": {
+  "name": "Toni Fernández",
+  "tm_id": "1066206",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "jan virgili": {
+  "name": "Jan Virgili",
+  "tm_id": "1301775",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "arnau pradas": {
+  "name": "Arnau Pradas",
+  "tm_id": "938159",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "aziz issah": {
+  "name": "Aziz Issah",
+  "tm_id": "1071086",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "ibrahim diarra": {
+  "name": "Ibrahim Diarra",
+  "tm_id": "1132629",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "alan godoy": {
+  "name": "Alan Godoy",
+  "tm_id": "668277",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "ivan cedric": {
+  "name": "Iván Cédric",
+  "tm_id": "716163",
+  "b_seasons": [
+   "2024/25"
+  ]
+ },
+ "oscar gistau": {
+  "name": "Òscar Gistau",
+  "tm_id": "1050116",
+  "b_seasons": [
+   "2024/25"
+  ]
+ }
+}

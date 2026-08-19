@@ -3,20 +3,14 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_seasons,
-                  metric_cards, setup)
+from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_parquet,
+                  load_seasons, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
 
 
-@st.cache_data
-def load_players() -> pd.DataFrame:
-    p = PROCESSED / "players.parquet"
-    return pd.read_parquet(p) if p.exists() else pd.DataFrame()
-
-
-df = load_players()
+df = load_parquet(PROCESSED / "players.parquet")
 
 st.markdown(f"""
 <div class="hero">

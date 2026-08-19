@@ -30,7 +30,15 @@ def load_all() -> pd.DataFrame:
 
 
 def league_table(df: pd.DataFrame) -> pd.DataFrame:
-    """시즌별 전 구단 순위표. 승점 → 골득실 → 다득점 순."""
+    """시즌별 전 구단 순위표.
+
+    라리가는 승점이 같으면 **동률 팀끼리의 상대전적**을 먼저 본다. 골득실을
+    바로 적용하면 2006/07처럼 실제와 뒤집히는 시즌이 생긴다(바르사·레알 76점
+    동률에서 상대전적으로 레알이 우승).
+
+    순서: 승점 → 동률 팀 간 상대전적 승점 → 상대전적 골득실 → 전체 골득실 →
+    다득점.
+    """
     recs = []
     for season, g in df.groupby("Season"):
         acc = {}
@@ -43,11 +51,36 @@ def league_table(df: pd.DataFrame) -> pd.DataFrame:
         t = pd.DataFrame(acc).T.reset_index(names="team")
         t["GD"] = t["GF"] - t["GA"]
         t["Pts"] = t["W"] * 3 + t["D"]
-        t = t.sort_values(["Pts", "GD", "GF"], ascending=False).reset_index(drop=True)
+
+        h2h_pts, h2h_gd = _head_to_head(g, t)
+        t["H2H_Pts"] = t["team"].map(h2h_pts)
+        t["H2H_GD"] = t["team"].map(h2h_gd)
+
+        t = (t.sort_values(["Pts", "H2H_Pts", "H2H_GD", "GD", "GF"], ascending=False)
+             .drop(columns=["H2H_Pts", "H2H_GD"]).reset_index(drop=True))
         t["rank"] = t.index + 1
         t["Season"] = season
         recs.append(t)
     return pd.concat(recs, ignore_index=True)
+
+
+def _head_to_head(games: pd.DataFrame, table: pd.DataFrame) -> tuple[dict, dict]:
+    """승점이 같은 팀 묶음마다 그들끼리의 맞대결 승점·골득실을 계산한다.
+
+    동률이 아닌 팀은 0으로 둬도 정렬에 영향이 없다 — 승점이 먼저 갈리기 때문.
+    """
+    pts, gd = {t: 0 for t in table["team"]}, {t: 0 for t in table["team"]}
+    for _, tied in table.groupby("Pts"):
+        teams = set(tied["team"])
+        if len(teams) < 2:
+            continue
+        sub = games[games["HomeTeam"].isin(teams) & games["AwayTeam"].isin(teams)]
+        for _, r in sub.iterrows():
+            for team, f, a in ((r["HomeTeam"], r["FTHG"], r["FTAG"]),
+                               (r["AwayTeam"], r["FTAG"], r["FTHG"])):
+                pts[team] += 3 if f > a else (1 if f == a else 0)
+                gd[team] += f - a
+    return pts, gd
 
 
 RIVAL = "Real Madrid"
@@ -79,6 +112,10 @@ def main() -> None:
     df = load_all()
     table = league_table(df)
     table.to_parquet(OUT / "league_table.parquet", index=False)
+
+    # 리그 전체 경기도 남긴다. 상대 팀의 그 시점 폼을 계산하려면 바르사
+    # 경기만으로는 부족하다.
+    df.to_parquet(OUT / "all_matches.parquet", index=False)
 
     cl = clasico(df)
     cl.to_parquet(OUT / "clasico.parquet", index=False)
