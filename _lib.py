@@ -228,3 +228,55 @@ def credits_block(seasons: pd.DataFrame, credits: dict, extra: str = "") -> str:
 <b>이미지</b> 클럽 엠블럼은 FC Barcelona 소유. 사진 출처:<br>{lines}
 </div>
 """
+
+
+# ---------------------------------------------------------------- 피치 그리기
+
+def pitch_shapes(x0: float = 0, y0: float = 0, x1: float = 120, y1: float = 80) -> list:
+    """StatsBomb 좌표계(120×80) 축구장 라인. plotly layout.shapes에 넣는다.
+
+    공격 방향은 +x, 골대는 x=120. 페널티박스는 골라인에서 18야드(=18단위),
+    골에어리어는 6야드다.
+    """
+    line = dict(type="line", line=dict(color="#2f4d78", width=1.4))
+    rect = dict(type="rect", line=dict(color="#2f4d78", width=1.4))
+    circle = dict(type="circle", line=dict(color="#2f4d78", width=1.4))
+    return [
+        {**rect, "x0": x0, "y0": y0, "x1": x1, "y1": y1},          # 외곽
+        {**line, "x0": 60, "y0": y0, "x1": 60, "y1": y1},           # 하프라인
+        {**circle, "x0": 50, "y0": 30, "x1": 70, "y1": 50},         # 센터서클
+        {**rect, "x0": 0, "y0": 18, "x1": 18, "y1": 62},            # 좌 페널티박스
+        {**rect, "x0": 102, "y0": 18, "x1": 120, "y1": 62},         # 우 페널티박스
+        {**rect, "x0": 0, "y0": 30, "x1": 6, "y1": 50},             # 좌 골에어리어
+        {**rect, "x0": 114, "y0": 30, "x1": 120, "y1": 50},         # 우 골에어리어
+    ]
+
+
+def pitch_layout(height: int = 470, **kw) -> dict:
+    """피치 위 산점도용 레이아웃. 종횡비를 고정해 경기장이 찌그러지지 않게 한다."""
+    base = dict(
+        height=height, shapes=pitch_shapes(), showlegend=False,
+        xaxis=dict(range=[-2, 122], visible=False, constrain="domain"),
+        yaxis=dict(range=[-2, 82], visible=False, scaleanchor="x", scaleratio=1),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#94a8c4", size=12), margin=dict(l=6, r=6, t=30, b=6),
+    )
+    base.update(kw)
+    return base
+
+
+@st.cache_data
+def load_sb(name: str) -> pd.DataFrame:
+    """StatsBomb 집계 parquet. 아직 수집 전이면 빈 DataFrame."""
+    p = PROCESSED.parent / "statsbomb" / f"{name}.parquet"
+    return pd.read_parquet(p) if p.exists() else pd.DataFrame()
+
+
+@st.cache_data
+def load_fbref(stat: str) -> pd.DataFrame:
+    """FBref 시즌별 parquet을 한 종류씩 합친다. 시즌마다 열 구성이 조금씩 다르다."""
+    d = PROCESSED.parent / "fbref"
+    files = sorted(d.glob(f"{stat}_*.parquet")) if d.exists() else []
+    if not files:
+        return pd.DataFrame()
+    return pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
