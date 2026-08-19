@@ -7,9 +7,9 @@
   },
   "figo": {
     "file": "clasico/figo.jpg",
-    "license": "CC BY-SA 3.0",
-    "artist": "The original uploader was Monocromatico at P",
-    "source": "https://commons.wikimedia.org/wiki/File:Figo.jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (figo.webp)"
   },
   "bernabeu": {
     "file": "clasico/bernabeu.jpg",

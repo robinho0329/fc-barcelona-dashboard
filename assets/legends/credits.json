@@ -1,9 +1,9 @@
 {
   "messi": {
     "file": "legends/messi.jpg",
-    "license": "CC BY 2.0",
-    "artist": "Jeroen Bennink",
-    "source": "https://commons.wikimedia.org/wiki/File:Lionel Messi, 2011.jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (messi.webp)"
   },
   "iniesta": {
     "file": "legends/iniesta.jpg",
@@ -37,20 +37,26 @@
   },
   "stoichkov": {
     "file": "legends/stoichkov.jpg",
-    "license": "CC BY 3.0",
-    "artist": "Biso",
-    "source": "https://commons.wikimedia.org/wiki/File:Hristo stoichkov-2010 (crop).jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (stoichkov.jpg)"
   },
   "cruyff": {
     "file": "legends/cruyff.jpg",
-    "license": "CC0",
-    "artist": "Fotograaf Onbekend / Anefo",
-    "source": "https://commons.wikimedia.org/wiki/File:Het elftal van Barcelona, Bestanddeelnr 928-0927.jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (cruyff.webp)"
   },
   "ronaldinho": {
     "file": "legends/ronaldinho.jpg",
-    "license": "CC BY 2.0",
-    "artist": "Hector Garcia from Barcelona, Catalonia, Spa",
-    "source": "https://commons.wikimedia.org/wiki/File:Ronaldinhotaking a set piece54.jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (ronaldinho.png)"
+  },
+  "puyol": {
+    "file": "legends/puyol.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (puyol.png)"
   }
 }

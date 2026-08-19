@@ -1,0 +1,103 @@
+"""assets/_inbox/ 에 넣은 사진을 대시보드 자산으로 반영한다.
+
+사용자가 직접 고른 사진을 쓰기 위한 경로다. 파일명 앞부분으로 대상을 정하며
+(messi / cruyff / ronaldinho / puyol ...), 확장자는 무엇이든 된다.
+
+  1) assets/_inbox/ 에 파일을 넣는다  (예: messi.jpg, puyol.png)
+  2) python apply_inbox.py
+
+레전드 페이지와 홈 페이지가 함께 쓰는 인물은 양쪽에 복사한다.
+"""
+import json
+import logging
+import shutil
+import sys
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parent
+INBOX = ROOT / "assets" / "_inbox"
+ASSETS = ROOT / "assets"
+LEGENDS = ASSETS / "legends"
+CLASICO = ASSETS / "clasico"
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+log = logging.getLogger("inbox")
+
+# 키 -> 저장할 자산 폴더 목록. 여러 페이지가 함께 쓰는 인물은 양쪽에 넣는다.
+#   legends = 레전드 카드,  home = 홈 페이지,  clasico = 엘클라시코 갤러리
+TARGETS = {
+    "messi": ["legends", "home"],
+    "cruyff": ["legends", "home"],
+    "ronaldinho": ["legends"],
+    "puyol": ["legends"],
+    "xavi": ["legends"],
+    "iniesta": ["legends"],
+    "kubala": ["legends"],
+    "guardiola": ["legends"],
+    "stoichkov": ["legends"],
+    "suarez": ["legends"],
+    "camp_nou": ["home"],
+    # 엘클라시코 갤러리
+    "figo": ["clasico"],
+    "sunyol": ["clasico"],
+    "franco": ["clasico"],
+    "di_stefano": ["clasico"],
+    "coronacion": ["clasico"],
+    "bernabeu": ["clasico"],
+}
+
+STORE = {"legends": LEGENDS, "home": ASSETS, "clasico": CLASICO}
+MAX_W = 900
+
+
+def save_as(src: Path, dest: Path) -> None:
+    """JPEG로 통일해 저장. 폭이 크면 줄인다."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    im = Image.open(src)
+    if im.mode in ("RGBA", "LA", "P"):
+        im = im.convert("RGB")
+    w, h = im.size
+    if w > MAX_W:
+        im = im.resize((MAX_W, int(h * MAX_W / w)), Image.LANCZOS)
+    im.save(dest, "JPEG", quality=88, optimize=True)
+
+
+def note_source(store: Path, key: str, filename: str) -> None:
+    """출처를 '사용자 제공'으로 남긴다. 커먼즈 항목은 건드리지 않는다."""
+    p = store / "credits.json"
+    meta = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    rel = f"{key}.jpg" if store == ASSETS else f"{store.name}/{key}.jpg"
+    meta[key] = {"file": rel, "license": "사용자 제공", "artist": "사용자 제공",
+                 "source": f"직접 전달한 파일 ({filename})"}
+    p.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def main() -> None:
+    files = [f for f in sorted(INBOX.iterdir())
+             if f.is_file() and f.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".gif"}] \
+        if INBOX.exists() else []
+    if not files:
+        sys.exit(f"{INBOX} 에 이미지가 없습니다. 파일을 넣고 다시 실행하세요.")
+
+    applied = 0
+    for f in files:
+        key = f.stem.lower().split("_")[0].split("-")[0].strip()
+        if key not in TARGETS:
+            log.warning("건너뜀 %-22s — 대상 이름이 아닙니다 (%s)",
+                        f.name, ", ".join(TARGETS))
+            continue
+        dests = TARGETS[key]
+        for d in dests:
+            store = STORE[d]
+            save_as(f, store / f"{key}.jpg")
+            note_source(store, key, f.name)
+        log.info("반영 %-14s <- %-26s (%s)", key, f.name, " + ".join(dests))
+        applied += 1
+
+    log.info("\n%d개 반영 완료. 브라우저를 새로고침하면 바로 보입니다.", applied)
+
+
+if __name__ == "__main__":
+    main()

@@ -4,5 +4,17 @@
     "license": "CC BY-SA 3.0",
     "artist": "Luis Miguel Bugallo Sánchez (Lmbuga)",
     "source": "https://commons.wikimedia.org/wiki/File:2014. Camp Nou. Més que un club. Barcelona B40.jpg"
+  },
+  "cruyff": {
+    "file": "cruyff.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (cruyff.webp)"
+  },
+  "messi": {
+    "file": "messi.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (messi.webp)"
   }
 }
