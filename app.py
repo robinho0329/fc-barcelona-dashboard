@@ -21,6 +21,7 @@ nav = st.navigation({
     ],
     "선수": [
         st.Page("views/players.py", title="선수 아카이브", icon="👤"),
+        st.Page("views/masia.py", title="라 마시아", icon="🌱"),
         st.Page("views/advanced.py", title="선수 고급 기록", icon="📈"),
     ],
     "이벤트 데이터": [
