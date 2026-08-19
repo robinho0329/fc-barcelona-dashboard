@@ -1,3 +1,5 @@
 __pycache__/
 .venv/
 *.pyc
+# StatsBomb 원본 이벤트 캐시 (1.3GB). 집계 결과만 커밋한다.
+data/.sb_cache/
