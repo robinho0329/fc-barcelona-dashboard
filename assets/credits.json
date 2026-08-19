@@ -1,0 +1,20 @@
+{
+  "camp_nou": {
+    "file": "camp_nou.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Luis Miguel Bugallo Sánchez (Lmbuga)",
+    "source": "https://commons.wikimedia.org/wiki/File:2014. Camp Nou. Més que un club. Barcelona B40.jpg"
+  },
+  "cruyff": {
+    "file": "cruyff.jpg",
+    "license": "CC0",
+    "artist": "Rob Mieremet / Anefo",
+    "source": "https://commons.wikimedia.org/wiki/File:Johan Cruijff (1974).jpg"
+  },
+  "messi": {
+    "file": "messi.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Кирилл Венедиктов",
+    "source": "https://commons.wikimedia.org/wiki/File:Lionel Messi 20180626.jpg"
+  }
+}
