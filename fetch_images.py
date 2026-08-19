@@ -77,6 +77,29 @@ CLASICO = {
 }
 
 
+# 시대 카드용 — 인물 증명사진이 아니라 그 시대를 떠올리게 하는 장면으로.
+# 커먼즈에 바르사 우승 순간 사진이 많지 않아, 없는 시대는 캄 노우·클라시코
+# 같은 그 시기 실제 경기 장면으로 대신한다.
+ERAS = {
+    "era_dreamteam": ["Celebración Barcelona Copa de Europa 1992.jpg"],
+    "era_transition": ["F.C. Barcelona. Camp Nou 2006 - panoramio.jpg",
+                       "Camp Nou - Home Ground of FC Barcelona.jpg"],
+    "era_rijkaard": ["LFP - Barcelona vs Mallorca pre-match - Oct 3rd 2010.jpg",
+                     "Barca medals.jpg"],
+    "era_pep": ["2010-11-29 Clasico05 (5221488999).jpg",
+                "2010-11-29 Clasico11 (5222092056).jpg"],
+    "era_msn": ["Festa culé, Barcelona-Juventus. Champions league 2015, Berlin.JPG",
+                "Barça Party - Champions League Final 2015 , Barcelona-Juventus.JPG",
+                "Barcelona fans - Champions league 2015 Berlin.JPG"],
+    "era_post": ["Barcelona BW 2019-10-07 10-48-36.jpg",
+                 "Camp Nou, La Liga match (Ank Kumar) 10.jpg",
+                 "Camp Nou - Home Ground of FC Barcelona.jpg"],
+    "era_rebuild": ["Stadium of Football Club FC Barcelona - Camp Nou.jpg",
+                    "Camp Nou - Home Ground of FC Barcelona.jpg",
+                    "2014. Camp Nou. Més que un club. Barcelona B40.jpg"],
+}
+
+
 def commons_file(title: str, width: int = 760) -> dict | None:
     r = requests.get(API, headers=UA, timeout=45, params={
         "action": "query", "format": "json", "titles": f"File:{title}",
@@ -175,13 +198,15 @@ def run(group: str, wants: dict, out: Path) -> None:
 
 
 def main() -> None:
-    groups = sys.argv[1:] or ["legends", "clasico", "home"]
+    groups = sys.argv[1:] or ["legends", "clasico", "home", "eras"]
     if "legends" in groups:
         run("legends", LEGENDS, ROOT / "assets" / "legends")
     if "clasico" in groups:
         run("clasico", CLASICO, ROOT / "assets" / "clasico")
     if "home" in groups:
         run("home", HOME, ROOT / "assets")
+    if "eras" in groups:
+        run("eras", ERAS, ROOT / "assets" / "eras")
 
 
 if __name__ == "__main__":

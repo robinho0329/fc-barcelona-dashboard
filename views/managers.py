@@ -101,7 +101,7 @@ c1, c2 = st.columns([1, 2.3], gap="medium")
 with c1:
     src = b64(f"managers/{r['file']}") if r["file"] else ""
     if src:
-        st.markdown(f'<div class="legend-hero"><img src="{src}" alt="{r["name"]}"></div>',
+        st.markdown(f'<div class="legend-hero mg-hero"><img src="{src}" alt="{r["name"]}"></div>',
                     unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="legend-hero mg-hero-initial">{initials(r["name"])}</div>',
@@ -168,7 +168,8 @@ NOTES = {
     "Hansi Flick": "부임과 함께 수비 라인을 끌어올리며 경기당 2.40점. 첫 두 시즌 "
                    "연속 리그 우승으로 과르디올라 이후 가장 빠른 출발을 했다.",
 }
-note = NOTES.get(r["name"])
+# 두 번 부임한 감독은 표시명에 "(1기)"가 붙는다. 표시명 → 이름 순으로 찾는다.
+note = NOTES.get(r["표시명"]) or NOTES.get(r["name"])
 if note:
     st.markdown(f'<div class="mg-note">{note}</div>', unsafe_allow_html=True)
 

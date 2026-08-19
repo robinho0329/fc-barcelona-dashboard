@@ -3,29 +3,62 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_parquet,
-                  load_seasons, metric_cards, setup)
+from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_dir,
+                  load_parquet, load_seasons, metric_cards, portrait_map, setup)
 
 seasons = load_seasons()
 setup(seasons)
 
 
-df = load_parquet(PROCESSED / "players.parquet")
+# 두 소스를 쓴다.
+#  - 라리가 상세(슛·유효슛·태클 등): players.parquet, 1993/94~
+#  - 대회별(라리가·챔스·코파) 기본 스탯: fbref_allcomps_players, 1993/94~
+LIGA = load_parquet(PROCESSED / "players.parquet")
+ALL = load_dir("fbref_allcomps_players")
 
 st.markdown(f"""
 <div class="hero">
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
-  <div class="hero-kicker">FBref · La Liga 1993/94–2025/26</div>
+  <div class="hero-kicker">FBref · 1993/94–2025/26</div>
   <h1>선수 아카이브</h1>
-  <div class="hero-motto">33시즌 동안 바르사 유니폼을 입고 라리가를 뛴 선수들의
-  시즌 기록. 리그 경기만 집계한 값이다.</div>
+  <div class="hero-motto">33시즌 동안 바르사 유니폼을 입은 선수들의 시즌 기록.
+  라리가·챔피언스리그·코파 델 레이를 대회별로 나눠 볼 수 있다.</div>
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
 
-if df.empty:
-    st.warning("선수 데이터가 없습니다. `python crawl_fbref.py` 후 `python build_players.py`를 실행하세요.")
+if LIGA.empty and ALL.empty:
+    st.warning("선수 데이터가 없습니다. `python crawl_fbref.py` 후 `python build_players.py`를 "
+               "실행하세요. 대회별 스탯은 `python crawl_allcomps.py`가 필요합니다.")
     st.stop()
+
+# ---------------------------------------------------------------- 대회 선택
+comp_opts = ["라리가 (상세)"]
+if not ALL.empty:
+    order = ["전 대회", "라리가", "챔피언스리그", "코파 델 레이", "수페르코파",
+             "UEFA컵/유로파", "UEFA 슈퍼컵"]
+    have = [c for c in order if c in set(ALL["대회"])]
+    comp_opts = have + comp_opts
+
+st.markdown('<div class="section">대회</div>', unsafe_allow_html=True)
+comp = st.radio("참여 대회", comp_opts, horizontal=True, label_visibility="collapsed")
+
+if comp == "라리가 (상세)":
+    df = LIGA
+    DETAIL = True
+else:
+    df = ALL[ALL["대회"] == comp].copy()
+    DETAIL = False
+    st.caption("FBref 대회별 집계. 슛·태클 같은 세부 지표는 라리가 상세에서만 볼 수 있다.")
+
+if df.empty:
+    st.info("이 대회의 데이터가 없습니다.")
+    st.stop()
+
+if "포지션군" not in df.columns:
+    df = df.copy()
+    df["포지션군"] = df["Pos"].fillna("").str[:2].replace({
+        "GK": "골키퍼", "DF": "수비수", "MF": "미드필더", "FW": "공격수"})
 
 # ---------------------------------------------------------------- 총괄
 st.markdown('<div class="section">아카이브 규모</div>', unsafe_allow_html=True)
@@ -50,7 +83,9 @@ season = c1.selectbox("시즌", season_opts)
 pos_opts = ["전체"] + [p for p in ["골키퍼", "수비수", "미드필더", "공격수"]
                      if p in set(df["포지션군"])]
 pos = c2.selectbox("포지션", pos_opts)
-min_games = c3.slider("최소 출전 경기", 0, 38, 5)
+cap = int(df["경기"].max()) if df["경기"].notna().any() else 38
+# 컵대회는 경기 수가 적어 상한을 데이터에 맞춘다
+min_games = c3.slider("최소 출전 경기", 0, max(cap, 1), min(5, cap))
 name_q = c4.text_input("선수 이름 검색", placeholder="예: Messi, Xavi")
 
 view = df.copy()
@@ -69,13 +104,24 @@ if view.empty:
 st.caption(f"{len(view)}건 · 선수 {view['Player'].nunique()}명 · "
            f"시즌 {view['season'].nunique()}개")
 
-SHOW = ["Player", "season", "Pos", "Age", "경기", "선발", "출전분", "골", "도움",
-        "골p90", "슛", "유효슛", "유효슛%", "경고", "퇴장"]
-tbl = view[[c for c in SHOW if c in view.columns]].copy()
-tbl.columns = ["선수", "시즌", "포지션", "나이", "경기", "선발", "출전분", "골", "도움",
-               "골p90", "슛", "유효슛", "유효슛%", "경고", "퇴장"][:len(tbl.columns)]
-st.dataframe(tbl.sort_values("출전분", ascending=False).set_index("선수"),
-             use_container_width=True, height=430)
+LABELS = {"Player": "선수", "season": "시즌", "Pos": "포지션", "Age": "나이",
+          "경기": "경기", "선발": "선발", "출전분": "출전분", "골": "골",
+          "도움": "도움", "골p90": "골p90", "슛": "슛", "유효슛": "유효슛",
+          "유효슛%": "유효슛%", "경고": "경고", "퇴장": "퇴장"}
+SHOW = [c for c in LABELS if c in view.columns]
+tbl = view[SHOW].copy()
+tbl.columns = [LABELS[c] for c in SHOW]
+tbl = tbl.sort_values("출전분", ascending=False)
+
+# Transfermarkt 증명사진을 맨 앞 열에 붙인다. 1990년대 선수는 원본에 사진이
+# 없는 경우가 많아 빈칸으로 남는다.
+photos = portrait_map(tbl["선수"].unique())
+tbl.insert(0, "사진", tbl["선수"].map(photos))
+st.dataframe(
+    tbl.set_index("선수"), use_container_width=True, height=430,
+    column_config={"사진": st.column_config.ImageColumn("사진", width="small")})
+st.caption(f"사진은 Transfermarkt 시즌 스쿼드에서 받은 것으로, "
+           f"{sum(1 for v in photos.values() if v)}/{len(photos)}명 붙어 있다.")
 
 # ---------------------------------------------------------------- 랭킹
 st.markdown('<div class="section">통산 순위 (필터 적용)</div>', unsafe_allow_html=True)
@@ -133,11 +179,14 @@ else:
 
 st.markdown("""
 <div class="credits">
-<b>데이터</b> FBref 라리가 선수 시즌 스탯 1993/94~2025/26. 리그 경기만 집계하며
-컵대회·챔피언스리그는 빠져 있어 클럽 공식 통산 기록과 다르다.<br>
-<b>결측</b> FBref가 라리가 페이지에서 세부 패스·수비·점유 지표를 빈 값으로 내려주어
-해당 열은 아예 제외했다. 슛·유효슛은 2014/15 이후, 도움은 1999/00 이후만 제공된다.
-패스·드리블·압박 같은 세부 지표는 <b>xG·슈팅 맵</b>과 <b>레전드</b> 페이지의
+<b>데이터</b> FBref 1993/94~2025/26. 대회 선택에 따라 두 소스를 쓴다.<br>
+· <b>라리가·챔피언스리그·코파 델 레이 등</b> — FBref 클럽 페이지의 대회별 표.
+출전·골·도움 같은 기본 지표를 대회 단위로 담는다. '전 대회'는 이미 합산된 행이라
+다른 대회 행과 더하면 중복이 된다.<br>
+· <b>라리가 (상세)</b> — 리그 전용 집계로, 슛·유효슛·태클 등 세부 지표가 더 붙는다.
+슛·유효슛은 2014/15 이후, 도움은 1999/00 이후만 제공된다.<br>
+<b>결측</b> FBref가 라리가 페이지에서 패스 성공률·터치 같은 지표를 빈 값으로
+내려주어 해당 열은 제외했다. 그 지표들은 <b>선수 고급 기록</b>과 <b>패스 맵</b>의
 StatsBomb 이벤트 데이터에서 볼 수 있다(2004/05~2020/21).
 </div>
 """, unsafe_allow_html=True)

@@ -2,8 +2,10 @@
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (ASSETS, GOLD, GRANA, GRID, PLOT, b64, load_json, load_sb,
-                  load_seasons, metric_cards, setup)
+import pandas as pd
+
+from _lib import (ASSETS, GOLD, GRANA, GRID, PLOT, b64, load_dir, load_json,
+                  load_sb, load_seasons, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -16,6 +18,7 @@ LEGENDS = [
         "key": "messi", "name": "리오넬 메시", "full": "Lionel Andrés Messi",
         "years": "2004–2021", "pos": "포워드 · 우측 윙어",
         "stats_name": "Lionel Andrés Messi Cuccittini",
+        "fbref_name": "Lionel Messi",
         "photo": "legends/messi.jpg",
         "tagline": "클럽 통산 최다 출전·최다 득점. 바르사 그 자체.",
         "career": [
@@ -31,7 +34,7 @@ LEGENDS = [
     {
         "key": "cruyff", "name": "요한 크루이프", "full": "Hendrik Johannes Cruijff",
         "years": "1973–1978 (선수) · 1988–1996 (감독)", "pos": "포워드 · 감독",
-        "stats_name": "", "photo": "legends/cruyff.jpg",
+        "stats_name": "", "fbref_name": "", "photo": "legends/cruyff.jpg",
         "tagline": "선수로 한 번, 감독으로 또 한 번 클럽의 방향을 바꿨다.",
         "career": [
             ("1973", "아약스에서 이적", "당시 세계 최고 이적료. 첫 시즌 14년 만의 리그 우승."),
@@ -46,7 +49,8 @@ LEGENDS = [
     {
         "key": "xavi", "name": "차비 에르난데스", "full": "Xavier Hernández Creus",
         "years": "1998–2015", "pos": "중앙 미드필더",
-        "stats_name": "Xavier Hernández Creus", "photo": "legends/xavi.jpg",
+        "stats_name": "Xavier Hernández Creus", "fbref_name": "Xavi",
+        "photo": "legends/xavi.jpg",
         "tagline": "티키타카의 메트로놈. 라 마시아가 만든 가장 완성된 8번.",
         "career": [
             ("1998", "1군 데뷔", "마요르카전 데뷔골. 과르디올라의 뒤를 잇는 자리로 지목됐다."),
@@ -61,7 +65,8 @@ LEGENDS = [
     {
         "key": "iniesta", "name": "안드레스 이니에스타", "full": "Andrés Iniesta Luján",
         "years": "2002–2018", "pos": "중앙 · 공격형 미드필더",
-        "stats_name": "Andrés Iniesta Luján", "photo": "legends/iniesta.jpg",
+        "stats_name": "Andrés Iniesta Luján", "fbref_name": "Andrés Iniesta",
+        "photo": "legends/iniesta.jpg",
         "tagline": "가장 좁은 공간에서 가장 조용하게 경기를 풀어낸 선수.",
         "career": [
             ("2002", "1군 데뷔", "라 마시아를 거쳐 브루헤전으로 데뷔."),
@@ -76,7 +81,7 @@ LEGENDS = [
     {
         "key": "kubala", "name": "라디슬라오 쿠발라", "full": "László Kubala Stecz",
         "years": "1951–1961", "pos": "포워드 · 인사이드 포워드",
-        "stats_name": "", "photo": "legends/kubala.jpg",
+        "stats_name": "", "fbref_name": "", "photo": "legends/kubala.jpg",
         "tagline": "캄 노우를 짓게 만든 선수. 관중이 넘쳐 새 구장이 필요했다.",
         "career": [
             ("1951", "입단", "헝가리를 떠나 망명 끝에 바르사행. 곧바로 팀의 중심이 됐다."),
@@ -91,7 +96,8 @@ LEGENDS = [
     {
         "key": "ronaldinho", "name": "호나우지뉴", "full": "Ronaldo de Assis Moreira",
         "years": "2003–2008", "pos": "공격형 미드필더 · 좌측 윙어",
-        "stats_name": "Ronaldo de Assis Moreira", "photo": "legends/ronaldinho.jpg",
+        "stats_name": "Ronaldo de Assis Moreira", "fbref_name": "Ronaldinho",
+        "photo": "legends/ronaldinho.jpg",
         "tagline": "침체기의 클럽을 다시 즐겁게 만든 선수.",
         "career": [
             ("2003", "입단", "레알과의 경쟁 끝에 PSG에서 합류. 재건의 출발점."),
@@ -106,7 +112,8 @@ LEGENDS = [
     {
         "key": "puyol", "name": "카를레스 푸욜", "full": "Carles Puyol i Saforcada",
         "years": "1999–2014", "pos": "센터백",
-        "stats_name": "Carles Puyol i Saforcada", "photo": "legends/puyol.jpg",
+        "stats_name": "Carles Puyol i Saforcada", "fbref_name": "Carles Puyol",
+        "photo": "legends/puyol.jpg",
         "tagline": "15년을 한 클럽에서. 주장 완장의 기준이 된 수비수.",
         "career": [
             ("1999", "1군 데뷔", "라 마시아 출신 수비수로 자리 잡았다."),
@@ -121,7 +128,7 @@ LEGENDS = [
     {
         "key": "guardiola", "name": "펩 과르디올라", "full": "Josep Guardiola i Sala",
         "years": "1990–2001 (선수) · 2008–2012 (감독)", "pos": "수비형 미드필더 · 감독",
-        "stats_name": "", "photo": "legends/guardiola.jpg",
+        "stats_name": "", "fbref_name": "Pep Guardiola", "photo": "legends/guardiola.jpg",
         "tagline": "드림팀의 4번이었고, 훗날 6관왕의 감독이 됐다.",
         "career": [
             ("1990", "크루이프의 발탁", "유스에서 끌어올려 드림팀의 중심 수비형 미드필더로."),
@@ -136,7 +143,8 @@ LEGENDS = [
     {
         "key": "stoichkov", "name": "흐리스토 스토이치코프", "full": "Hristo Stoichkov",
         "years": "1990–1995 · 1996–1998", "pos": "좌측 윙어 · 포워드",
-        "stats_name": "", "photo": "legends/stoichkov.jpg",
+        "stats_name": "", "fbref_name": "Hristo Stoichkov",
+        "photo": "legends/stoichkov.jpg",
         "tagline": "드림팀의 화력. 성격도 슛도 거칠었다.",
         "career": [
             ("1990", "입단", "CSKA 소피아에서 합류해 드림팀 공격의 한 축이 됐다."),
@@ -151,7 +159,7 @@ LEGENDS = [
     {
         "key": "suarez", "name": "루이스 수아레스 미라몬테스", "full": "Luis Suárez Miramontes",
         "years": "1954–1961", "pos": "인사이드 포워드 · 플레이메이커",
-        "stats_name": "", "photo": "legends/suarez.jpg",
+        "stats_name": "", "fbref_name": "", "photo": "legends/suarez.jpg",
         "tagline": "스페인 태생 선수 중 유일한 발롱도르 수상자.",
         "career": [
             ("1954", "입단", "라 코루냐 출신으로 바르사에 합류."),
@@ -237,8 +245,44 @@ cards = "".join(
 )
 st.markdown(f'<div class="timeline-grid">{cards}</div>', unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- 스탯
-st.markdown('<div class="section">이벤트 데이터 기반 스탯</div>', unsafe_allow_html=True)
+# ---------------------------------------------------------------- 통산 기록
+# FBref 전 대회 합산. 라리가만 담은 수치를 통산이라 부르면 실제와 크게 어긋난다.
+st.markdown('<div class="section">통산 기록 (전 대회)</div>', unsafe_allow_html=True)
+ALL = load_dir("fbref_allcomps_players")
+career = pd.DataFrame()
+if not ALL.empty and lg.get("fbref_name"):
+    career = ALL[(ALL["Player"] == lg["fbref_name"]) & (ALL["대회"] == "전 대회")]
+
+if career.empty:
+    st.info(f"{lg['name']}의 FBref 기록이 없습니다. FBref 커버리지는 1993/94부터라 "
+            "그 이전에 뛴 선수는 수치가 붙지 않습니다.")
+else:
+    tot = career[["경기", "선발", "출전분", "골", "도움", "경고", "퇴장"]].sum()
+    st.markdown(metric_cards([
+        ("시즌", f"{career['season'].nunique()}", f"{career['season'].min()} ~ {career['season'].max()}"),
+        ("경기", f"{int(tot['경기']):,}", f"선발 {int(tot['선발']):,}"),
+        ("골", f"{int(tot['골']):,}", f"경기당 {tot['골'] / max(tot['경기'], 1):.2f}"),
+        ("도움", f"{int(tot['도움']):,}", f"공격P {int(tot['골'] + tot['도움']):,}"),
+    ]), unsafe_allow_html=True)
+
+    # 대회별로 쪼개 본다
+    by_comp = (ALL[(ALL["Player"] == lg["fbref_name"]) & (ALL["대회"] != "전 대회")]
+               .groupby("대회").agg(경기=("경기", "sum"), 골=("골", "sum"),
+                                  도움=("도움", "sum")).sort_values("경기", ascending=False))
+    if not by_comp.empty:
+        f0 = go.Figure()
+        f0.add_trace(go.Bar(x=by_comp.index, y=by_comp["골"], name="골", marker_color=GRANA))
+        f0.add_trace(go.Bar(x=by_comp.index, y=by_comp["도움"], name="도움", marker_color=GOLD))
+        f0.update_layout(height=300, barmode="group", yaxis_title="횟수",
+                         legend=dict(orientation="h", y=1.14), **PLOT)
+        f0.update_xaxes(gridcolor=GRID)
+        f0.update_yaxes(gridcolor=GRID)
+        st.plotly_chart(f0, use_container_width=True)
+        st.caption("대회별 골·도움. FBref 클럽 페이지의 대회별 표를 그대로 합산했다.")
+
+# ---------------------------------------------------------------- 이벤트 스탯
+st.markdown('<div class="section">플레이 지표 (StatsBomb 이벤트)</div>',
+            unsafe_allow_html=True)
 pm = load_sb("player_match")
 
 if not lg["stats_name"]:
@@ -277,8 +321,9 @@ else:
         f1.update_xaxes(gridcolor=GRID, tickangle=-45)
         f1.update_yaxes(gridcolor=GRID)
         st.plotly_chart(f1, use_container_width=True)
-        st.caption("StatsBomb 공개 경기만 집계한 값이라 실제 통산 기록과 다르다. "
-                   "시즌마다 공개된 경기 수가 달라 시즌 간 직접 비교도 조심해야 한다.")
+        st.caption("StatsBomb이 공개한 라리가 경기만 집계한 값이다. 위의 통산 기록과 "
+                   "숫자가 다른 것은 범위가 좁아서이며, 이 구역은 통산 합계가 아니라 "
+                   "패스·드리블·압박 같은 플레이 성향을 보기 위한 것이다.")
 
 # ---------------------------------------------------------------- 출처
 cred = legend_credits()

@@ -5,6 +5,8 @@ app.py가 st.navigation으로 views/ 아래 페이지를 묶고, 각 페이지�
 """
 import base64
 import json
+import re
+import unicodedata
 from pathlib import Path
 
 import pandas as pd
@@ -219,14 +221,31 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .legend-honors span{display:block;color:var(--gold);font-size:.66rem;letter-spacing:.12em;
       text-transform:uppercase;font-weight:800;margin-bottom:.25rem;}
 
-/* 감독 카드 — 사진이 없는 감독은 이니셜로 채운다 */
-.mg-card img{height:132px;object-position:top center;}
+/* 감독 카드 — 초상 사진이 3:4로 규격이 같다. cover로 자르면 턱과 이마가
+   날아가므로 contain으로 전체를 보여주고 여백은 배경으로 채운다. */
+.mg-card img{width:100%;height:auto;aspect-ratio:3/4;object-fit:contain;
+      background:linear-gradient(150deg,#0d2038,#081426);}
 .mg-initial{font-size:1.9rem;font-weight:850;color:var(--gold);letter-spacing:.04em;
-      height:132px;background:linear-gradient(150deg,#0d2038,#081426);}
-.mg-hero-initial{display:flex;align-items:center;justify-content:center;height:250px;
+      aspect-ratio:3/4;height:auto;background:linear-gradient(150deg,#0d2038,#081426);}
+.mg-hero-initial{display:flex;align-items:center;justify-content:center;height:330px;
       font-size:4rem;font-weight:850;color:var(--gold);letter-spacing:.05em;
       border-radius:14px;border:1px solid var(--line);border-bottom:4px solid var(--grana);
       background:linear-gradient(150deg,#0d2038,#081426);}
+/* 상세의 큰 사진도 자르지 않는다 */
+.mg-hero img{object-fit:contain !important;max-height:360px;
+      background:linear-gradient(150deg,#0d2038,#081426);}
+
+/* 시대 카드 — 대표 인물 사진을 위에 얹는다 */
+.era-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+.era-card{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line);
+      background:linear-gradient(145deg,var(--panel),var(--panel2));display:flex;
+      flex-direction:column;}
+/* 시대 사진은 가로 장면이라 중앙 기준으로 담는다 */
+.era-photo{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:center;
+      display:block;background:#081426;}
+.era-body{padding:1rem 1.15rem 1.1rem;flex:1;}
+.era-caption{color:var(--gold);font-size:.68rem;letter-spacing:.08em;margin-top:.65rem;
+      text-transform:uppercase;font-weight:700;}
 
 /* 감독 한 줄 평 */
 .mg-note{color:#c3d2e6;font-size:.94rem;line-height:1.75;margin:.2rem 0 1rem;
@@ -265,7 +284,7 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .credits{color:#6f849f;font-size:.68rem;line-height:1.7;border-top:1px solid var(--line);
       padding-top:.9rem;margin-top:2rem;}
 @media(max-width:900px){
-  .metric-grid,.timeline-grid,.photo-grid,.gallery{grid-template-columns:1fr;}
+  .metric-grid,.timeline-grid,.photo-grid,.gallery,.era-grid{grid-template-columns:1fr;}
   .hero h1{white-space:normal;}
   .hero-vs{flex-direction:column;align-items:flex-start;gap:.2rem;}
 }
@@ -375,3 +394,59 @@ def load_dir(dirname: str, pattern: str = "*.parquet") -> pd.DataFrame:
     files = sorted(d.glob(pattern)) if d.exists() else []
     key = "|".join(f"{f.name}:{f.stat().st_mtime}" for f in files)
     return _concat_cached(key, tuple(str(f) for f in files))
+
+
+# ---------------------------------------------------------------- 선수 사진
+
+def _name_key(name: str) -> str:
+    """발음기호를 벗기고 소문자로. 소스마다 표기가 달라 비교용 키가 필요하다."""
+    n = unicodedata.normalize("NFKD", str(name))
+    n = "".join(c for c in n if not unicodedata.combining(c))
+    return re.sub(r"[^a-z ]", "", n.lower()).strip()
+
+
+@st.cache_data
+def _portrait_index(stamp: float) -> dict:
+    """선수 이름 → 썸네일 data URI.
+
+    Transfermarkt와 FBref의 표기가 달라(Ion/Jon Goikoetxea, Eusebio Sacristán/
+    Eusebio) 정확히 일치하는 키 외에 성(姓)만으로도 찾을 수 있게 색인을 둘로
+    만든다. 성이 겹치면 애매하므로 그런 성은 아예 빼서 엉뚱한 얼굴이 붙는 것을
+    막는다.
+    """
+    p = PROCESSED / "portraits.json"
+    if not p.exists():
+        return {"exact": {}, "surname": {}}
+    idx = json.loads(p.read_text(encoding="utf-8"))
+
+    exact, by_surname = {}, {}
+    for key, v in idx.items():
+        thumb = ASSETS / "portraits_thumb" / v["file"]
+        if not thumb.exists():
+            continue
+        uri = f"data:image/jpeg;base64,{base64.b64encode(thumb.read_bytes()).decode()}"
+        exact[key] = uri
+        parts = key.split()
+        if parts:
+            by_surname.setdefault(parts[-1], []).append(uri)
+
+    # 성이 유일한 경우만 남긴다
+    surname = {k: v[0] for k, v in by_surname.items() if len(v) == 1}
+    return {"exact": exact, "surname": surname}
+
+
+def portrait_map(names) -> dict:
+    """주어진 이름들에 대한 사진 URI. 없으면 빈 문자열."""
+    p = PROCESSED / "portraits.json"
+    stamp = p.stat().st_mtime if p.exists() else 0.0
+    idx = _portrait_index(stamp)
+    out = {}
+    for n in names:
+        key = _name_key(n)
+        uri = idx["exact"].get(key)
+        if not uri:
+            parts = key.split()
+            if parts:
+                uri = idx["surname"].get(parts[-1])
+        out[n] = uri or ""
+    return out

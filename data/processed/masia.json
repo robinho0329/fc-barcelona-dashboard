@@ -2229,7 +2229,8 @@
   "b_seasons": [
    "2022/23",
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "aron yaakobishvili": {
@@ -2247,7 +2248,8 @@
   "b_seasons": [
    "2022/23",
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "sergi dominguez": {
@@ -2359,7 +2361,8 @@
   "tm_id": "789145",
   "b_seasons": [
    "2022/23",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "marc guiu": {
@@ -2396,7 +2399,8 @@
   "tm_id": "898751",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "gerard martin": {
@@ -2411,7 +2415,8 @@
   "tm_id": "924610",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "andres cuenca": {
@@ -2419,7 +2424,8 @@
   "tm_id": "962111",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "albert navarro": {
@@ -2457,7 +2463,8 @@
   "tm_id": "1050120",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "cristo munoz": {
@@ -2472,7 +2479,8 @@
   "tm_id": "938154",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "fermin lopez": {
@@ -2495,7 +2503,8 @@
   "tm_id": "962118",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "naim garcia": {
@@ -2524,7 +2533,8 @@
   "tm_id": "834470",
   "b_seasons": [
    "2023/24",
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "nil caldero": {
@@ -2553,42 +2563,48 @@
   "name": "Eder Aller",
   "tm_id": "1066202",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "leo saca": {
   "name": "Leo Saca",
   "tm_id": "1008261",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "jofre torrents": {
   "name": "Jofre Torrents",
   "tm_id": "1009765",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "david oduro": {
   "name": "David Oduro",
   "tm_id": "1051724",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "landry farre": {
   "name": "Landry Farré",
   "tm_id": "938148",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "xavi espart": {
   "name": "Xavi Espart",
   "tm_id": "1018912",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "pedro soma": {
@@ -2602,28 +2618,32 @@
   "name": "Quim Junyent",
   "tm_id": "962113",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "pedro rodriguez": {
   "name": "Pedro Rodríguez",
   "tm_id": "1066205",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "toni fernandez": {
   "name": "Toni Fernández",
   "tm_id": "1066206",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "jan virgili": {
   "name": "Jan Virgili",
   "tm_id": "1301775",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "arnau pradas": {
@@ -2637,14 +2657,16 @@
   "name": "Aziz Issah",
   "tm_id": "1071086",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "ibrahim diarra": {
   "name": "Ibrahim Diarra",
   "tm_id": "1132629",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
   ]
  },
  "alan godoy": {
@@ -2665,7 +2687,106 @@
   "name": "Òscar Gistau",
   "tm_id": "1050116",
   "b_seasons": [
-   "2024/25"
+   "2024/25",
+   "2025/26"
+  ]
+ },
+ "emilio bernad": {
+  "name": "Emilio Bernad",
+  "tm_id": "480966",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "eldar taghizada": {
+  "name": "Eldar Taghizada",
+  "tm_id": "628035",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "alex campos": {
+  "name": "Alex Campos",
+  "tm_id": "1154932",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "hafiz gariba": {
+  "name": "Hafiz Gariba",
+  "tm_id": "1380018",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "patricio pacifico": {
+  "name": "Patricio Pacífico",
+  "tm_id": "997826",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "tommy marques": {
+  "name": "Tommy Marqués",
+  "tm_id": "938156",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "roger martinez": {
+  "name": "Roger Martínez",
+  "tm_id": "646746",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "marcos parriego": {
+  "name": "Marcos Parriego",
+  "tm_id": "1296748",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "dro fernandez": {
+  "name": "Dro Fernández",
+  "tm_id": "1071596",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "ebrima tunkara": {
+  "name": "Ebrima Tunkara",
+  "tm_id": "1242159",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "shane kluivert": {
+  "name": "Shane Kluivert",
+  "tm_id": "964364",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "roony bardghji": {
+  "name": "Roony Bardghji",
+  "tm_id": "792331",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "roberto tomas": {
+  "name": "Roberto Tomás",
+  "tm_id": "1172226",
+  "b_seasons": [
+   "2025/26"
+  ]
+ },
+ "joaquin delgado": {
+  "name": "Joaquín Delgado",
+  "tm_id": "635885",
+  "b_seasons": [
+   "2025/26"
   ]
  }
 }

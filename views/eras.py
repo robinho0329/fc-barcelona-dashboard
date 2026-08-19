@@ -11,20 +11,28 @@ setup(seasons)
 
 # 시대 구분은 감독 재임을 기준으로 한 편집 판단이다. 시즌 중 교체가 있던 해는
 # 그 시즌을 더 오래 이끈 쪽에 넣었다.
+# 각 시대의 얼굴 한 명. 이미 받아 둔 감독·레전드 사진을 쓴다.
 ERAS = [
-    ("크루이프 드림팀", "1993/94", "1995/96", GOLD,
+    ("크루이프 드림팀", "1993/94", "1995/96", GOLD, "eras/era_dreamteam.jpg",
+     "1992년 유러피언컵 우승 세리머니",
      "요한 크루이프 감독 마지막 3년. 리그 4연패의 끝자락과 세대 교체기."),
-    ("과도기", "1996/97", "2002/03", "#6b7d99",
+    ("과도기", "1996/97", "2002/03", "#6b7d99", "eras/era_transition.jpg",
+     "캄 노우",
      "로브손·판 할·레샥이 차례로 지휘. 리그 2회 우승했지만 흐름이 끊겼다."),
-    ("레이카르트 부활", "2003/04", "2007/08", BLAU,
+    ("레이카르트 부활", "2003/04", "2007/08", BLAU, "eras/era_rijkaard.jpg",
+     "캄 노우 경기 전",
      "호나우지뉴 영입으로 반등. 리그 2연패와 2006년 챔피언스리그 우승."),
-    ("과르디올라", "2008/09", "2011/12", GRANA,
+    ("과르디올라", "2008/09", "2011/12", GRANA, "eras/era_pep.jpg",
+     "2010년 클라시코 5-0",
      "부임 첫해 6관왕. 리그 3연패, 클럽 역사상 가장 압도적인 4년."),
-    ("MSN", "2012/13", "2016/17", "#e0748f",
+    ("MSN", "2012/13", "2016/17", "#e0748f", "eras/era_msn.jpg",
+     "2015년 베를린 우승 축제",
      "티토·마르티노를 거쳐 루이스 엔리케 체제. 2015년 두 번째 트레블."),
-    ("포스트 과르디올라", "2017/18", "2020/21", "#7ab8ff",
+    ("포스트 과르디올라", "2017/18", "2020/21", "#7ab8ff", "eras/era_transition.jpg",
+     "캄 노우",
      "발베르데·세티엔·쿠만. 리그는 지켰지만 유럽에서 무너졌다."),
-    ("재건", "2021/22", "2025/26", "#4fb0a5",
+    ("재건", "2021/22", "2025/26", "#4fb0a5", "camp_nou.jpg",
+     "캄 노우",
      "메시 이적 이후. 차비에 이어 플릭 체제로 리그를 되찾았다."),
 ]
 
@@ -33,14 +41,14 @@ ORDER = seasons["Season"].tolist()
 
 def era_of(s: str) -> str:
     i = ORDER.index(s)
-    for name, a, b, _, _ in ERAS:
+    for name, a, b, *_ in ERAS:
         if ORDER.index(a) <= i <= ORDER.index(b):
             return name
     return "기타"
 
 
 seasons["시대"] = seasons["Season"].map(era_of)
-COLOR = {name: c for name, _, _, c, _ in ERAS}
+COLOR = {e[0]: e[3] for e in ERAS}
 
 st.markdown(f"""
 <div class="hero">
@@ -56,17 +64,22 @@ st.markdown(f"""
 # ---------------------------------------------------------------- 시대 카드
 st.markdown('<div class="section">일곱 시대</div>', unsafe_allow_html=True)
 cards = ""
-for name, a, b, color, desc in ERAS:
+for name, a, b, color, photo, caption, desc in ERAS:
     part = seasons[seasons["시대"] == name]
     titles = int((part["rank"] == 1).sum())
+    src = b64(photo)
+    img = (f'<img class="era-photo" src="{src}" alt="{caption}">' if src else "")
     cards += (
-        f'<div class="timeline-card" style="border-left:5px solid {color}">'
+        f'<div class="era-card" style="border-left:5px solid {color}">{img}'
+        f'<div class="era-body">'
         f'<div class="timeline-year">{a} ~ {b}</div>'
         f'<div class="timeline-title">{name}</div>'
-        f'<div class="timeline-score" style="font-size:1.05rem">'
+        f'<div class="timeline-score" style="font-size:1.02rem">'
         f'{len(part)}시즌 · 우승 {titles}회 · 경기당 {part["PPG"].mean():.2f}점</div>'
-        f'<div class="timeline-body">{desc}</div></div>')
-st.markdown(f'<div class="timeline-grid">{cards}</div>', unsafe_allow_html=True)
+        f'<div class="timeline-body">{desc}</div>'
+        f'<div class="era-caption">{caption}</div>'
+        f'</div></div>')
+st.markdown(f'<div class="era-grid">{cards}</div>', unsafe_allow_html=True)
 st.caption("시대 구분은 감독 재임 기준의 편집 판단이며, 수치는 라리가 경기 원본 집계다.")
 
 # ---------------------------------------------------------------- 시대별 비교

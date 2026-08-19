@@ -22,7 +22,9 @@ from crawlers.base_agent import BaseCrawlerAgent  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "data" / "fbref_allcomps"
+PLAYERS_OUT = ROOT / "data" / "fbref_allcomps_players"
 OUT.mkdir(parents=True, exist_ok=True)
+PLAYERS_OUT.mkdir(parents=True, exist_ok=True)
 
 SQUAD_ID = "206d90db"  # FBref의 바르셀로나 팀 id
 URL = ("https://fbref.com/en/squads/{sid}/{season}/all_comps/"
@@ -50,17 +52,85 @@ def find_table(soup: BeautifulSoup, tid: str):
     return None
 
 
-def parse(soup: BeautifulSoup) -> pd.DataFrame | None:
-    t = find_table(soup, "matchlogs_for")
-    if t is None:
-        return None
+def read_table(t) -> pd.DataFrame:
     df = pd.read_html(StringIO(str(t)))[0]
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = [b if str(a).startswith("Unnamed") else f"{a}_{b}"
                       for a, b in df.columns]
+    return df
+
+
+def parse(soup: BeautifulSoup) -> pd.DataFrame | None:
+    t = find_table(soup, "matchlogs_for")
+    if t is None:
+        return None
+    df = read_table(t)
     # 표 중간에 반복되는 머리글 행을 걷어낸다
     df = df[df["Date"].notna() & (df["Date"] != "Date")]
     return df.reset_index(drop=True)
+
+
+# FBref 대회 id → 표시명. 클럽 페이지는 대회별로 표를 따로 두고,
+# 마지막에 합산표(_combined)를 하나 더 붙인다.
+COMPS = {
+    "combined": "전 대회",
+    "12": "라리가",
+    "8": "챔피언스리그",
+    "569": "코파 델 레이",
+    "646": "수페르코파",
+    "14": "UEFA컵/유로파",
+    "19": "UEFA 슈퍼컵",
+}
+
+
+def parse_players(soup: BeautifulSoup) -> pd.DataFrame | None:
+    """대회별 + 전 대회 합산 선수 스탯을 한 표로 세로로 쌓는다.
+
+    라리가만 담은 players.parquet과 달리 챔피언스리그·코파 델 레이까지 담는다.
+    '대회' 열로 걸러 쓰면 되고, '전 대회'는 합산 행이라 다른 행과 더하면 중복이다.
+    """
+    frames = []
+    for key, label in COMPS.items():
+        t = find_table(soup, f"stats_standard_{key}")
+        if t is None:
+            continue
+        one = _shape_players(read_table(t))
+        if one is None:
+            continue
+        one["대회"] = label
+        frames.append(one)
+    return pd.concat(frames, ignore_index=True) if frames else None
+
+
+# FBref 표 맨 아래에 붙는 팀 합계 행. 선수로 섞이면 '최다 득점 578골 Squad Total'
+# 같은 엉뚱한 결과가 나온다.
+TOTAL_ROWS = {"Squad Total", "Opponent Total"}
+
+
+def _shape_players(df: pd.DataFrame) -> pd.DataFrame | None:
+    df = df[df["Player"].notna() & (df["Player"] != "Player")]
+    df = df[~df["Player"].isin(TOTAL_ROWS)]
+    if df.empty:
+        return None
+
+    keep = {
+        "Player": "Player", "Nation": "Nation", "Pos": "Pos", "Age": "Age",
+        "MP": "경기", "Playing Time_Starts": "선발", "Playing Time_Min": "출전분",
+        "Playing Time_90s": "90분수", "Performance_Gls": "골",
+        "Performance_Ast": "도움", "Performance_G+A": "공격P",
+        "Performance_G-PK": "필드골", "Performance_PK": "PK골",
+        "Performance_CrdY": "경고", "Performance_CrdR": "퇴장",
+        "Per 90 Minutes_Gls": "골p90", "Per 90 Minutes_Ast": "도움p90",
+    }
+    cols = {c: n for c, n in keep.items() if c in df.columns}
+    out = df[list(cols)].rename(columns=cols)
+    for c in out.columns:
+        if c in ("Player", "Nation", "Pos"):
+            continue
+        out[c] = pd.to_numeric(
+            out[c].astype(str).str.replace(",", "", regex=False).str.extract(r"^(\d+\.?\d*)")[0],
+            errors="coerce")
+    return out.reset_index(drop=True)
 
 
 def main() -> None:
@@ -76,7 +146,8 @@ def main() -> None:
         for i, y in enumerate(years, 1):
             season = f"{y}-{y + 1}"
             dest = OUT / f"{season}.parquet"
-            if dest.exists():
+            pdest = PLAYERS_OUT / f"{season}.parquet"
+            if dest.exists() and pdest.exists():
                 skip += 1
                 continue
             try:
@@ -93,6 +164,11 @@ def main() -> None:
                 continue
             df["season"] = f"{y}/{str(y + 1)[-2:]}"
             df.to_parquet(dest, index=False)
+
+            pdf = parse_players(soup)
+            if pdf is not None:
+                pdf["season"] = f"{y}/{str(y + 1)[-2:]}"
+                pdf.to_parquet(pdest, index=False)
             ok += 1
             comps = df["Comp"].dropna().unique().tolist() if "Comp" in df else []
             rate = (time.time() - t0) / i

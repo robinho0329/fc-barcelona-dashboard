@@ -31,7 +31,25 @@ LALIGA = 11
 SEASONS = {37: "2004/05", 38: "2005/06", 39: "2006/07", 40: "2007/08", 41: "2008/09",
            21: "2009/10", 22: "2010/11", 23: "2011/12", 24: "2012/13", 25: "2013/14",
            26: "2014/15", 27: "2015/16", 2: "2016/17", 1: "2017/18", 4: "2018/19",
-           42: "2019/20", 90: "2020/21"}
+           42: "2019/20", 90: "2020/21",
+           # 1973/74 — 크루이프 데뷔 시즌의 베르나베우 0-5가 여기 들어 있다
+           278: "1973/74"}
+
+# 라리가 밖에서도 바르사 경기가 공개돼 있다(챔스 결승 3경기, 코파 3경기).
+# season_id는 릴리스마다 달라 추측하면 어긋나므로 competitions.json에서 찾는다.
+EXTRA_COMPS = {"Champions League": "챔피언스리그", "Copa del Rey": "코파 델 레이"}
+
+
+def extra_sources() -> list[tuple[int, int, str, str]]:
+    """대회 목록에서 EXTRA_COMPS에 해당하는 (대회 id, 시즌 id)를 모은다."""
+    out = []
+    for c in get_json("competitions.json", "competitions.json"):
+        label = EXTRA_COMPS.get(c["competition_name"])
+        if not label:
+            continue
+        season = c["season_name"].replace("/", "/")[:4] + "/" + c["season_name"][-2:]
+        out.append((c["competition_id"], c["season_id"], season, label))
+    return out
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
 log = logging.getLogger("statsbomb")
@@ -61,8 +79,15 @@ def get_json(path: str, cache_name: str | None = None):
 
 def collect_matches() -> pd.DataFrame:
     rows = []
-    for sid, label in SEASONS.items():
-        for m in get_json(f"matches/{LALIGA}/{sid}.json", f"matches_{sid}.json"):
+    sources = [(LALIGA, sid, label, "라리가") for sid, label in SEASONS.items()]
+    sources += extra_sources()
+    for cid, sid, label, comp in sources:
+        try:
+            games = get_json(f"matches/{cid}/{sid}.json", f"matches_{cid}_{sid}.json")
+        except Exception as exc:  # noqa: BLE001 — 없는 조합은 건너뛴다
+            log.info("  %s %s — %s", comp, label, type(exc).__name__)
+            continue
+        for m in games:
             h, a = m["home_team"]["home_team_name"], m["away_team"]["away_team_name"]
             if CLUB not in h and CLUB not in a:
                 continue
@@ -73,6 +98,7 @@ def collect_matches() -> pd.DataFrame:
                 "opponent": a if is_home else h,
                 "gf": m["home_score"] if is_home else m["away_score"],
                 "ga": m["away_score"] if is_home else m["home_score"],
+                "competition": comp,
             })
     df = pd.DataFrame(rows)
     df["date"] = pd.to_datetime(df["date"])
@@ -104,7 +130,8 @@ def parse_events(match_id: int, meta: dict) -> tuple[list, list, dict]:
             xg = sh.get("statsbomb_xg", 0.0) or 0.0
             outcome = sh.get("outcome", {}).get("name", "")
             shots.append({
-                "match_id": match_id, "season": meta["season"], "team": team,
+                "match_id": match_id, "season": meta["season"],
+                "competition": meta["competition"], "team": team,
                 "is_barca": team == CLUB, "player": player,
                 "minute": e.get("minute"), "x": loc[0], "y": loc[1],
                 "xg": xg, "outcome": outcome, "goal": outcome == "Goal",
@@ -123,7 +150,8 @@ def parse_events(match_id: int, meta: dict) -> tuple[list, list, dict]:
             complete = "outcome" not in ps  # StatsBomb은 성공 패스에 outcome을 안 넣는다
             if team == CLUB:
                 passes.append({
-                    "match_id": match_id, "season": meta["season"], "player": player,
+                    "match_id": match_id, "season": meta["season"],
+                    "competition": meta["competition"], "player": player,
                     "x": loc[0], "y": loc[1], "end_x": end[0], "end_y": end[1],
                     "complete": complete,
                     "length": ps.get("length"), "angle": ps.get("angle"),
@@ -161,7 +189,7 @@ def main() -> None:
     all_shots, all_passes, all_players = [], [], []
     t0 = time.time()
     for i, m in enumerate(matches.itertuples(), 1):
-        meta = {"season": m.season}
+        meta = {"season": m.season, "competition": m.competition}
         try:
             shots, passes, players = parse_events(m.match_id, meta)
         except Exception as exc:  # noqa: BLE001 — 한 경기 실패로 전체를 멈추지 않는다
@@ -172,6 +200,7 @@ def main() -> None:
         all_passes += passes
         for p in players.values():
             p |= {"match_id": m.match_id, "season": m.season,
+                  "competition": m.competition,
                   "opponent": m.opponent, "venue": m.venue}
             all_players.append(p)
 

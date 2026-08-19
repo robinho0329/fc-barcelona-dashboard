@@ -1,0 +1,44 @@
+{
+  "era_dreamteam": {
+    "file": "eras/era_dreamteam.jpg",
+    "license": "CC BY 3.0",
+    "artist": "https://www.youtube.com/channel/UCgv37GD2ILS",
+    "source": "https://commons.wikimedia.org/wiki/File:Celebración Barcelona Copa de Europa 1992.jpg"
+  },
+  "era_transition": {
+    "file": "eras/era_transition.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Guba Zoky Rabko",
+    "source": "https://commons.wikimedia.org/wiki/File:F.C. Barcelona. Camp Nou 2006 - panoramio.jpg"
+  },
+  "era_rijkaard": {
+    "file": "eras/era_rijkaard.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Paolo Costa Baldi",
+    "source": "https://commons.wikimedia.org/wiki/File:LFP - Barcelona vs Mallorca pre-match - Oct 3rd 2010.jpg"
+  },
+  "era_pep": {
+    "file": "eras/era_pep.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Markus Unger from Vienna, Austria",
+    "source": "https://commons.wikimedia.org/wiki/File:2010-11-29 Clasico05 (5221488999).jpg"
+  },
+  "era_msn": {
+    "file": "eras/era_msn.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ferran Cornellà",
+    "source": "https://commons.wikimedia.org/wiki/File:Festa culé, Barcelona-Juventus. Champions league 2015, Berlin.JPG"
+  },
+  "era_post": {
+    "file": "eras/era_post.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ank Kumar",
+    "source": "https://commons.wikimedia.org/wiki/File:Camp Nou, La Liga match (Ank Kumar) 10.jpg"
+  },
+  "era_rebuild": {
+    "file": "eras/era_rebuild.jpg",
+    "license": "CC0",
+    "artist": "ticketsluxury",
+    "source": "https://commons.wikimedia.org/wiki/File:Stadium of Football Club FC Barcelona - Camp Nou.jpg"
+  }
+}

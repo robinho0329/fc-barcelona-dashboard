@@ -1,12 +1,10 @@
 """AI 모델 — 경기 전 정보만으로 라리가 결과를 예측하고, 그 한계를 그대로 보인다."""
-import json
-
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, WHITE, b64,
-                  load_seasons, metric_cards, setup)
+                  load_json, load_parquet, load_seasons, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -14,20 +12,8 @@ setup(seasons)
 MODEL_DIR = PROCESSED / "model"
 
 
-@st.cache_data
-def load_metrics() -> dict:
-    p = MODEL_DIR / "metrics.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-
-
-@st.cache_data
-def load_preds() -> pd.DataFrame:
-    p = MODEL_DIR / "predictions.parquet"
-    return pd.read_parquet(p) if p.exists() else pd.DataFrame()
-
-
-mt = load_metrics()
-pr = load_preds()
+mt = load_json(MODEL_DIR / "metrics.json")
+pr = load_parquet(MODEL_DIR / "predictions.parquet")
 
 st.markdown(f"""
 <div class="hero">

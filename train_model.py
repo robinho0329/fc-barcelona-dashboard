@@ -207,10 +207,33 @@ def main() -> None:
             best_clf, best_proba = clf, proba
 
     results["best"] = best_name
+    results["best_log_loss"] = round(float(best_ll), 4)
     results["test_seasons"] = sorted(test_seasons)
     results["features"] = FEATURES
     results["n_train"] = len(train)
     results["n_test"] = len(test)
+
+    # 정확도·로그손실만 보면 이 모델은 기준선과 다를 바 없어 보인다. 하지만
+    # 승률 70%인 팀에서 중요한 건 "어느 경기가 위험한가"를 줄 세우는 능력이다.
+    # 그래서 승 확률의 판별력(AUC)과 사분위별 실제 승률을 함께 남긴다.
+    # 이 블록은 metrics.json을 쓰기 전에 와야 한다.
+    win_col = list(best_clf.classes_).index("승")
+    p_win = best_proba[:, win_col]
+    actual_win = (y_te == "승").astype(int).to_numpy()
+    results["auc_win"] = round(float(roc_auc_score(actual_win, p_win)), 4)
+
+    q = pd.qcut(p_win, 4, labels=["하위 25%", "중하", "중상", "상위 25%"])
+    cal = (pd.DataFrame({"bin": q, "p": p_win, "win": actual_win})
+           .groupby("bin", observed=True)
+           .agg(경기=("win", "size"), 예측승률=("p", "mean"), 실제승률=("win", "mean")))
+    results["calibration"] = [
+        {"구간": str(i), "경기": int(r["경기"]),
+         "예측승률": round(float(r["예측승률"]) * 100, 1),
+         "실제승률": round(float(r["실제승률"]) * 100, 1)}
+        for i, r in cal.iterrows()]
+    log.info("승 확률 AUC %.3f · 상위25%% 실제승률 %.1f%% vs 하위25%% %.1f%%",
+             results["auc_win"], results["calibration"][-1]["실제승률"],
+             results["calibration"][0]["실제승률"])
 
     # 로지스틱 계수로 방향성만 본다(부스팅은 계수가 없다)
     lr = models["로지스틱 회귀"]
@@ -229,28 +252,6 @@ def main() -> None:
 
     (OUT / "metrics.json").write_text(
         json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
-    results["best_log_loss"] = round(float(best_ll), 4)
-
-    # 정확도·로그손실만 보면 이 모델은 기준선과 다를 바 없어 보인다. 하지만
-    # 승률 70%인 팀에서 중요한 건 "어느 경기가 위험한가"를 줄 세우는 능력이다.
-    # 그래서 승 확률의 판별력(AUC)과 사분위별 실제 승률을 함께 남긴다.
-    win_col = list(best_clf.classes_).index("승")
-    p_win = best_proba[:, win_col]
-    actual_win = (y_te == "승").astype(int).to_numpy()
-    results["auc_win"] = round(float(roc_auc_score(actual_win, p_win)), 4)
-
-    q = pd.qcut(p_win, 4, labels=["하위 25%", "중하", "중상", "상위 25%"])
-    cal = (pd.DataFrame({"bin": q, "p": p_win, "win": actual_win})
-           .groupby("bin", observed=True)
-           .agg(경기=("win", "size"), 예측승률=("p", "mean"), 실제승률=("win", "mean")))
-    results["calibration"] = [
-        {"구간": str(i), "경기": int(r["경기"]),
-         "예측승률": round(float(r["예측승률"]) * 100, 1),
-         "실제승률": round(float(r["실제승률"]) * 100, 1)}
-        for i, r in cal.iterrows()]
-    log.info("승 확률 AUC %.3f · 상위25%% 실제승률 %.1f%% vs 하위25%% %.1f%%",
-             results["auc_win"], results["calibration"][-1]["실제승률"],
-             results["calibration"][0]["실제승률"])
     log.info("최고 모델: %s · 로그손실 %.3f (기준선 %.3f, %+.3f) · 정확도 %.3f",
              best_name, best_ll, base_ll, best_ll - base_ll, best_acc)
 
