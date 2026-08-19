@@ -51,17 +51,7 @@ representatives = [
     ("Sergio Busquets", "미드필더", "보이지 않는 공간을 지배한 중심축"),
 ]
 portrait_index = load_json(PROCESSED / "portraits.json")
-lineage_people = [("Johan Cruyff", "철학의 출발", b64("legends/cruyff.jpg"))]
-for name, role, _ in representatives:
-    entry = portrait_index.get(_name_key(name), {})
-    src = b64(f"portraits/{entry['file']}") if entry.get("file") else ""
-    lineage_people.append((name, role, src))
-face_cards = "".join(
-    f'<div class="lineage-person"><img src="{src}" alt="{name}">'
-    f'<div><b>{name}</b><span>{role}</span></div></div>'
-    for name, role, src in lineage_people if src
-)
-st.markdown(f'<div class="lineage-visual"><img class="lineage-bg" src="{b64("masia_lineage.jpg")}" alt="세대를 잇는 라 마시아의 철학"><div class="lineage-faces">{face_cards}</div></div>', unsafe_allow_html=True)
+st.image(str(ASSETS / "masia_lineage.jpg"), width="stretch")
 st.caption("하나의 철학, 여러 세대 — 크루이프 시대에 확립된 축구의 언어가 "
            "지도자와 선수를 거쳐 다음 유소년의 어깨로 이어진다. · AI 생성 이미지")
 
