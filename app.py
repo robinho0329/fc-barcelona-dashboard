@@ -1,7 +1,8 @@
 """FC Barcelona — 1993년 이후 라리가 33시즌 기록.
 
 football-data.co.uk 라리가(SP1) 원본에서 직접 집계한 수치만 표시한다.
-디자인은 바이에른 뮌헨 페이지 구조를 바르사 컬러(그라나·블라우)로 옮긴 것.
+레이아웃은 바이에른 뮌헨 페이지 구조를 따르되, 테마는 클럽 공식 팔레트
+(블라우 #004d98 · 그라나 #a50044 · 노랑 #edbb00)로 새로 짰다.
 """
 import base64
 import json
@@ -15,9 +16,9 @@ ROOT = Path(__file__).resolve().parent
 ASSETS = ROOT / "assets"
 PROCESSED = ROOT / "data" / "processed"
 
-GRANA = "#a50044"
-BLAU = "#004d98"
-GOLD = "#edbb00"
+GRANA = "#a50044"  # 클럽 공식 그라나
+BLAU = "#004d98"  # 클럽 공식 블라우
+GOLD = "#edbb00"  # 클럽 공식 노랑
 
 st.set_page_config(page_title="FC Barcelona · Més que un club",
                    page_icon="🔵", layout="wide")
@@ -41,6 +42,11 @@ def b64(name: str) -> str:
 
 
 @st.cache_data
+def load_clasico() -> pd.DataFrame:
+    return pd.read_parquet(PROCESSED / "clasico.parquet")
+
+
+@st.cache_data
 def load_credits() -> dict:
     p = ASSETS / "credits.json"
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
@@ -49,9 +55,22 @@ def load_credits() -> dict:
 CSS = """
 <style>
 :root{--grana:#a50044;--blau:#004d98;--gold:#edbb00;
-      --ink:#f5f7fb;--muted:#aab4c3;--line:#293446;}
+      --bg:#04101f;--panel:#0a1c33;--panel2:#061527;
+      --ink:#f2f6fc;--muted:#94a8c4;--line:#173355;}
+
+/* 액센트 — 세녜라 줄무늬는 이 크기에서 뭉개져 붉은 덩어리로 보인다.
+   대신 블라우/그라나 2톤 바로 통일하고, 노랑은 글자 강조에만 쓴다. */
+.accent-rule{height:5px;width:104px;border-radius:3px;margin-top:1.1rem;position:relative;
+      background:linear-gradient(90deg,var(--blau) 0 50%,var(--grana) 50% 100%);}
+
+[data-testid="stAppViewContainer"]{
+      background:radial-gradient(1200px 620px at 78% -12%,rgba(0,77,152,.30),transparent 62%),
+                 radial-gradient(900px 520px at 8% 4%,rgba(165,0,68,.22),transparent 60%),
+                 var(--bg);}
+[data-testid="stHeader"]{background:transparent;}
 .block-container{padding-top:1.4rem;max-width:1180px;}
-section[data-testid="stSidebar"]{background:#0b0f17;}
+section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#04101f);
+      border-right:1px solid var(--line);}
 .side-brand{text-align:center;padding:1.2rem 0 .4rem;}
 .side-brand img{width:118px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.38));}
 .side-name{color:var(--ink);font-weight:800;letter-spacing:.02em;margin-top:.7rem;font-size:1.02rem;}
@@ -61,49 +80,72 @@ section[data-testid="stSidebar"]{background:#0b0f17;}
 .side-row span:first-child{color:var(--muted);}
 .side-row span:last-child{color:var(--ink);font-weight:650;}
 
-.hero{position:relative;overflow:hidden;min-height:230px;padding:2.25rem 2.5rem;border-radius:20px;
-      background:linear-gradient(118deg,rgba(18,23,34,.96) 0%,rgba(5,8,13,.92) 72%);
-      display:flex;flex-direction:column;justify-content:center;margin-bottom:1.6rem;}
-.hero::before{content:"";position:absolute;width:410px;height:410px;right:-160px;top:-245px;
-      border:76px solid rgba(165,0,68,.92);border-radius:50%;}
-.hero::after{content:"";position:absolute;width:410px;height:410px;right:-60px;top:-160px;
-      border:76px solid rgba(0,77,152,.55);border-radius:50%;}
+/* 히어로 — 벽지식 줄무늬 대신 조용한 블라우→그라나 그라디언트 위에
+   엠블럼을 크게 워터마크로 앉힌다. 줄무늬는 오른쪽 끝에만 얇게 남긴다. */
+.hero{position:relative;overflow:hidden;min-height:250px;padding:2.4rem 2.6rem;
+      border-radius:20px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.8rem;
+      border:1px solid var(--line);
+      background:linear-gradient(112deg,#0b2447 0%,#071a31 46%,#2a0a24 100%);}
+.hero::after{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;
+      background:linear-gradient(180deg,var(--blau),var(--grana));}
+.hero-crest{position:absolute;right:2.6rem;top:50%;transform:translateY(-50%);
+      height:210px;opacity:.16;pointer-events:none;}
 .hero-kicker{position:relative;color:var(--gold);font-size:.72rem;letter-spacing:.24em;
       text-transform:uppercase;font-weight:700;}
 .hero h1{position:relative;color:var(--ink);font-size:clamp(2rem,3.15vw,3.45rem);
-      letter-spacing:-.035em;white-space:nowrap;font-weight:860;margin:.35rem 0 .5rem;}
-.hero-motto{position:relative;color:var(--muted);font-size:1.02rem;font-style:italic;max-width:640px;}
+      letter-spacing:-.035em;white-space:nowrap;font-weight:860;margin:.4rem 0 .55rem;}
+.hero-motto{position:relative;color:#c3d2e6;font-size:1.02rem;font-style:italic;max-width:600px;}
 
-.section{color:var(--grana);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
-      font-weight:800;margin:2rem 0 .8rem;}
+/* 섹션 제목 앞 블라우그라나 태그. 노랑 글자와 함께 클럽 색을 반복한다. */
+.section{color:var(--gold);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+      font-weight:800;margin:2rem 0 .8rem;display:flex;align-items:center;gap:.6rem;}
+.section::before{content:"";width:20px;height:4px;border-radius:2px;flex:none;
+      background:linear-gradient(90deg,var(--blau) 0 50%,var(--grana) 50% 100%);}
 .lede{color:var(--muted);font-size:.92rem;line-height:1.75;margin-bottom:.6rem;}
+.lede b{color:var(--ink);}
 
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;}
-.metric-card{background:linear-gradient(150deg,rgba(22,29,42,.96),rgba(10,14,22,.96));
-      border-top:4px solid var(--grana);border-radius:12px;min-height:112px;
+.metric-card{background:linear-gradient(150deg,var(--panel),var(--panel2));
+      border:1px solid var(--line);border-top:4px solid var(--grana);border-radius:12px;min-height:112px;
       padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:center;}
 .metric-card:nth-child(even){border-top-color:var(--blau);}
 .metric-label{color:var(--muted);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;}
-.metric-value{color:var(--ink);font-size:1.7rem;font-weight:850;line-height:1.15;margin:.3rem 0 .15rem;}
+.metric-value{color:var(--ink);font-size:1.7rem;font-weight:850;line-height:1.15;
+      margin:.3rem 0 .15rem;word-break:keep-all;}
 .metric-note{color:var(--muted);font-size:.74rem;}
 
 .timeline-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
-.timeline-card{position:relative;overflow:hidden;min-height:150px;border-radius:14px;padding:1.1rem 1.2rem;
-      background:linear-gradient(145deg,rgba(21,28,41,.97),rgba(8,12,19,.97));}
+/* 연표 카드 — 왼쪽에 블라우/그라나를 번갈아 세워 유니폼 줄무늬를 암시한다. */
+.timeline-card{position:relative;overflow:hidden;min-height:150px;border-radius:14px;
+      padding:1.1rem 1.2rem 1.1rem 1.45rem;border:1px solid var(--line);
+      background:linear-gradient(145deg,var(--panel),var(--panel2));}
+.timeline-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grana);}
+.timeline-card:nth-child(even)::before{background:var(--blau);}
 .timeline-card::after{content:"";position:absolute;width:76px;height:76px;right:-28px;bottom:-34px;
-      border:14px solid rgba(165,0,68,.18);border-radius:50%;}
+      border:14px solid rgba(0,77,152,.22);border-radius:50%;}
 .timeline-year{color:var(--gold);font-size:.72rem;letter-spacing:.16em;font-weight:800;}
 .timeline-title{color:var(--ink);font-size:1.02rem;font-weight:780;margin:.35rem 0 .4rem;}
 .timeline-body{color:var(--muted);font-size:.82rem;line-height:1.6;}
 
 .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
-.photo-card{border-radius:14px;overflow:hidden;background:#0d121c;border:1px solid var(--line);}
-.photo-card img{width:100%;height:190px;object-fit:cover;display:block;}
+.photo-card{border-radius:14px;overflow:hidden;background:var(--panel2);border:1px solid var(--line);}
+.photo-card img{width:100%;height:190px;object-fit:cover;display:block;
+      border-bottom:3px solid var(--grana);}
+.photo-card:nth-child(even) img{border-bottom-color:var(--blau);}
 .photo-cap{padding:.7rem .9rem .85rem;}
 .photo-cap b{color:var(--ink);font-size:.88rem;display:block;}
 .photo-cap span{color:var(--muted);font-size:.72rem;}
 
-.credits{color:#6c7789;font-size:.68rem;line-height:1.7;border-top:1px solid var(--line);
+/* 엘클라시코 최근 폼 — 승/무/패를 칩으로 늘어놓는다. */
+.form-strip{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .4rem;}
+.form-chip{min-width:58px;flex:1 1 58px;max-width:96px;border-radius:9px;padding:.5rem .3rem;text-align:center;
+      border:1px solid var(--line);background:var(--panel2);}
+.form-chip .fc-res{font-size:.92rem;font-weight:850;line-height:1.1;}
+.form-chip .fc-score{color:var(--ink);font-size:.78rem;font-weight:700;margin-top:.15rem;}
+.form-chip .fc-meta{color:var(--muted);font-size:.62rem;margin-top:.15rem;}
+.fc-w{color:var(--gold);} .fc-d{color:#9fb2cc;} .fc-l{color:#e0748f;}
+
+.credits{color:#6f849f;font-size:.68rem;line-height:1.7;border-top:1px solid var(--line);
       padding-top:.9rem;margin-top:2rem;}
 @media(max-width:900px){
   .metric-grid,.timeline-grid,.photo-grid{grid-template-columns:1fr;}
@@ -142,10 +184,12 @@ st.sidebar.markdown(f"""
 # ---------------------------------------------------------------- 히어로
 st.markdown(f"""
 <div class="hero">
+  <img class="hero-crest" src="{b64('crest.svg')}" alt="">
   <div class="hero-kicker">Des de 1899 · Barcelona</div>
   <h1>FC BARCELONA</h1>
   <div class="hero-motto">"Més que un club" — 클럽 그 이상. 카탈루냐의 정체성을
   대변해 온 소시오 조합원 소유 구단의 {len(seasons)}시즌 기록.</div>
+  <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -219,7 +263,7 @@ st.markdown(f'<div class="metric-grid">{cards}</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 차트
 PLOT = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#aab4c3", size=12), margin=dict(l=10, r=10, t=30, b=10))
+            font=dict(color="#94a8c4", size=12), margin=dict(l=10, r=10, t=30, b=10))
 
 st.markdown('<div class="section">시즌별 경기당 승점</div>', unsafe_allow_html=True)
 fig = go.Figure()
@@ -229,10 +273,10 @@ fig.add_trace(go.Bar(
     hovertemplate="<b>%{x}</b><br>경기당 승점 %{y:.2f}<extra></extra>"))
 fig.add_hline(y=seasons["PPG"].mean(), line_dash="dot", line_color=BLAU,
               annotation_text=f"평균 {seasons['PPG'].mean():.2f}",
-              annotation_font_color="#aab4c3")
+              annotation_font_color="#94a8c4")
 fig.update_layout(height=340, yaxis_title="경기당 승점", **PLOT)
-fig.update_xaxes(gridcolor="#293446", tickangle=-60)
-fig.update_yaxes(gridcolor="#293446")
+fig.update_xaxes(gridcolor="#173355", tickangle=-60)
+fig.update_yaxes(gridcolor="#173355")
 st.plotly_chart(fig, use_container_width=True)
 st.caption("금색 = 해당 시즌 라리가 우승")
 
@@ -242,11 +286,11 @@ with c1:
     dec = (seasons[seasons["rank"] == 1].groupby("decade").size()
            .reindex(["1990s", "2000s", "2010s", "2020s"], fill_value=0))
     f2 = go.Figure(go.Bar(x=dec.index, y=dec.values, marker_color=BLAU, text=dec.values,
-                          textposition="outside", textfont_color="#f5f7fb",
+                          textposition="outside", textfont_color="#f2f6fc",
                           hovertemplate="<b>%{x}</b><br>우승 %{y}회<extra></extra>"))
     f2.update_layout(height=300, yaxis_title="우승 횟수", **PLOT)
-    f2.update_xaxes(gridcolor="#293446")
-    f2.update_yaxes(gridcolor="#293446", range=[0, int(dec.max()) + 2])
+    f2.update_xaxes(gridcolor="#173355")
+    f2.update_yaxes(gridcolor="#173355", range=[0, int(dec.max()) + 2])
     st.plotly_chart(f2, use_container_width=True)
 
 with c2:
@@ -257,22 +301,87 @@ with c2:
     f3.add_trace(go.Scatter(x=seasons["Season"], y=seasons["GA"], name="실점",
                             line=dict(color=BLAU, width=2.4)))
     f3.update_layout(height=300, yaxis_title="골", legend=dict(orientation="h", y=1.12), **PLOT)
-    f3.update_xaxes(gridcolor="#293446", tickangle=-60)
-    f3.update_yaxes(gridcolor="#293446")
+    f3.update_xaxes(gridcolor="#173355", tickangle=-60)
+    f3.update_yaxes(gridcolor="#173355")
     st.plotly_chart(f3, use_container_width=True)
+
+# ---------------------------------------------------------------- 엘클라시코
+cl = load_clasico()
+w = int((cl["result"] == "승").sum())
+d = int((cl["result"] == "무").sum())
+lo = int((cl["result"] == "패").sum())
+biggest = cl.loc[cl["gd"].idxmax()]
+worst = cl.loc[cl["gd"].idxmin()]
+
+st.markdown('<div class="section">엘클라시코 — 레알 마드리드 상대전적</div>', unsafe_allow_html=True)
+st.markdown(f"""
+<div class="lede">
+리그 경기만 집계한 수치다. 컵대회·챔피언스리그 맞대결은 원본에 없어 빠져 있고,
+원본 파일이 잘려 있는 2004/05 두 경기도 제외된다.
+최다 점수차 승리는 <b>{biggest['Season']} {biggest['venue']} {biggest['score']}</b>,
+최다 점수차 패배는 <b>{worst['Season']} {worst['venue']} {worst['score']}</b>.
+</div>
+""", unsafe_allow_html=True)
+
+home, away = cl[cl["venue"] == "홈"], cl[cl["venue"] == "원정"]
+metrics = [
+    ("맞대결", f"{len(cl)}경기", f"{cl['Season'].nunique()}시즌 · 리그 한정"),
+    ("전적", f"{w}-{d}-{lo}", f"{w}승 {d}무 {lo}패 · 승률 {w / len(cl) * 100:.0f}%"),
+    ("득실", f"{int(cl['gf'].sum())}-{int(cl['ga'].sum())}",
+     f"경기당 {cl['gf'].mean():.2f} : {cl['ga'].mean():.2f}"),
+    ("홈 / 원정 승리", f"{int((home['result'] == '승').sum())} / {int((away['result'] == '승').sum())}",
+     f"각 {len(home)}경기 · 캄 노우에서 더 강했다"),
+]
+cards = "".join(
+    f'<div class="metric-card"><div class="metric-label">{lab}</div>'
+    f'<div class="metric-value">{val}</div><div class="metric-note">{note}</div></div>'
+    for lab, val, note in metrics
+)
+st.markdown(f'<div class="metric-grid">{cards}</div>', unsafe_allow_html=True)
+
+RES_COLOR = {"승": GRANA, "무": "#6b7d99", "패": "#c9d3e0"}
+st.markdown('<div class="section">경기별 골 득실차 (오래된 순)</div>', unsafe_allow_html=True)
+f4 = go.Figure(go.Bar(
+    x=cl["date"], y=cl["gd"],
+    marker_color=[RES_COLOR[r] for r in cl["result"]],
+    customdata=cl[["Season", "venue", "score", "result"]].values,
+    hovertemplate="<b>%{customdata[0]} %{customdata[1]}</b><br>"
+                  "%{customdata[2]} %{customdata[3]}<extra></extra>"))
+f4.update_layout(height=300, yaxis_title="골 득실차", showlegend=False, **PLOT)
+f4.update_xaxes(gridcolor="#173355")
+f4.update_yaxes(gridcolor="#173355", zerolinecolor="#2b4a72")
+st.plotly_chart(f4, use_container_width=True)
+st.caption("그라나 = 승 · 회색 = 무 · 흰색 = 패")
+
+st.markdown('<div class="section">최근 10경기</div>', unsafe_allow_html=True)
+cls = {"승": "fc-w", "무": "fc-d", "패": "fc-l"}
+chips = "".join(
+    f'<div class="form-chip"><div class="fc-res {cls[r.result]}">{r.result}</div>'
+    f'<div class="fc-score">{r.score}</div>'
+    f'<div class="fc-meta">{r.Season} {r.venue}</div></div>'
+    for r in cl.tail(10).itertuples()
+)
+st.markdown(f'<div class="form-strip">{chips}</div>', unsafe_allow_html=True)
+
+with st.expander("엘클라시코 64경기 전체 보기"):
+    tb = cl.copy()
+    tb["date"] = tb["date"].dt.strftime("%Y-%m-%d")
+    tb.columns = ["시즌", "날짜", "장소", "득점", "실점", "득실차", "결과", "스코어"]
+    st.dataframe(tb.set_index("날짜"), use_container_width=True, height=380)
 
 # ---------------------------------------------------------------- 최신 시즌
 st.markdown(f'<div class="section">{latest["Season"]} 시즌 요약</div>', unsafe_allow_html=True)
 rows = [
-    ("최종 순위", f"{int(latest['rank'])}위"),
-    ("전적", f"{int(latest['W'])}승 {int(latest['D'])}무 {int(latest['L'])}패"),
-    ("승점", f"{int(latest['Pts'])}점 (경기당 {latest['PPG']:.2f})"),
-    ("득실", f"{int(latest['GF'])}득 {int(latest['GA'])}실 (+{int(latest['GD'])})"),
+    ("최종 순위", f"{int(latest['rank'])}위", f"{int(latest['P'])}경기"),
+    ("전적", f"{int(latest['W'])}-{int(latest['D'])}-{int(latest['L'])}",
+     f"{int(latest['W'])}승 {int(latest['D'])}무 {int(latest['L'])}패"),
+    ("승점", f"{int(latest['Pts'])}점", f"경기당 {latest['PPG']:.2f}"),
+    ("골 득실", f"{int(latest['GD']):+d}", f"{int(latest['GF'])}득점 {int(latest['GA'])}실점"),
 ]
 cards = "".join(
     f'<div class="metric-card"><div class="metric-label">{lab}</div>'
-    f'<div class="metric-value">{val}</div><div class="metric-note">&nbsp;</div></div>'
-    for lab, val in rows
+    f'<div class="metric-value">{val}</div><div class="metric-note">{note}</div></div>'
+    for lab, val, note in rows
 )
 st.markdown(f'<div class="metric-grid">{cards}</div>', unsafe_allow_html=True)
 

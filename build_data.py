@@ -50,10 +50,40 @@ def league_table(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(recs, ignore_index=True)
 
 
+RIVAL = "Real Madrid"
+
+
+def clasico(df: pd.DataFrame) -> pd.DataFrame:
+    """엘클라시코 전 경기. 바르사 기준 득실·승패로 정규화하고 날짜순 정렬한다.
+
+    원본 Date는 dd/mm/yy와 dd/mm/yyyy가 섞여 있고 파일이 시즌명이 아니라
+    파일명 알파벳순으로 합쳐지므로, 날짜를 파싱해 다시 정렬해야 한다.
+    """
+    cl = df[((df["HomeTeam"] == CLUB) & (df["AwayTeam"] == RIVAL))
+            | ((df["HomeTeam"] == RIVAL) & (df["AwayTeam"] == CLUB))].copy()
+
+    cl["date"] = pd.to_datetime(cl["Date"], format="mixed", dayfirst=True)
+    home = cl["HomeTeam"] == CLUB
+    cl["venue"] = home.map({True: "홈", False: "원정"})
+    cl["gf"] = cl["FTHG"].where(home, cl["FTAG"]).astype(int)
+    cl["ga"] = cl["FTAG"].where(home, cl["FTHG"]).astype(int)
+    cl["gd"] = cl["gf"] - cl["ga"]
+    cl["result"] = cl["gd"].apply(lambda d: "승" if d > 0 else ("무" if d == 0 else "패"))
+    cl["score"] = cl["gf"].astype(str) + "-" + cl["ga"].astype(str)
+
+    cols = ["Season", "date", "venue", "gf", "ga", "gd", "result", "score"]
+    return cl.sort_values("date")[cols].reset_index(drop=True)
+
+
 def main() -> None:
     df = load_all()
     table = league_table(df)
     table.to_parquet(OUT / "league_table.parquet", index=False)
+
+    cl = clasico(df)
+    cl.to_parquet(OUT / "clasico.parquet", index=False)
+    w, d, l = (cl["result"] == "승").sum(), (cl["result"] == "무").sum(), (cl["result"] == "패").sum()
+    print(f"엘클라시코 {len(cl)}경기 · {w}승 {d}무 {l}패 · {cl['gf'].sum()}득 {cl['ga'].sum()}실")
 
     club = table[table["team"] == CLUB].sort_values("Season").reset_index(drop=True)
     club["PPG"] = (club["Pts"] / club["P"]).round(3)
