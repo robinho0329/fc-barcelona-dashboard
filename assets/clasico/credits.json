@@ -1,0 +1,38 @@
+{
+  "di_stefano": {
+    "file": "clasico/di_stefano.jpg",
+    "license": "Public domain",
+    "artist": "Unknown authorUnknown author",
+    "source": "https://commons.wikimedia.org/wiki/File:Alfredo Di Stefano.jpg"
+  },
+  "figo": {
+    "file": "clasico/figo.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "The original uploader was Monocromatico at P",
+    "source": "https://commons.wikimedia.org/wiki/File:Figo.jpg"
+  },
+  "bernabeu": {
+    "file": "clasico/bernabeu.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Acruz319",
+    "source": "https://commons.wikimedia.org/wiki/File:Santiago Bernabeu Stadium.jpg"
+  },
+  "sunyol": {
+    "file": "clasico/sunyol.jpg",
+    "license": "CC BY-SA 3.0 es",
+    "artist": "Herodotptlomeu",
+    "source": "https://commons.wikimedia.org/wiki/File:A Josep Sunyol.JPG"
+  },
+  "coronacion": {
+    "file": "clasico/coronacion.jpg",
+    "license": "Public domain",
+    "artist": "AnonymousUnknown author",
+    "source": "https://commons.wikimedia.org/wiki/File:Copa de la coronacion.jpg"
+  },
+  "franco": {
+    "file": "clasico/franco.jpg",
+    "license": "Public domain",
+    "artist": "Image Credit: US National Archives",
+    "source": "https://commons.wikimedia.org/wiki/File:Francisco Franco 1959 (cropped).jpg"
+  }
+}

@@ -3,8 +3,9 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, WHITE, b64, credits_block,
-                  load_clasico, load_credits, load_seasons, metric_cards, setup)
+from _lib import (ASSETS, GOLD, GRANA, GRID, PLOT, WHITE, b64, credits_block,
+                  load_clasico, load_credits, load_json, load_seasons,
+                  metric_cards, setup)
 
 seasons = load_seasons()
 credits = load_credits()
@@ -98,6 +99,35 @@ cards = "".join(
 st.markdown(f'<div class="timeline-grid">{cards}</div>', unsafe_allow_html=True)
 st.caption("연표는 위키백과 El Clásico 문서를 확인해 정리했다. "
            "아래 수치는 모두 1993/94 이후 리그 경기 원본에서 직접 집계한 값이다.")
+
+# ---------------------------------------------------------------- 갤러리
+GALLERY = [
+    ("coronacion", "코파 데 라 코로나시온",
+     "1902년 첫 맞대결이 열린 대회의 우승컵. 바르사가 준결승에서 마드리드를 3-1로 꺾었다."),
+    ("sunyol", "조셉 수뇰 추모",
+     "1936년 프랑코군에 총살당한 바르사 회장. 생전 사진이 공개 라이선스로 없어 "
+     "바르셀로나에 세워진 추모 기념물로 대신한다."),
+    ("franco", "프란시스코 프랑코",
+     "1936~75년 독재기. 카탈루냐어와 깃발이 금지되면서 캄 노우의 의미가 달라졌다."),
+    ("di_stefano", "알프레도 디 스테파노",
+     "1953년 영입 분쟁 끝에 레알로. 이후 레알의 유러피언컵 5연패를 이끌었다."),
+    ("figo", "루이스 피구",
+     "2000년 바르사 주장이 레알로 이적. 2002년 캄 노우 복귀전에서 돼지머리가 날아들었다."),
+    ("bernabeu", "산티아고 베르나베우",
+     "레알의 홈. 1974년 크루이프의 0-5, 2009년 2-6이 이곳에서 나왔다."),
+]
+shots_html = "".join(
+    f'<figure><img src="{b64("clasico/" + k + ".jpg")}" alt="{t}">'
+    f'<figcaption><b>{t}</b><span>{d}</span></figcaption></figure>'
+    for k, t, d in GALLERY if b64("clasico/" + k + ".jpg")
+)
+if shots_html:
+    st.markdown('<div class="section">갤러리</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="gallery">{shots_html}</div>', unsafe_allow_html=True)
+    gc = load_json(ASSETS / "clasico" / "credits.json")
+    names = {k: t for k, t, _ in GALLERY}
+    st.caption("사진 출처 — " + " · ".join(
+        f"{names[k]}: {v['artist']} / {v['license']}" for k, v in gc.items() if k in names))
 
 # ---------------------------------------------------------------- 총평
 st.markdown('<div class="section">통산 상대전적</div>', unsafe_allow_html=True)

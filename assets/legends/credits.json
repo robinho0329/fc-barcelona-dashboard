@@ -1,0 +1,56 @@
+{
+  "messi": {
+    "file": "legends/messi.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Jeroen Bennink",
+    "source": "https://commons.wikimedia.org/wiki/File:Lionel Messi, 2011.jpg"
+  },
+  "iniesta": {
+    "file": "legends/iniesta.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Shay",
+    "source": "https://commons.wikimedia.org/wiki/File:Andres Iniesta Joan Gamper.jpg"
+  },
+  "guardiola": {
+    "file": "legends/guardiola.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Jordiferrer",
+    "source": "https://commons.wikimedia.org/wiki/File:Pep-Guardiola-Barcelona-1992.jpg"
+  },
+  "suarez": {
+    "file": "legends/suarez.jpg",
+    "license": "CC0",
+    "artist": "Unknown authorUnknown author",
+    "source": "https://commons.wikimedia.org/wiki/File:Luis Suárez Miramontes 1962.jpg"
+  },
+  "xavi": {
+    "file": "legends/xavi.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Castroquini",
+    "source": "https://commons.wikimedia.org/wiki/File:2012 2013 - 06 Xavi Hernández.jpg"
+  },
+  "kubala": {
+    "file": "legends/kubala.jpg",
+    "license": "Public domain",
+    "artist": "Unknown authorUnknown author",
+    "source": "https://commons.wikimedia.org/wiki/File:Ladislao Kubala, Estadio, 1953-07-18 (531).jpg"
+  },
+  "stoichkov": {
+    "file": "legends/stoichkov.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Biso",
+    "source": "https://commons.wikimedia.org/wiki/File:Hristo stoichkov-2010 (crop).jpg"
+  },
+  "cruyff": {
+    "file": "legends/cruyff.jpg",
+    "license": "CC0",
+    "artist": "Fotograaf Onbekend / Anefo",
+    "source": "https://commons.wikimedia.org/wiki/File:Het elftal van Barcelona, Bestanddeelnr 928-0927.jpg"
+  },
+  "ronaldinho": {
+    "file": "legends/ronaldinho.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Hector Garcia from Barcelona, Catalonia, Spa",
+    "source": "https://commons.wikimedia.org/wiki/File:Ronaldinhotaking a set piece54.jpg"
+  }
+}

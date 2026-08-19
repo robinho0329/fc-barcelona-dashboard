@@ -40,14 +40,23 @@ def load_clasico() -> pd.DataFrame:
 
 
 @st.cache_data
-def load_credits() -> dict:
-    p = ASSETS / "credits.json"
+def _json_cached(path_str: str, stamp: float) -> dict:
+    p = Path(path_str)
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
+def load_json(path: Path) -> dict:
+    """수정 시각을 캐시 키에 포함해, 나중에 갱신된 파일도 다시 읽는다."""
+    stamp = path.stat().st_mtime if path.exists() else 0.0
+    return _json_cached(str(path), stamp)
+
+
+def load_credits() -> dict:
+    return load_json(ASSETS / "credits.json")
+
+
 @st.cache_data
-def b64(name: str) -> str:
-    """자산 파일을 data URI로. 클라우드 정적서빙 설정 없이 HTML에 심기 위함."""
+def _b64_cached(name: str, stamp: float) -> str:
     p = ASSETS / name
     if not p.exists():
         return ""
@@ -55,11 +64,23 @@ def b64(name: str) -> str:
     return f"data:{mime};base64,{base64.b64encode(p.read_bytes()).decode()}"
 
 
+def b64(name: str) -> str:
+    """자산 파일을 data URI로. 클라우드 정적서빙 설정 없이 HTML에 심기 위함.
+
+    캐시 키에 수정 시각을 함께 넣는다. 파일명만 키로 쓰면, 아직 내려받기 전에
+    조회해 캐시된 빈 문자열이 파일이 생긴 뒤에도 계속 돌아온다.
+    """
+    p = ASSETS / name
+    stamp = p.stat().st_mtime if p.exists() else 0.0
+    return _b64_cached(name, stamp)
+
+
 # ---------------------------------------------------------------- 사진 목록
+# 홈 페이지 사진. 모두 바르사 소속 시절 사진으로 맞춘다.
 PHOTOS = [
     ("camp_nou", "캄 노우", "관중 99,354석. 유럽 최대 규모 축구 전용 경기장"),
-    ("cruyff", "요한 크루이프", "선수(1973~78)와 감독(1988~96)으로 클럽 철학을 세움"),
-    ("messi", "리오넬 메시", "라 마시아 출신, 클럽 통산 최다 득점자"),
+    ("cruyff", "요한 크루이프", "바르사 시절 경기 장면. 1973~78년 선수, 1988~96년 감독"),
+    ("messi", "리오넬 메시", "캄 노우 라리가 경기. 클럽 통산 최다 출전·최다 득점"),
 ]
 
 
@@ -157,6 +178,43 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .photo-cap b{color:var(--ink);font-size:.88rem;display:block;}
 .photo-cap span{color:var(--muted);font-size:.72rem;}
 
+/* 레전드 카드 — 선택된 카드는 그라나 테두리로 표시 */
+.legend-card{border-radius:14px;overflow:hidden;background:var(--panel2);
+      border:1px solid var(--line);border-bottom:3px solid var(--blau);margin-bottom:.4rem;}
+.legend-card-on{border-color:var(--grana);border-bottom-color:var(--grana);
+      box-shadow:0 0 0 1px var(--grana) inset;}
+.legend-card img{width:100%;height:150px;object-fit:cover;object-position:top center;display:block;}
+.legend-noimg{height:150px;display:flex;align-items:center;justify-content:center;
+      color:var(--muted);font-size:.74rem;background:#0a1728;}
+.legend-cap{padding:.5rem .6rem .6rem;text-align:center;}
+.legend-cap b{color:var(--ink);font-size:.8rem;display:block;line-height:1.2;}
+.legend-cap span{color:var(--muted);font-size:.66rem;}
+
+.legend-hero{border-radius:14px;overflow:hidden;border:1px solid var(--line);
+      border-bottom:4px solid var(--grana);background:var(--panel2);}
+.legend-hero img{width:100%;display:block;object-fit:cover;max-height:330px;object-position:top center;}
+.legend-bio{background:linear-gradient(150deg,var(--panel),var(--panel2));
+      border:1px solid var(--line);border-left:4px solid var(--grana);border-radius:12px;
+      padding:1.2rem 1.4rem;height:100%;}
+.legend-full{color:var(--ink);font-size:1.15rem;font-weight:800;}
+.legend-pos{color:var(--gold);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+      font-weight:700;margin-top:.3rem;}
+.legend-tag{color:#c3d2e6;font-size:.95rem;font-style:italic;margin:.8rem 0 1rem;line-height:1.6;}
+.legend-honors{color:var(--muted);font-size:.82rem;line-height:1.6;
+      border-top:1px solid var(--line);padding-top:.8rem;}
+.legend-honors span{display:block;color:var(--gold);font-size:.66rem;letter-spacing:.12em;
+      text-transform:uppercase;font-weight:800;margin-bottom:.25rem;}
+
+/* 갤러리 — 클라시코 역사 이미지 */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+.gallery figure{margin:0;border-radius:14px;overflow:hidden;background:var(--panel2);
+      border:1px solid var(--line);border-bottom:3px solid var(--grana);}
+.gallery figure:nth-child(even){border-bottom-color:var(--blau);}
+.gallery img{width:100%;height:200px;object-fit:cover;display:block;}
+.gallery figcaption{padding:.7rem .9rem .85rem;}
+.gallery figcaption b{color:var(--ink);font-size:.86rem;display:block;margin-bottom:.15rem;}
+.gallery figcaption span{color:var(--muted);font-size:.74rem;line-height:1.5;}
+
 /* 승/무/패 칩 */
 .form-strip{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .4rem;}
 .form-chip{min-width:58px;flex:1 1 58px;max-width:96px;border-radius:9px;padding:.5rem .3rem;
@@ -178,7 +236,7 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .credits{color:#6f849f;font-size:.68rem;line-height:1.7;border-top:1px solid var(--line);
       padding-top:.9rem;margin-top:2rem;}
 @media(max-width:900px){
-  .metric-grid,.timeline-grid,.photo-grid{grid-template-columns:1fr;}
+  .metric-grid,.timeline-grid,.photo-grid,.gallery{grid-template-columns:1fr;}
   .hero h1{white-space:normal;}
   .hero-vs{flex-direction:column;align-items:flex-start;gap:.2rem;}
 }
