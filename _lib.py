@@ -221,6 +221,14 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .legend-honors span{display:block;color:var(--gold);font-size:.66rem;letter-spacing:.12em;
       text-transform:uppercase;font-weight:800;margin-bottom:.25rem;}
 
+.lineage-visual{position:relative;overflow:hidden;border-radius:15px;border:1px solid var(--line);border-bottom:4px solid var(--grana);background:var(--panel2);}
+.lineage-bg{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;}
+.lineage-faces{position:absolute;left:.8rem;right:.8rem;bottom:.8rem;display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;}
+.lineage-person{display:flex;align-items:center;gap:.4rem;min-width:0;padding:.35rem;border:1px solid rgba(237,187,0,.28);border-radius:999px;background:rgba(3,15,28,.86);backdrop-filter:blur(5px);}
+.lineage-person img{width:42px;height:42px;flex:none;border-radius:50%;object-fit:cover;object-position:top center;border:2px solid var(--gold);}
+.lineage-person b{display:block;color:var(--ink);font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lineage-person span{display:block;color:var(--muted);font-size:.56rem;line-height:1.2;}
+
 /* 감독 카드 — 초상 사진이 3:4로 규격이 같다. cover로 자르면 턱과 이마가
    날아가므로 contain으로 전체를 보여주고 여백은 배경으로 채운다. */
 .mg-card img{width:100%;height:auto;aspect-ratio:3/4;object-fit:contain;
@@ -285,6 +293,8 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
       padding-top:.9rem;margin-top:2rem;}
 @media(max-width:900px){
   .metric-grid,.timeline-grid,.photo-grid,.gallery,.era-grid{grid-template-columns:1fr;}
+  .lineage-faces{position:static;grid-template-columns:repeat(2,1fr);padding:.65rem;}
+  .lineage-bg{aspect-ratio:16/10;}
   .hero h1{white-space:normal;}
   .hero-vs{flex-direction:column;align-items:flex-start;gap:.2rem;}
 }

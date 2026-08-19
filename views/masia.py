@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, _name_key, b64,
-                  load_json, load_parquet, load_seasons, metric_cards,
+from _lib import (ASSETS, BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, _name_key,
+                  b64, load_json, load_parquet, load_seasons, metric_cards,
                   portrait_map, setup)
 
 
@@ -29,6 +29,80 @@ if players.empty or not masia:
     st.warning("라 마시아 데이터가 없습니다. `python crawl_masia.py`와 "
                "`python build_players.py`를 먼저 실행하세요.")
     st.stop()
+
+st.markdown('<div class="section">건물에서 철학으로</div>',
+            unsafe_allow_html=True)
+st.markdown("""
+라 마시아의 이름은 캄 노우 옆에 있던 **1702년 건축 농가 ‘마시아 데 칸 플라네스’**에서
+왔다. 바르사의 유소년 축구는 그보다 앞선 1901년 2·3·4군 창설에서 시작됐지만,
+1979년 이 건물이 타지 출신 유망주를 위한 기숙사로 문을 열면서 ‘라 마시아’는
+생활·학업·축구를 함께 가르치는 육성 체계의 이름이 됐다.
+
+오늘날 라 마시아는 특정 건물만을 뜻하지 않는다. **겸손·노력·야망·존중·팀워크**를
+공통 가치로 삼고, 같은 경기 언어를 여러 연령대에 이어 주는 바르사의 교육 모델이다.
+2011년 기숙사는 산트 조안 데스피의 **오리올 토르트 훈련센터**로 옮겼지만,
+‘집에서 선수를 키워 1군의 정체성으로 연결한다’는 역할은 그대로 이어지고 있다.
+""")
+representatives = [
+    ("Carles Puyol", "수비 · 주장", "헌신과 리더십의 기준"),
+    ("Xavi", "미드필더", "점유와 위치 축구의 설계자"),
+    ("Andrés Iniesta", "미드필더", "좁은 공간을 푼 기술과 판단"),
+    ("Lionel Messi", "공격수", "아카데미가 배출한 최고 기록 보유자"),
+    ("Sergio Busquets", "미드필더", "보이지 않는 공간을 지배한 중심축"),
+]
+portrait_index = load_json(PROCESSED / "portraits.json")
+lineage_people = [("Johan Cruyff", "철학의 출발", b64("legends/cruyff.jpg"))]
+for name, role, _ in representatives:
+    entry = portrait_index.get(_name_key(name), {})
+    src = b64(f"portraits/{entry['file']}") if entry.get("file") else ""
+    lineage_people.append((name, role, src))
+face_cards = "".join(
+    f'<div class="lineage-person"><img src="{src}" alt="{name}">'
+    f'<div><b>{name}</b><span>{role}</span></div></div>'
+    for name, role, src in lineage_people if src
+)
+st.markdown(f'<div class="lineage-visual"><img class="lineage-bg" src="{b64("masia_lineage.jpg")}" alt="세대를 잇는 라 마시아의 철학"><div class="lineage-faces">{face_cards}</div></div>', unsafe_allow_html=True)
+st.caption("하나의 철학, 여러 세대 — 크루이프 시대에 확립된 축구의 언어가 "
+           "지도자와 선수를 거쳐 다음 유소년의 어깨로 이어진다. · AI 생성 이미지")
+
+history = [
+    ("1901", "유소년 축구의 시작",
+     "구단 이사이자 선수였던 류이스 도소가 2·3·4군을 만들었다. 라 마시아 건물보다 먼저 시작된 바르사 육성 체계의 뿌리다."),
+    ("1979", "선수 기숙사 개관",
+     "10월 20일, 캄 노우 옆 칸 플라네스 농가가 스페인 최초의 축구선수 기숙사로 문을 열었다."),
+    ("2010", "발롱도르를 채우다",
+     "메시·이니에스타·차비가 최종 1~3위를 모두 차지했다. 한 구단 아카데미 출신 세 명이 시상대를 독점한 유일한 사례다."),
+    ("2011", "새로운 집",
+     "10월 20일, 기숙사가 조안 감페르 훈련단지의 오리올 토르트 센터로 이전했다. 교육·생활 시설도 함께 확장됐다."),
+    ("2012", "11명이 모두 유스 출신",
+     "11월 25일 레반테전에서 약 46분 동안 필드의 바르사 선수 전원이 유스 출신이었다. 경기는 4-0으로 끝났다."),
+    ("2025", "2,000경기 연속 계승",
+     "1990년부터 1군 2,000경기 연속으로 최소 한 명의 라 마시아 출신이 그라운드를 밟았다."),
+]
+history_cards = "".join(
+    f'<div class="timeline-card"><div class="timeline-year">{year}</div>'
+    f'<div class="timeline-title">{title}</div>'
+    f'<div class="timeline-body">{body}</div></div>'
+    for year, title, body in history
+)
+st.markdown(f'<div class="timeline-grid">{history_cards}</div>',
+            unsafe_allow_html=True)
+
+st.markdown('<div class="section">라 마시아를 대표한 다섯 선수</div>',
+            unsafe_allow_html=True)
+rep_cols = st.columns(5, gap="small")
+for col, (name, role, note) in zip(rep_cols, representatives):
+    with col:
+        entry = portrait_index.get(_name_key(name), {})
+        src = b64(f"portraits/{entry['file']}") if entry.get("file") else ""
+        img = (f'<img src="{src}" alt="{name}">' if src
+               else '<div class="legend-noimg">사진 없음</div>')
+        st.markdown(f"""
+<div class="legend-card">{img}
+  <div class="legend-cap"><b>{name}</b><span>{role}<br>{note}</span></div>
+</div>""", unsafe_allow_html=True)
+st.caption("이 계보는 라민 야말·파우 쿠바르시·가비 같은 새 세대로 이어지고 있다. "
+           "아래 수치는 명성이나 수상 경력이 아니라 실제 라리가 출전 시간으로 그 흐름을 본다.")
 
 # crawl_masia.py가 수집한 바르사 B 시즌 명단에 등장한 선수를 유스 출신으로 본다.
 # 이름은 악센트와 구두점을 제거한 키로만 정확히 대조한다. 성만 맞추면 Arturo
@@ -141,6 +215,12 @@ st.markdown("""
 정확히 일치할 때만 연결했다.<br>
 <b>해석 한계</b> 바르사 B 명단을 기준으로 하므로 B팀을 거치지 않은 아카데미 출신은
 누락될 수 있다. 반대로 B팀 명단에 있었던 선수는 유스 체류 기간과 관계없이 포함된다.
-출전분은 FBref가 기록한 선수별 합계이며 라리가만 포함한다.
+출전분은 FBref가 기록한 선수별 합계이며 라리가만 포함한다.<br>
+<b>역사 출처</b>
+<a href="https://www.fcbarcelona.com/en/news/1457129/la-masia-is-40-years-old" target="_blank">FC Barcelona · La Masia is 40 years old</a> ·
+<a href="https://www.fcbarcelona.com/en/club/identity/la-masia" target="_blank">FC Barcelona · La Masia</a> ·
+<a href="https://www.fcbarcelona.com/en/news/1924303/10-years-since-a-unique-ballon-dor-podium" target="_blank">2010 Ballon d'Or podium</a> ·
+<a href="https://www.fcbarcelona.com/en/news/2914090/10-years-since-11-from-la-masia-appeared-in-the-line-up" target="_blank">2012 La Masia XI</a> ·
+<a href="https://www.fcbarcelona.com/en/news/4273670/la-masia-presence-in-2000-consecutive-games" target="_blank">2,000 consecutive games</a>
 </div>
 """, unsafe_allow_html=True)

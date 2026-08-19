@@ -73,6 +73,9 @@ views/                     페이지 13개
 | `assets/portraits/` + `_thumb/` | 316장 |
 | `assets/managers/` | 25장 |
 
+라 마시아 페이지는 역사 연표·대표 선수 5명·AI 계승 이미지와 실제 얼굴 오버레이를
+포함한다. 계승 이미지는 `assets/masia_lineage.jpg`이며 AI 생성임을 캡션에 밝힌다.
+
 ## 반드시 알아야 할 함정
 
 ### 1. Streamlit 캐시 키에 파일 수정 시각을 넣어야 한다
