@@ -71,25 +71,100 @@ for _n, _rel in CROP.items():
 st.markdown(f"""
 <div class="hero">
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
-  <div class="hero-kicker">MSN · 2014/15 – 2016/17</div>
-  <h1>메시 · 수아레스 · 네이마르</h1>
-  <div class="hero-motto">세 시즌 동안 세 명이 넣은 골이 팀 득점의 3분의 2를
-  넘었다. 축구사에서 손꼽히는 삼각편대의 기록.</div>
+  <div class="hero-kicker">삼각편대의 역사 · 2010 – 2017</div>
+  <h1>삼각편대의 역사</h1>
+  <div class="hero-motto">바르사에는 시대를 대표한 공격 삼각형이 둘 있었다.
+  먼저 온 <b>MVP</b>(메시·비야·페드로), 그다음이 <b>MSN</b>(메시·수아레스·네이마르)다.
+  시간순으로 놓고 같은 기준으로 잰다.</div>
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+if trio.empty:
+    st.warning("선수 데이터가 없습니다. `python crawl_allcomps.py`를 먼저 실행하세요.")
+    st.stop()
 
+# ---------------------------------------------------------------- 1기 MVP
+# MSN 이전에도 삼각편대가 있었다. 과르디올라 말기의 메시·비야·페드로다.
+# 같은 기준(FBref 전 대회)으로 재서 두 조합을 나란히 놓는다.
+MVP = ["Lionel Messi", "David Villa", "Pedro"]
+MVP_SEASONS = ["2010/11", "2011/12"]
+MVP_KOR = {"Lionel Messi": "메시", "David Villa": "비야", "Pedro": "페드로"}
+MVP_COLOR = {"Lionel Messi": GRANA, "David Villa": GOLD, "Pedro": BLAU}
+
+
+@st.cache_data
+def mvp_stats(stamp: str) -> pd.DataFrame:
+    ac = load_dir("fbref_allcomps_players")
+    if ac.empty:
+        return pd.DataFrame()
+    return ac[(ac["대회"] == "전 대회") & ac["Player"].isin(MVP)
+              & ac["season"].isin(MVP_SEASONS)].copy()
+
+
+@st.cache_data
+def mvp_team_goals(stamp: str) -> pd.Series:
+    ac = load_dir("fbref_allcomps_players")
+    if ac.empty:
+        return pd.Series(dtype=float)
+    return (ac[(ac["대회"] == "전 대회") & ac["season"].isin(MVP_SEASONS)]
+            .groupby("season")["골"].sum())
+
+
+mvp = mvp_stats(_stamp)
+mvp_team = mvp_team_goals(_stamp)
+
+if not mvp.empty:
+    st.markdown('<div class="section">1기 · MVP — 메시 · 비야 · 페드로 (2010/11~2011/12)</div>', unsafe_allow_html=True)
+    st.markdown("""
+<div class="lede">
+먼저 온 조합이다. 과르디올라 마지막 두 시즌, 메시 옆에는 <b>다비드 비야</b>와
+<b>페드로</b>가 있었다. 셋 다 발이 빠르고 뒷공간을 노려, 점유율로 상대를 눌러 놓고
+한 번에 찌르는 방식이었다. 2011년 12월 비야가 정강이 골절로 빠지면서 사실상
+해체됐다. 아래는 2기와 <b>같은 기준</b>(FBref 전 대회 합산)으로 잰 수치다.
+</div>
+""", unsafe_allow_html=True)
+
+    mvp_faces = portrait_map(MVP)
+    cards = ""
+    for name in MVP:
+        part = mvp[mvp["Player"] == name]
+        g, a = int(part["골"].sum()), int(part["도움"].sum())
+        mp = int(part["경기"].sum())
+        src = mvp_faces.get(name, "")
+        # 1기는 트랜스퍼마르크트 증명사진(얼굴만)이라 2기처럼 잘라내면 확대돼 버린다
+        img = (f'<img class="msn-photo head" src="{src}" alt="{name}">' if src else "")
+        cards += (
+            f'<div class="msn-card" style="border-top:4px solid {MVP_COLOR[name]}">'
+            f'{img}<div class="msn-body"><div class="msn-name">{MVP_KOR[name]}</div>'
+            f'<div class="msn-full">{name}</div>'
+            f'<div class="msn-line"><b>{g}</b>골 · <b>{a}</b>도움</div>'
+            f'<div class="msn-sub">{mp}경기 · 경기당 {g / max(mp, 1):.2f}골</div>'
+            f'</div></div>')
+    st.markdown(f'<div class="msn-grid">{cards}</div>', unsafe_allow_html=True)
+
+    mvp_goals = int(mvp["골"].sum())
+    mvp_team_total = int(mvp_team.sum())
+    msn_goals = int(trio["골"].sum())
+    msn_team_total = int(sum(team.get(s, 0) for s in SEASONS))
+    st.markdown(metric_cards([
+        ("합계 득점", f"{mvp_goals}골",
+         f"{MVP_SEASONS[0]}~{MVP_SEASONS[-1]} · 2시즌"),
+        ("팀 득점 비중", f"{mvp_goals / max(mvp_team_total, 1) * 100:.1f}%",
+         f"팀 {mvp_team_total}골 중"),
+        ("메시 비중", f"{int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum())}골",
+         f"셋 중 {int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum()) / max(mvp_goals, 1) * 100:.0f}%"),
+        ("합계 도움", f"{int(mvp['도움'].sum())}도움", "전 대회 기준"),
+    ]), unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------- 2기 MSN
+st.markdown('<div class="section">2기 · MSN — 메시 · 수아레스 · 네이마르 (2014/15~2016/17)</div>', unsafe_allow_html=True)
 # 세 사람이 함께 있는 한 장. 아래 카드 사진은 모두 이 사진에서 잘라낸 것이다.
 if pathlib.Path("assets/eras/era_msn.jpg").exists():
     st.markdown(f'<img class="msn-banner" src="{b64("eras/era_msn.jpg")}" '
                 'alt="수아레스 · 네이마르 · 메시">', unsafe_allow_html=True)
     st.caption("2015/16 캄 노우. 왼쪽부터 수아레스(9) · 네이마르(11) · 메시(10).")
 
-if trio.empty:
-    st.warning("선수 데이터가 없습니다. `python crawl_allcomps.py`를 먼저 실행하세요.")
-    st.stop()
-
-# ---------------------------------------------------------------- 세 사람
 st.markdown('<div class="section">세 사람</div>', unsafe_allow_html=True)
 cards = ""
 for name in TRIO:
@@ -411,78 +486,17 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------------- 앞선 삼각편대
-# MSN 이전에도 삼각편대가 있었다. 과르디올라 말기의 메시·비야·페드로다.
-# 같은 기준(FBref 전 대회)으로 재서 두 조합을 나란히 놓는다.
-MVP = ["Lionel Messi", "David Villa", "Pedro"]
-MVP_SEASONS = ["2010/11", "2011/12"]
-MVP_KOR = {"Lionel Messi": "메시", "David Villa": "비야", "Pedro": "페드로"}
-MVP_COLOR = {"Lionel Messi": GRANA, "David Villa": GOLD, "Pedro": BLAU}
-
-
-@st.cache_data
-def mvp_stats(stamp: str) -> pd.DataFrame:
-    ac = load_dir("fbref_allcomps_players")
-    if ac.empty:
-        return pd.DataFrame()
-    return ac[(ac["대회"] == "전 대회") & ac["Player"].isin(MVP)
-              & ac["season"].isin(MVP_SEASONS)].copy()
-
-
-@st.cache_data
-def mvp_team_goals(stamp: str) -> pd.Series:
-    ac = load_dir("fbref_allcomps_players")
-    if ac.empty:
-        return pd.Series(dtype=float)
-    return (ac[(ac["대회"] == "전 대회") & ac["season"].isin(MVP_SEASONS)]
-            .groupby("season")["골"].sum())
-
-
-mvp = mvp_stats(_stamp)
-mvp_team = mvp_team_goals(_stamp)
-
+# ------------------------------------------------------------------ 1기 vs 2기
 if not mvp.empty:
-    st.markdown('<div class="section">그 전의 삼각편대 — 메시 · 비야 · 페드로</div>',
+    st.markdown('<div class="section">1기와 2기, 무엇이 달랐나</div>',
                 unsafe_allow_html=True)
     st.markdown("""
 <div class="lede">
-MSN이 처음은 아니었다. 과르디올라 마지막 두 시즌, 메시 옆에는 <b>다비드 비야</b>와
-<b>페드로</b>가 있었다. 셋 다 발이 빠르고 뒷공간을 노려, 점유율로 상대를 눌러 놓고
-한 번에 찌르는 방식이었다. 아래는 MSN과 <b>같은 기준</b>(FBref 전 대회 합산)으로
-잰 수치다.
+시즌 수가 2 대 3으로 달라 총합으로는 견줄 수 없다. <b>시즌당</b>으로 맞추고,
+팀 득점에서 차지한 비중을 함께 본다. 비중이 높다는 건 그만큼 공격을 셋에게
+<b>의존했다</b>는 뜻이기도 하다.
 </div>
 """, unsafe_allow_html=True)
-
-    mvp_faces = portrait_map(MVP)
-    cards = ""
-    for name in MVP:
-        part = mvp[mvp["Player"] == name]
-        g, a = int(part["골"].sum()), int(part["도움"].sum())
-        mp = int(part["경기"].sum())
-        src = mvp_faces.get(name, "")
-        img = (f'<img class="msn-photo" src="{src}" alt="{name}">' if src else "")
-        cards += (
-            f'<div class="msn-card" style="border-top:4px solid {MVP_COLOR[name]}">'
-            f'{img}<div class="msn-body"><div class="msn-name">{MVP_KOR[name]}</div>'
-            f'<div class="msn-full">{name}</div>'
-            f'<div class="msn-line"><b>{g}</b>골 · <b>{a}</b>도움</div>'
-            f'<div class="msn-sub">{mp}경기 · 경기당 {g / max(mp, 1):.2f}골</div>'
-            f'</div></div>')
-    st.markdown(f'<div class="msn-grid">{cards}</div>', unsafe_allow_html=True)
-
-    mvp_goals = int(mvp["골"].sum())
-    mvp_team_total = int(mvp_team.sum())
-    msn_goals = int(trio["골"].sum())
-    msn_team_total = int(sum(team.get(s, 0) for s in SEASONS))
-    st.markdown(metric_cards([
-        ("합계 득점", f"{mvp_goals}골",
-         f"{MVP_SEASONS[0]}~{MVP_SEASONS[-1]} · 2시즌"),
-        ("팀 득점 비중", f"{mvp_goals / max(mvp_team_total, 1) * 100:.1f}%",
-         f"팀 {mvp_team_total}골 중"),
-        ("메시 비중", f"{int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum())}골",
-         f"셋 중 {int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum()) / max(mvp_goals, 1) * 100:.0f}%"),
-        ("합계 도움", f"{int(mvp['도움'].sum())}도움", "전 대회 기준"),
-    ]), unsafe_allow_html=True)
 
     # 두 조합을 한 눈에 — 시즌 수가 달라 '시즌당'으로 맞춘다
     comp = pd.DataFrame([

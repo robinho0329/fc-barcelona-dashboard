@@ -274,6 +274,8 @@ div.legend-noimg.masia-photo{display:flex;align-items:center;justify-content:cen
       object-position:center 30%!important;
       border-radius:14px;border:1px solid var(--line);
       display:block;margin:.2rem 0 .4rem;}
+.msn-photo.head{height:240px;object-fit:contain!important;
+      object-position:center center!important;}
 .msn-body{padding:.9rem 1.1rem 1.1rem;}
 .msn-name{color:var(--ink);font-size:1.25rem;font-weight:860;}
 .msn-full{color:var(--muted);font-size:.72rem;letter-spacing:.06em;margin-top:.1rem;}
