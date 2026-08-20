@@ -231,6 +231,86 @@ f2.update_xaxes(gridcolor=GRID)
 f2.update_yaxes(gridcolor=GRID, type="category")
 st.plotly_chart(f2, use_container_width=True)
 
+# ---------------------------------------------------------------- 전술 성향
+# football-data가 2005/06부터 슈팅·코너·파울을 제공한다. 그 이전 감독은
+# 원본에 값이 없어 이 구역이 나오지 않는다.
+STYLE = {"슛": ("HS", "AS"), "유효슛": ("HST", "AST"), "코너": ("HC", "AC"),
+         "파울": ("HF", "AF"), "경고": ("HY", "AY")}
+
+
+@st.cache_data
+def style_table(stamp: float) -> pd.DataFrame:
+    """감독 재임 구간별 경기당 전술 지표. 20경기 미만은 표본이 얇아 뺀다."""
+    m = load_parquet(PROCESSED / "club_matches.parquet").copy()
+    if m.empty:
+        return pd.DataFrame()
+    m["date"] = pd.to_datetime(m["Date"], format="mixed", dayfirst=True)
+    home = m["HomeTeam"] == "Barcelona"
+    for name, (ours, theirs) in STYLE.items():
+        if {ours, theirs} <= set(m.columns):
+            m[name] = pd.to_numeric(m[ours].where(home, m[theirs]), errors="coerce")
+            m[f"상대{name}"] = pd.to_numeric(m[theirs].where(home, m[ours]), errors="coerce")
+    if "슛" not in m.columns:
+        return pd.DataFrame()
+
+    mgr = load_parquet(PROCESSED / "managers.parquet")
+    rows = []
+    for r in mgr.itertuples():
+        part = m[(m["date"] >= r.start) & (m["date"] <= r.end)].dropna(subset=["슛"])
+        if len(part) < 20:
+            continue
+        rows.append({
+            "감독": r.표시명, "경기": len(part),
+            "경기당 슛": part["슛"].mean(),
+            "유효슛률": part["유효슛"].sum() / max(part["슛"].sum(), 1) * 100,
+            "경기당 코너": part["코너"].mean(),
+            "경기당 파울": part["파울"].mean(),
+            "허용 슛": part["상대슛"].mean(),
+            "경기당 경고": part["경고"].mean(),
+        })
+    return pd.DataFrame(rows)
+
+
+_cm = PROCESSED / "club_matches.parquet"
+style = style_table(_cm.stat().st_mtime if _cm.exists() else 0.0)
+
+if not style.empty:
+    st.markdown('<div class="section">전술 성향</div>', unsafe_allow_html=True)
+    st.markdown("""
+<div class="lede">
+경기당 슛을 얼마나 만들고, 상대에게 얼마나 내주며, 얼마나 거칠게 싸웠는지.
+원본이 슈팅·코너·파울을 <b>2005/06 시즌부터</b> 제공해 그 이전 감독은 빠진다.
+20경기 미만을 지휘한 임시 감독도 표본이 얇아 제외했다.
+</div>
+""", unsafe_allow_html=True)
+
+    METRICS = ["경기당 슛", "유효슛률", "경기당 코너", "경기당 파울",
+               "허용 슛", "경기당 경고"]
+    metric = st.selectbox("지표", METRICS, key="style_metric")
+    # 허용 슛과 파울·경고는 낮을수록 좋은 지표라 색을 뒤집는다
+    lower_better = metric in {"허용 슛", "경기당 파울", "경기당 경고"}
+    srt = style.sort_values(metric, ascending=lower_better)
+    hi = GRANA if not lower_better else BLAU
+    colors = [GOLD if n == r["표시명"] else hi for n in srt["감독"]]
+
+    fs = go.Figure(go.Bar(
+        y=srt["감독"], x=srt[metric], orientation="h", marker_color=colors,
+        text=srt[metric].round(2), textposition="outside", textfont_color="#f2f6fc",
+        customdata=srt[["경기"]].values,
+        hovertemplate="<b>%{y}</b><br>" + metric + " %{x:.2f}<br>"
+                      "%{customdata[0]}경기<extra></extra>"))
+    fs.update_layout(height=max(320, 34 * len(srt)), xaxis_title=metric, **PLOT)
+    fs.update_xaxes(gridcolor=GRID, range=[0, float(srt[metric].max()) * 1.2])
+    fs.update_yaxes(gridcolor=GRID, type="category")
+    st.plotly_chart(fs, use_container_width=True)
+    st.caption("금색 = 지금 고른 감독. "
+               + ("낮을수록 좋은 지표라 오름차순으로 놓았다."
+                  if lower_better else "높을수록 공격적이다."))
+
+    with st.expander("전술 지표 표"):
+        st.dataframe(style.set_index("감독").round(2),
+                     use_container_width=True, height=380)
+
 # ---------------------------------------------------------------- 전체 비교
 st.markdown('<div class="section">감독 전체 비교</div>', unsafe_allow_html=True)
 min_games = st.slider("최소 경기 수", 0, 100, 30, step=10)
@@ -272,6 +352,9 @@ football-data.co.uk 라리가 원본에서 경기 날짜를 재임 구간에 넣
 <b>리그 우승</b> 그 시즌 경기의 3분의 2 이상을 지휘한 감독에게만 귀속시켰다.
 순위는 승점 → 동률 팀 간 상대전적 → 골득실 순으로 산출한다.<br>
 <b>임시 감독</b> 원본에 역할 구분이 없어, 시즌 중 급히 투입돼 짧게 지휘한
-세르지 바르주안과 라도미르 안티치를 직접 표시했다.
+세르지 바르주안과 라도미르 안티치를 직접 표시했다.<br>
+<b>전술 성향</b> 슈팅·코너·파울은 원본이 2005/06 시즌부터만 제공한다. 그래서
+크루이프·로브손·판 할 등 그 이전 감독은 이 구역에 나오지 않는다. 20경기 미만
+지휘한 감독도 표본이 얇아 제외했다.
 </div>
 """, unsafe_allow_html=True)
