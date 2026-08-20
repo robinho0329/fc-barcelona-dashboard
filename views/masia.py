@@ -117,11 +117,29 @@ rep_cards(CURRENT_GEN, GOLD)
 st.caption("계보는 끊기지 않았다. 아래 수치는 명성이나 수상 경력이 아니라 "
            "실제 라리가 출전 시간으로 그 흐름을 본다.")
 # 현역 선수는 자유 라이선스 경기 사진이 거의 없어 보도사진을 썼다.
-# 저작권이 있는 사진이므로 출처를 밝혀 둔다.
-st.caption("사진 출처 · 가비, 페르민 로페스 — Getty Images (각각 sportalkorea, "
-           "InterFootball 경유). 저작권이 있는 보도사진이며 비상업 학습 목적으로 "
-           "인용했다. 세르히오 부스케츠 — הגמל התימני / CC BY-SA 4.0 "
-           "(Wikimedia Commons).")
+# 저작권이 있는 사진이므로 출처를 밝힌다.
+#
+# 손으로 적지 않고 credits.json 에서 읽는다. 예전에는 캡션에 직접 써 뒀는데,
+# 사진을 바꾸면 apply_inbox.py 가 credits.json 만 고치고 캡션은 그대로 남아
+# 설명이 사실과 어긋나게 된다.
+masia_credits = load_json(ASSETS / "masia" / "credits.json")
+KOR_NAME = {"yamal": "라민 야말", "cubarsi": "파우 쿠바르시", "gavi": "가비",
+            "pedri": "페드리", "fermin": "페르민 로페스",
+            "busquets": "세르히오 부스케츠"}
+src_lines = []
+for key, name in KOR_NAME.items():
+    e = masia_credits.get(key)
+    if not e:
+        continue
+    artist, lic = e.get("artist", ""), e.get("license", "")
+    where = " (Wikimedia Commons)" if "commons.wikimedia.org" in str(e.get("source", "")) else ""
+    if artist:
+        src_lines.append(f"{name} — {artist} / {lic}{where}")
+    elif lic and lic != "출처 미상":
+        src_lines.append(f"{name} — {lic}{where}")
+if src_lines:
+    st.caption("사진 출처 · " + " · ".join(src_lines)
+               + ". 저작권이 있는 보도사진은 비상업 학습 목적으로 인용했다.")
 
 # crawl_masia.py가 수집한 바르사 B 시즌 명단에 등장한 선수를 유스 출신으로 본다.
 # 이름은 악센트와 구두점을 제거한 키로만 정확히 대조한다. 성만 맞추면 Arturo
