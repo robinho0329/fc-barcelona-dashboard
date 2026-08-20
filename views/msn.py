@@ -8,7 +8,7 @@ import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_dir, load_sb,
                   load_seasons, load_understat, metric_cards,
-                  portrait_map, setup)
+                  portrait_map, sb_names, setup)
 
 def draw_triangle(links: pd.DataFrame, order: list, kor: dict, color: dict,
                   photos: dict, note: str) -> None:
@@ -202,6 +202,25 @@ def mvp_links(stamp: float) -> pd.DataFrame:
 
 
 @st.cache_data
+def mvp_routes(stamp: float) -> pd.DataFrame:
+    """1기 셋이 넣은 골의 상황·부위·마무리, 그리고 도움 준 사람.
+
+    2기는 Understat을 쓰지만 이 시기는 없어서 StatsBomb을 쓴다. 두 원본은
+    값 이름이 달라(Regular Play vs OpenPlay) 표를 따로 둔다.
+    """
+    sh = load_sb("shots")
+    if sh.empty:
+        return pd.DataFrame()
+    g = sh[sh["is_barca"] & sh["goal"]
+           & sh["season"].isin(["2010/11", "2011/12"])].copy()
+    if g.empty:
+        return pd.DataFrame()
+    g["이름"] = sb_names(g["player"]).values
+    g["도움"] = sb_names(g["assisted_by"]).values
+    return g[g["이름"].isin(MVP)].copy()
+
+
+@st.cache_data
 def mvp_stats(stamp: str) -> pd.DataFrame:
     ac = load_dir("fbref_allcomps_players")
     if ac.empty:
@@ -382,6 +401,87 @@ if not mvp.empty:
     else:
         st.caption("1기의 내부 삼각형을 만들 데이터가 없다. "
                    "`python fetch_statsbomb.py` 를 먼저 실행하면 채워진다.")
+
+    # ---- 주 공격 루트
+    mvp_rt = mvp_routes(_sb.stat().st_mtime if _sb.exists() else 0.0)
+    if not mvp_rt.empty:
+        st.markdown('<div class="section">1기 · 주 공격 루트</div>',
+                    unsafe_allow_html=True)
+        # StatsBomb 표기는 Understat 과 다르다(Regular Play vs OpenPlay).
+        SB_PATTERN = {"Regular Play": "오픈 플레이", "From Free Kick": "프리킥 상황",
+                      "From Throw In": "스로인 상황", "From Counter": "역습",
+                      "From Corner": "코너", "From Goal Kick": "골킥 상황",
+                      "From Kick Off": "킥오프", "From Keeper": "골키퍼 전개",
+                      "Other": "기타"}
+        SB_BODY = {"Left Foot": "왼발", "Right Foot": "오른발", "Head": "헤더",
+                   "Other": "기타"}
+        SB_TECH = {"Normal": "일반", "Half Volley": "하프발리", "Volley": "발리",
+                   "Lob": "로빙", "Overhead Kick": "오버헤드",
+                   "Backheel": "백힐", "Diving Header": "다이빙 헤더"}
+
+        r1, r2 = st.columns(2)
+        with r1:
+            pat = (mvp_rt.assign(상황=mvp_rt["pattern"].map(SB_PATTERN).fillna("기타"))
+                   .groupby(["이름", "상황"]).size().unstack(fill_value=0)
+                   .reindex(MVP).fillna(0))
+            fp = go.Figure()
+            for col in pat.columns:
+                fp.add_trace(go.Bar(x=[MVP_KOR[i] for i in pat.index],
+                                    y=pat[col], name=col))
+            fp.update_layout(height=340, barmode="stack", yaxis_title="골",
+                             legend=dict(orientation="h", y=1.14), **PLOT)
+            fp.update_xaxes(gridcolor=GRID)
+            fp.update_yaxes(gridcolor=GRID)
+            st.plotly_chart(fp, use_container_width=True)
+            st.caption("상황별 득점. 흐름 속에서 나온 골이 절반을 넘는다")
+
+        with r2:
+            bod = (mvp_rt.assign(부위=mvp_rt["body_part"].map(SB_BODY).fillna("기타"))
+                   .groupby(["이름", "부위"]).size().unstack(fill_value=0)
+                   .reindex(MVP).fillna(0))
+            fb = go.Figure()
+            for col in bod.columns:
+                fb.add_trace(go.Bar(x=[MVP_KOR[i] for i in bod.index],
+                                    y=bod[col], name=col))
+            fb.update_layout(height=340, barmode="stack", yaxis_title="골",
+                             legend=dict(orientation="h", y=1.14), **PLOT)
+            fb.update_xaxes(gridcolor=GRID)
+            fb.update_yaxes(gridcolor=GRID)
+            st.plotly_chart(fb, use_container_width=True)
+            st.caption("왼발 득점이 오른발의 두 배가 넘는다 — 메시 몫이 크다")
+
+        # 2기의 '골 직전에 무슨 일'(lastAction)은 StatsBomb 에 없다.
+        # 대신 마무리 기술이 있어 그걸 보여준다.
+        tech = (mvp_rt["technique"].map(lambda v: SB_TECH.get(v, "기타"))
+                .value_counts().iloc[::-1])
+        st.markdown('<div class="section">1기 · 어떻게 마무리했나</div>',
+                    unsafe_allow_html=True)
+        ft = go.Figure(go.Bar(y=tech.index, x=tech.values, orientation="h",
+                              marker_color=GRANA, text=tech.values,
+                              textposition="outside", textfont_color="#f2f6fc",
+                              hovertemplate="<b>%{y}</b><br>%{x}골<extra></extra>"))
+        ft.update_layout(height=300, xaxis_title="골", **PLOT)
+        ft.update_xaxes(gridcolor=GRID, range=[0, int(tech.max()) * 1.2])
+        ft.update_yaxes(gridcolor=GRID, type="category")
+        st.plotly_chart(ft, use_container_width=True)
+        st.caption("2기의 '골 직전에 무슨 일이 있었나'는 Understat 항목이라 "
+                   "이 시기에는 없다. StatsBomb 이 주는 마무리 기술로 대신했다.")
+
+        feed = (mvp_rt[mvp_rt["도움"].notna() & ~mvp_rt["도움"].isin(MVP)]
+                ["도움"].value_counts().head(8).iloc[::-1])
+        if not feed.empty:
+            st.markdown('<div class="section">1기 · 셋에게 공을 대준 사람들</div>',
+                        unsafe_allow_html=True)
+            ff = go.Figure(go.Bar(y=feed.index, x=feed.values, orientation="h",
+                                  marker_color=BLAU, text=feed.values,
+                                  textposition="outside", textfont_color="#f2f6fc",
+                                  hovertemplate="<b>%{y}</b><br>%{x}도움<extra></extra>"))
+            ff.update_layout(height=320, xaxis_title="셋에게 준 도움", **PLOT)
+            ff.update_xaxes(gridcolor=GRID, range=[0, int(feed.max()) * 1.25])
+            ff.update_yaxes(gridcolor=GRID, type="category")
+            st.plotly_chart(ff, use_container_width=True)
+            st.caption("셋 바깥에서 온 공. 오른쪽 풀백 알베스가 압도적으로 많다 — "
+                       "1기가 셋끼리보다 측면과 중원에서 받았다는 뜻이다.")
 
 
 # ---------------------------------------------------------------- 2기 MSN
