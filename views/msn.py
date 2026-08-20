@@ -213,23 +213,41 @@ if not links.empty:
             continue
         x0, y0 = pos[a]
         x1, y1 = pos[b]
-        # 양방향이 겹치지 않게 살짝 휘어 보이도록 중간점을 옆으로 민다
+        # 같은 두 사람 사이에 방향이 둘이라, 곡선을 서로 반대쪽으로 크게 휘어
+        # 겹치지 않게 한다. 휘는 쪽은 도움을 준 사람이 누구냐로 정한다.
         mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-        off = 0.10
-        nx, ny = -(y1 - y0), (x1 - x0)
+        # 법선은 **고정된 순서**로 계산해야 한다. a→b와 b→a에서 그대로 구하면
+        # 법선이 뒤집히고 부호까지 뒤집혀 서로 상쇄돼, 두 곡선이 같은 쪽에
+        # 겹쳐 그려진다.
+        lo, hi = sorted((a, b), key=TRIO.index)
+        fx0, fy0 = pos[lo]
+        fx1, fy1 = pos[hi]
+        nx, ny = -(fy1 - fy0), (fx1 - fx0)
         norm = (nx ** 2 + ny ** 2) ** .5 or 1
+        sign = 1 if a == lo else -1
+        off = 0.30 * sign
         cx, cy = mx + nx / norm * off, my + ny / norm * off
-        t = np.linspace(0, 1, 30)
+        t = np.linspace(0, 1, 40)
         bx = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t ** 2 * x1
         by = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t ** 2 * y1
         fig.add_trace(go.Scatter(
             x=bx, y=by, mode="lines",
-            line=dict(color=COLOR[a], width=2 + r.골 * 0.55), opacity=.75,
+            line=dict(color=COLOR[a], width=2.5 + r.골 * 0.6), opacity=.85,
             hovertemplate=f"<b>{KOR[a]} → {KOR[b]}</b><br>{r.골}골<extra></extra>",
             showlegend=False))
-        fig.add_annotation(x=cx, y=cy, text=f"<b>{r.골}</b>", showarrow=False,
-                           font=dict(size=13, color=COLOR[a]),
-                           bgcolor="rgba(4,16,31,.75)")
+        # 화살촉 — 받는 쪽 가까이에 방향을 표시
+        hx, hy = bx[32], by[32]
+        fig.add_annotation(x=bx[36], y=by[36], ax=hx, ay=hy,
+                           xref="x", yref="y", axref="x", ayref="y",
+                           showarrow=True, arrowhead=3, arrowsize=1.3,
+                           arrowwidth=2, arrowcolor=COLOR[a], text="")
+        # 숫자는 곡선 정점에 — 두 방향이 반대로 휘어 서로 떨어진다
+        lx = 0.25 * x0 + 0.5 * cx + 0.25 * x1
+        ly = 0.25 * y0 + 0.5 * cy + 0.25 * y1
+        fig.add_annotation(x=lx, y=ly, text=f"<b>{KOR[a]} → {KOR[b]}<br>{r.골}골</b>",
+                           showarrow=False, font=dict(size=11, color="#f2f6fc"),
+                           bgcolor="rgba(4,16,31,.88)",
+                           bordercolor=COLOR[a], borderwidth=1.5, borderpad=4)
 
     imgs = []
     for name, (x, y) in pos.items():
@@ -244,14 +262,16 @@ if not links.empty:
         hoverinfo="skip"))
 
     fig.update_layout(
-        height=520, images=imgs,
+        height=620, images=imgs,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(range=[-1.7, 1.7], visible=False, constrain="domain"),
-        yaxis=dict(range=[-1.5, 1.6], visible=False, scaleanchor="x", scaleratio=1))
+        xaxis=dict(range=[-2.0, 2.0], visible=False, constrain="domain"),
+        yaxis=dict(range=[-1.7, 1.8], visible=False, scaleanchor="x", scaleratio=1))
     st.plotly_chart(fig, use_container_width=True)
     st.caption(f"라리가 경기만 집계. 셋 사이에서만 {int(links['골'].sum())}골이 나왔다. "
-               "선 색은 도움을 준 쪽이다.")
+               "선 색과 화살표는 도움을 준 쪽이다. 원본에 도움이 기록되지 않은 골"
+               "(직접 프리킥·개인 돌파·세컨드볼 등)은 애초에 빠져 있어, 실제 합작은 "
+               "이보다 많다.")
 
 # ---------------------------------------------------------------- 공격 루트
 @st.cache_data
