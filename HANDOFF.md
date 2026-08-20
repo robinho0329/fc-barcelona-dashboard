@@ -310,6 +310,26 @@ Streamlit 기본 스타일이 `img` 에 `object-fit: scale-down` 을 걸어 둔�
 쓸 때는 `!important` 를 붙이고, 반드시 브라우저에서 `getComputedStyle` 로
 실제 적용값을 확인할 것.
 
+## 검수 도구
+
+### `tools/audit.py`
+대시보드가 쓰는 데이터의 논리적 모순 32개 항목을 훑는다.
+모순이 있으면 종료 코드 1. **데이터를 다시 만든 뒤에는 반드시 돌린다.**
+
+```
+"/d/workspace/EPL project/.venv/Scripts/python.exe" tools/audit.py
+```
+
+세션 임시 폴더에만 두었다가 매번 다시 쓰던 것을 저장소로 옮겼다.
+
+### `.claude/agents/barca-qa.md`
+검수 전담 서브에이전트. 데이터 무결성 → 페이지 렌더 → **화면 문구와 실제
+수치의 일치** 세 층으로 본다. 이 프로젝트에서 실제로 터졌던 함정 일곱 가지를
+표로 적어 뒀다(Streamlit 의 object-fit 덮어쓰기, FBref 열 이름 변동,
+Squad Total 혼입, 대회 목록 하드코딩, StatsBomb 전체 이름, 캐시 키, 사진 캡션).
+
+찾아서 보고만 하고 고치지는 않는다. 소스 수정·데이터 재생성·git 은 금지다.
+
 ## 남은 작업
 
 없다. 사용자가 요청한 것과 정리 항목을 모두 처리했다.
