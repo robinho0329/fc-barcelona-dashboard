@@ -24,6 +24,9 @@ nav = st.navigation({
         st.Page("views/masia.py", title="라 마시아", icon="🌱"),
         st.Page("views/advanced.py", title="선수 고급 기록", icon="📈"),
     ],
+    "전술": [
+        st.Page("views/tikitaka.py", title="티키타카 지수", icon="🕸️"),
+    ],
     "이벤트 데이터": [
         st.Page("views/shots.py", title="xG · 슈팅 맵", icon="🎯"),
         st.Page("views/passes.py", title="패스 맵", icon="🕸️"),
