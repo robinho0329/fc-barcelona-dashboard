@@ -89,13 +89,17 @@ def save_as(src: Path, dest: Path) -> None:
 
 
 def note_source(store: Path, key: str, filename: str) -> None:
-    """출처를 '사용자 제공'으로 남긴다. 커먼즈 항목은 건드리지 않는다."""
+    """출처를 남긴다. 커먼즈 항목은 건드리지 않는다.
+
+    표기는 대시보드에 그대로 보인다. '직접 전달한 파일' 같은 작업 용어는
+    보는 사람에게 아무 의미가 없으므로 쓰지 않는다.
+    """
     p = store / "credits.json"
     meta = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
     name = FILENAME.get(key, key)
     rel = f"{name}.jpg" if store == ASSETS else f"{store.name}/{name}.jpg"
-    meta[key] = {"file": rel, "license": "사용자 제공", "artist": "사용자 제공",
-                 "source": f"직접 전달한 파일 ({filename})"}
+    meta[key] = {"file": rel, "license": "출처 미상", "artist": "",
+                 "source": f"별도 제공 ({filename})"}
     p.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
 
 

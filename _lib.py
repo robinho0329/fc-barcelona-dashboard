@@ -406,10 +406,25 @@ def metric_cards(items) -> str:
     return f'<div class="metric-grid">{cards}</div>'
 
 
+def _credit_line(title: str, entry: dict) -> str:
+    """사진 한 장의 출처 한 줄.
+
+    커먼즈에서 받은 것만 커먼즈라고 적는다. 예전에는 모든 항목에
+    (Wikimedia Commons)를 붙여, 아닌 사진까지 커먼즈 출처로 보이게 했다.
+    """
+    src = str(entry.get("source", ""))
+    artist = entry.get("artist", "")
+    lic = entry.get("license", "")
+    if "commons.wikimedia.org" in src:
+        return f"· {title} — {artist} / {lic} (Wikimedia Commons)<br>"
+    if artist and artist not in ("사용자 제공",):
+        return f"· {title} — {artist} / {lic}<br>"
+    return f"· {title}<br>"
+
+
 def credits_block(seasons: pd.DataFrame, credits: dict, extra: str = "") -> str:
     lines = "".join(
-        f"· {t} — {credits[k]['artist']} / {credits[k]['license']} (Wikimedia Commons)<br>"
-        for k, t, _ in PHOTOS if k in credits
+        _credit_line(t, credits[k]) for k, t, _ in PHOTOS if k in credits
     )
     return f"""
 <div class="credits">

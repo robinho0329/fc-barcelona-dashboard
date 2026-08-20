@@ -1,15 +1,15 @@
 {
   "yamal": {
     "file": "masia/yamal.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (yamal.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (yamal.jpg)"
   },
   "cubarsi": {
     "file": "masia/cubarsi.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (cubarsi.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (cubarsi.jpg)"
   },
   "gavi": {
     "file": "masia/gavi.jpg",
@@ -19,9 +19,9 @@
   },
   "pedri": {
     "file": "masia/pedri.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (pedri.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (pedri.jpg)"
   },
   "fermin": {
     "file": "masia/fermin.jpg",

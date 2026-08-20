@@ -1,44 +1,44 @@
 {
   "era_dreamteam": {
     "file": "eras/era_dreamteam.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_dreamteam.webp)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_dreamteam.webp)"
   },
   "era_transition": {
     "file": "eras/era_transition.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_transition.webp)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_transition.webp)"
   },
   "era_rijkaard": {
     "file": "eras/era_rijkaard.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_rijkaard.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_rijkaard.jpg)"
   },
   "era_pep": {
     "file": "eras/era_pep.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_pep.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_pep.jpg)"
   },
   "era_msn": {
     "file": "eras/era_msn.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_msn.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_msn.jpg)"
   },
   "era_post": {
     "file": "eras/era_post.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_post.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_post.jpg)"
   },
   "era_rebuild": {
     "file": "eras/era_rebuild.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (era_rebuild.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (era_rebuild.jpg)"
   }
 }

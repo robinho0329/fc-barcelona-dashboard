@@ -1,9 +1,9 @@
 {
   "messi": {
     "file": "legends/messi.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (messi.webp)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (messi.webp)"
   },
   "iniesta": {
     "file": "legends/iniesta.jpg",
@@ -37,26 +37,26 @@
   },
   "stoichkov": {
     "file": "legends/stoichkov.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (stoichkov.jpg)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (stoichkov.jpg)"
   },
   "cruyff": {
     "file": "legends/cruyff.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (cruyff.webp)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (cruyff.webp)"
   },
   "ronaldinho": {
     "file": "legends/ronaldinho.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (ronaldinho.png)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (ronaldinho.png)"
   },
   "puyol": {
     "file": "legends/puyol.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (puyol.png)"
+    "license": "출처 미상",
+    "artist": "",
+    "source": "별도 제공 (puyol.png)"
   }
 }
