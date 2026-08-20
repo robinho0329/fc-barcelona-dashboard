@@ -117,6 +117,31 @@ def parse_events(match_id: int, meta: dict) -> tuple[list, list, dict]:
     pass_player = {e["id"]: (e.get("player") or {}).get("name")
                    for e in events if e["type"]["name"] == "Pass"}
 
+    def assist_kind(ps: dict) -> str:
+        """골로 이어진 패스가 어떤 종류였나.
+
+        Understat 의 lastAction 과 같은 자리를 채우려는 값이다. StatsBomb 에는
+        그런 열이 없어 패스 자체의 속성으로 만든다. 순서가 중요하다 —
+        코너에서 올린 크로스는 '크로스'가 아니라 '세트피스'로 봐야 한다.
+        """
+        typ = (ps.get("type") or {}).get("name", "")
+        if typ in ("Corner", "Free Kick"):
+            return "세트피스 상황"
+        if ps.get("through_ball"):
+            return "스루패스"
+        if ps.get("cut_back"):
+            return "컷백"
+        if ps.get("cross"):
+            return "크로스"
+        if typ in ("Throw-in", "Goal Kick", "Kick Off"):
+            return "재개 상황"
+        if (ps.get("height") or {}).get("name") == "High Pass":
+            return "띄운 패스"
+        return "짧은 패스"
+
+    pass_kind = {e["id"]: assist_kind(e.get("pass") or {})
+                 for e in events if e["type"]["name"] == "Pass"}
+
     for e in events:
         etype = e["type"]["name"]
         team = e.get("team", {}).get("name", "")
@@ -146,6 +171,9 @@ def parse_events(match_id: int, meta: dict) -> tuple[list, list, dict]:
                 "technique": sh.get("technique", {}).get("name", ""),
                 "pattern": e.get("play_pattern", {}).get("name", ""),
                 "assisted_by": pass_player.get(sh.get("key_pass_id")),
+                # 도움이 없으면 혼자 만든 골이다(개인 돌파·직접 프리킥 등)
+                "assist_kind": (pass_kind.get(sh["key_pass_id"])
+                                if sh.get("key_pass_id") in pass_kind else "직접"),
             })
             if player:
                 players[player]["shots"] += 1

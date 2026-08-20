@@ -450,22 +450,38 @@ if not mvp.empty:
             st.plotly_chart(fb, use_container_width=True)
             st.caption("왼발 득점이 오른발의 두 배가 넘는다 — 메시 몫이 크다")
 
-        # 2기의 '골 직전에 무슨 일'(lastAction)은 StatsBomb 에 없다.
-        # 대신 마무리 기술이 있어 그걸 보여준다.
+        # Understat 의 lastAction 은 StatsBomb 에 없다. 대신 골로 이어진 패스
+        # 자체의 속성(스루패스·크로스·코너 등)으로 같은 자리를 채웠다.
+        # fetch_statsbomb.py 의 assist_kind 를 보라.
+        if "assist_kind" in mvp_rt.columns:
+            act = mvp_rt["assist_kind"].value_counts().iloc[::-1]
+            st.markdown('<div class="section">1기 · 골 직전에 무슨 일이 있었나</div>',
+                        unsafe_allow_html=True)
+            fa = go.Figure(go.Bar(y=act.index, x=act.values, orientation="h",
+                                  marker_color=GRANA, text=act.values,
+                                  textposition="outside", textfont_color="#f2f6fc",
+                                  hovertemplate="<b>%{y}</b><br>%{x}골<extra></extra>"))
+            fa.update_layout(height=320, xaxis_title="골", **PLOT)
+            fa.update_xaxes(gridcolor=GRID, range=[0, int(act.max()) * 1.2])
+            fa.update_yaxes(gridcolor=GRID, type="category")
+            st.plotly_chart(fa, use_container_width=True)
+            st.caption(
+                "'직접'은 도움 없이 혼자 만든 골이다(개인 돌파·직접 프리킥 등). "
+                "같은 원본으로 2기를 재면 **스루패스 19.1% · 크로스 13.4%** 인데 "
+                "1기는 **스루패스 27.0% · 크로스 6.6%** 다. 발 빠른 셋이 뒷공간으로 "
+                "달리고 거기로 찔러 넣는 방식이었다는 뜻이다.")
+
         tech = (mvp_rt["technique"].map(lambda v: SB_TECH.get(v, "기타"))
                 .value_counts().iloc[::-1])
-        st.markdown('<div class="section">1기 · 어떻게 마무리했나</div>',
-                    unsafe_allow_html=True)
-        ft = go.Figure(go.Bar(y=tech.index, x=tech.values, orientation="h",
-                              marker_color=GRANA, text=tech.values,
-                              textposition="outside", textfont_color="#f2f6fc",
-                              hovertemplate="<b>%{y}</b><br>%{x}골<extra></extra>"))
-        ft.update_layout(height=300, xaxis_title="골", **PLOT)
-        ft.update_xaxes(gridcolor=GRID, range=[0, int(tech.max()) * 1.2])
-        ft.update_yaxes(gridcolor=GRID, type="category")
-        st.plotly_chart(ft, use_container_width=True)
-        st.caption("2기의 '골 직전에 무슨 일이 있었나'는 Understat 항목이라 "
-                   "이 시기에는 없다. StatsBomb 이 주는 마무리 기술로 대신했다.")
+        with st.expander("1기 · 어떻게 마무리했나 (슛 기술)"):
+            ft = go.Figure(go.Bar(y=tech.index, x=tech.values, orientation="h",
+                                  marker_color=BLAU, text=tech.values,
+                                  textposition="outside", textfont_color="#f2f6fc",
+                                  hovertemplate="<b>%{y}</b><br>%{x}골<extra></extra>"))
+            ft.update_layout(height=280, xaxis_title="골", **PLOT)
+            ft.update_xaxes(gridcolor=GRID, range=[0, int(tech.max()) * 1.2])
+            ft.update_yaxes(gridcolor=GRID, type="category")
+            st.plotly_chart(ft, use_container_width=True)
 
         feed = (mvp_rt[mvp_rt["도움"].notna() & ~mvp_rt["도움"].isin(MVP)]
                 ["도움"].value_counts().head(8).iloc[::-1])
