@@ -451,3 +451,54 @@ def portrait_map(names) -> dict:
                 uri = idx["surname"].get(parts[-1])
         out[n] = uri or ""
     return out
+
+
+@st.cache_data
+def _position_index(stamp: str) -> dict:
+    """선수 이름 → 주 포지션(GK/DF/MF/FW).
+
+    FBref 전 대회 표의 Pos를 쓰되, 한 선수가 여러 포지션이면 출전 시간이 가장
+    많은 쪽을 택한다. 소스마다 표기가 달라(Ferrán/Ferran, Rakitic/Rakitić)
+    정규화 키로 맞추고, 그래도 없으면 성으로 한 번 더 찾는다.
+    """
+    d = PROCESSED.parent / "fbref_allcomps_players"
+    files = sorted(d.glob("*.parquet")) if d.exists() else []
+    if not files:
+        return {"exact": {}, "surname": {}}
+    ac = pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
+    ac = ac[ac.get("대회", "") == "전 대회"].copy()
+    if ac.empty:
+        return {"exact": {}, "surname": {}}
+
+    ac["main"] = ac["Pos"].fillna("").str.split(",").str[0].str.strip()
+    ac = ac[ac["main"].isin(["GK", "DF", "MF", "FW"])]
+    ac["key"] = ac["Player"].map(_name_key)
+    exact = (ac.groupby(["key", "main"])["출전분"].sum().reset_index()
+             .sort_values("출전분", ascending=False).drop_duplicates("key")
+             .set_index("key")["main"].to_dict())
+
+    by_sur = {}
+    for k, v in exact.items():
+        parts = k.split()
+        if parts:
+            by_sur.setdefault(parts[-1], set()).add(v)
+    surname = {k: next(iter(v)) for k, v in by_sur.items() if len(v) == 1}
+    return {"exact": exact, "surname": surname}
+
+
+def position_map(names) -> dict:
+    """주어진 이름들의 주 포지션. 못 찾으면 빈 문자열."""
+    d = PROCESSED.parent / "fbref_allcomps_players"
+    files = sorted(d.glob("*.parquet")) if d.exists() else []
+    stamp = "|".join(f"{f.name}:{f.stat().st_mtime}" for f in files)
+    idx = _position_index(stamp)
+    out = {}
+    for n in names:
+        key = _name_key(n)
+        p = idx["exact"].get(key)
+        if not p:
+            parts = key.split()
+            if parts:
+                p = idx["surname"].get(parts[-1])
+        out[n] = p or ""
+    return out

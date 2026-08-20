@@ -6,8 +6,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, WHITE, b64, load_sb,
-                  load_seasons, load_understat, metric_cards, setup)
+from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_seasons,
+                  load_understat, metric_cards, portrait_map, position_map, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -85,7 +85,11 @@ st.markdown("""
   아니라 <b>관여량</b>이라, 오래 뛴 선수가 자연히 커진다.<br>
 · <b>선이 몰리는 자리</b>가 그 시기 공격의 통로다. 한 명에게 선이 집중되면
   팀이 그 선수에게 의존했다는 신호이고, 여러 명에게 고르게 퍼져 있으면
-  득점 경로가 분산돼 있었다는 뜻이다.<br><br>
+  득점 경로가 분산돼 있었다는 뜻이다.<br>
+· <b>가로 방향</b>은 포지션이다. 왼쪽부터 골키퍼 · 수비수 · 미드필더 · 공격수로
+  실제 라인업과 같은 순서다. 선이 왼쪽에서 오른쪽으로 길게 뻗으면 수비에서
+  공격으로 한 번에 이어졌다는 뜻이고, 오른쪽 칸 안에서만 짧게 오가면
+  공격진끼리 주고받아 골을 만들었다는 뜻이다.<br><br>
 위쪽 <b>시즌</b>을 바꾸면 그 해의 조합만, <b>최소 연결 횟수</b>를 올리면 굵은
 관계만 남는다. 특정 시즌을 골라 숫자를 1로 낮추면 그 해 골이 어떤 경로로
 나왔는지 전부 볼 수 있다.
@@ -94,52 +98,129 @@ st.markdown("""
 if strong.empty:
     st.info("최소 연결 횟수를 낮춰 보세요.")
 else:
-    # 등장 인물을 원형으로 배치한다. 관여가 많은 선수를 위쪽부터 시계방향으로.
     involved = pd.concat([strong["도움"], strong["득점"]]).value_counts()
     people = involved.index.tolist()
-    n = len(people)
-    ang = np.linspace(np.pi / 2, np.pi / 2 - 2 * np.pi, n, endpoint=False)
-    pos = {p: (np.cos(a), np.sin(a)) for p, a in zip(people, ang)}
+    photos = portrait_map(people)
+    positions = position_map(people)
 
-    total = view.groupby("도움").size().reindex(people).fillna(0) \
-        + view.groupby("득점").size().reindex(people).fillna(0)
+    # 포지션 띠로 세로 배치. 왼쪽이 골문, 오른쪽이 골대 — 실제 라인업과 같은 방향.
+    BANDS = [("GK", "골키퍼", 0.5), ("DF", "수비수", 2.2),
+             ("MF", "미드필더", 4.4), ("FW", "공격수", 6.6)]
+    BAND_COLOR = {"GK": "#4fb0a5", "DF": BLAU, "MF": GOLD, "FW": GRANA}
+    BAND_W = 1.55
+
+    grouped = {code: [] for code, *_ in BANDS}
+    for name in people:
+        grouped.get(positions.get(name) or "MF", grouped["MF"]).append(name)
+    # 관여가 많은 선수를 가운데로 모아 선이 덜 엉키게 한다
+    for code in grouped:
+        ranked = sorted(grouped[code], key=lambda n: -involved.get(n, 0))
+        mid, out = [], []
+        for i, n in enumerate(ranked):
+            (mid if i % 2 == 0 else out).append(n)
+        grouped[code] = out[::-1] + mid
+
+    tallest = max((len(v) for v in grouped.values()), default=1)
+    # 한 칸에 선수가 많을수록 세로를 늘려 사진과 이름이 겹치지 않게 한다.
+    SPAN = max(tallest, 6)
+    ROW_PX = 78                      # 노드 하나에 줄 세로 픽셀
+    HEIGHT = int(140 + SPAN * ROW_PX)
+    pos = {}
+    for code, _, cx in BANDS:
+        col = grouped[code]
+        if not col:
+            continue
+        ys = np.linspace(SPAN - 0.5, 0.5, len(col)) if len(col) > 1 else [SPAN / 2]
+        for name, y in zip(col, ys):
+            pos[name] = (cx, y)
+
+    total = (view.groupby("도움").size().reindex(people).fillna(0)
+             + view.groupby("득점").size().reindex(people).fillna(0))
 
     fig = go.Figure()
-    # 선 — 굵기는 연결 횟수. 개수가 많아 트레이스를 굵기별로 묶는다.
+
+    # 포지션 띠 배경
+    shapes, band_labels = [], []
+    for code, label, cx in BANDS:
+        if not grouped[code]:
+            continue
+        shapes.append(dict(type="rect", x0=cx - BAND_W / 2, x1=cx + BAND_W / 2,
+                           y0=-0.35, y1=SPAN + 0.35, layer="below",
+                           fillcolor=BAND_COLOR[code], opacity=.07,
+                           line=dict(color=BAND_COLOR[code], width=1)))
+        band_labels.append((cx, SPAN + 0.72, f"{label} ({len(grouped[code])})",
+                            BAND_COLOR[code]))
+
+    # 연결선 — 굵기는 골 수
     for _, r in strong.iterrows():
+        if r["도움"] not in pos or r["득점"] not in pos:
+            continue
         x0, y0 = pos[r["도움"]]
         x1, y1 = pos[r["득점"]]
         fig.add_trace(go.Scatter(
             x=[x0, x1], y=[y0, y1], mode="lines",
-            line=dict(color=GRANA, width=min(1 + r["골"] * 0.6, 9)),
-            opacity=min(.25 + r["골"] * 0.05, .85),
+            line=dict(color=GRANA, width=min(1 + r["골"] * 0.7, 10)),
+            opacity=min(.22 + r["골"] * 0.05, .8),
             hovertemplate=f"<b>{r['도움']} → {r['득점']}</b><br>"
                           f"{int(r['골'])}골<extra></extra>",
             showlegend=False))
 
+    # 선수 사진 — 관여가 많을수록 크게
+    imgs = []
+    for name in people:
+        if name not in pos:
+            continue
+        x, y = pos[name]
+        size = float(np.clip(total.get(name, 0) * 0.009 + 0.34, 0.34, 0.66))
+        uri = photos.get(name)
+        if uri:
+            imgs.append(dict(source=uri, x=x, y=y, sizex=size, sizey=size,
+                             xref="x", yref="y", xanchor="center", yanchor="middle",
+                             sizing="contain", layer="above"))
+
+    # 사진이 없는 선수는 원으로, 이름은 모두 아래에
+    no_photo = [n for n in people if n in pos and not photos.get(n)]
+    if no_photo:
+        fig.add_trace(go.Scatter(
+            x=[pos[n][0] for n in no_photo], y=[pos[n][1] for n in no_photo],
+            mode="markers", marker=dict(size=26, color="#0d2038",
+                                        line=dict(width=1.5, color=GOLD)),
+            hoverinfo="skip", showlegend=False))
+
     fig.add_trace(go.Scatter(
-        x=[pos[p][0] for p in people], y=[pos[p][1] for p in people],
-        mode="markers+text", text=people, textposition="middle center",
-        textfont=dict(size=9, color="#04101f"),
-        marker=dict(size=np.clip(total.to_numpy() * 1.6 + 22, 22, 62),
-                    color=GOLD, line=dict(width=1.5, color="#0b1b2f")),
-        customdata=total.to_numpy(),
-        hovertemplate="<b>%{text}</b><br>도움+득점 %{customdata:.0f}회<extra></extra>",
+        x=[pos[n][0] for n in people if n in pos],
+        y=[pos[n][1] - 0.40 for n in people if n in pos],
+        mode="text",
+        text=[n.split()[-1] if len(n) > 12 else n for n in people if n in pos],
+        textposition="middle center",
+        textfont=dict(size=10, color="#dbe6f5"),
+        customdata=[[n, total.get(n, 0), positions.get(n) or "?"]
+                    for n in people if n in pos],
+        hovertemplate="<b>%{customdata[0]}</b> · %{customdata[2]}<br>"
+                      "도움+득점 %{customdata[1]:.0f}회<extra></extra>",
         showlegend=False))
 
+    for cx, cy, label, color in band_labels:
+        fig.add_annotation(x=cx, y=cy, text=f"<b>{label}</b>", showarrow=False,
+                           font=dict(size=12, color=color))
+
     fig.update_layout(
-        height=620, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(range=[-1.35, 1.35], visible=False, constrain="domain"),
-        yaxis=dict(range=[-1.35, 1.35], visible=False,
-                   scaleanchor="x", scaleratio=1))
+        height=HEIGHT, shapes=shapes,
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        images=imgs, margin=dict(l=10, r=10, t=40, b=10),
+        xaxis=dict(range=[-0.5, 7.6], visible=False),
+        yaxis=dict(range=[-0.9, SPAN + 1.1], visible=False))
     st.plotly_chart(fig, use_container_width=True)
+
     hub = involved.index[0]
     hub_share = involved.iloc[0] / involved.sum() * 100
-    st.caption(f"선 굵기 = 그 조합으로 나온 골 수 · 원 크기 = 도움+득점 관여 횟수. "
-               f"{min_link}골 이상 이어진 조합 {len(strong)}개만 그렸다. "
-               f"이 범위에서는 **{hub}**에게 선이 가장 많이 몰린다"
-               f"(연결의 {hub_share:.0f}%).")
+    unknown = sum(1 for n in people if not positions.get(n))
+    st.caption(
+        f"왼쪽부터 골키퍼 → 수비수 → 미드필더 → 공격수. 선 굵기 = 그 조합으로 "
+        f"나온 골 수, 사진 크기 = 도움+득점 관여 횟수. "
+        f"{min_link}골 이상 이어진 조합 {len(strong)}개만 그렸다. "
+        f"이 범위에서는 {hub}에게 선이 가장 많이 몰린다(연결의 {hub_share:.0f}%)."
+        + (f" 포지션을 못 찾은 {unknown}명은 미드필더 칸에 뒀다." if unknown else ""))
 
 # ---------------------------------------------------------------- 상위 조합
 c1, c2 = st.columns(2)
