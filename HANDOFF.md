@@ -330,6 +330,17 @@ Streamlit 기본 스타일이 `img` 에 `object-fit: scale-down` 을 걸어 둔�
 | `barca-dashboard` | `views/`, `_lib.py`, `app.py`, 사진 | 렌더 확인 필수 |
 | `barca-qa` | 검수 전담 | 찾아서 보고만, 수정 금지 |
 
+**두 곳에 있다.** 원본은 `barcelona/.claude/agents/`(레포와 함께 다님),
+사본은 `D:\workspace\.claudegents\`(에이전트가 실제로 등록되는 것이
+확인된 경로). 원본을 고친 뒤 반드시 다시 복사한다.
+
+```bash
+cp barcelona/.claude/agents/barca-*.md .claude/agents/
+```
+
+> 새로 만든 에이전트는 **그 세션에서는 안 잡힌다.** 목록을 시작할 때
+> 한 번만 읽기 때문이다. 새 세션을 열어야 쓸 수 있다.
+
 **셋의 담당 파일은 겹치지 않는다.** 최상위 스크립트 15개를 전부 배정해
 미배정 0건·겹침 0건을 확인했다. `barca-data` 와 `barca-dashboard` 는
 동시에 돌려도 안전하다.
