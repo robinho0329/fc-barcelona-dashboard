@@ -322,6 +322,24 @@ Streamlit 기본 스타일이 `img` 에 `object-fit: scale-down` 을 걸어 둔�
 
 세션 임시 폴더에만 두었다가 매번 다시 쓰던 것을 저장소로 옮겼다.
 
+## 서브에이전트 세 종 (`.claude/agents/`)
+
+| 에이전트 | 담당 | 성격 |
+|---------|------|------|
+| `barca-data` | 수집·파싱·가공·모델 → `data/` | 네트워크·레이트 리밋·긴 실행 |
+| `barca-dashboard` | `views/`, `_lib.py`, `app.py`, 사진 | 렌더 확인 필수 |
+| `barca-qa` | 검수 전담 | 찾아서 보고만, 수정 금지 |
+
+**셋의 담당 파일은 겹치지 않는다.** 최상위 스크립트 15개를 전부 배정해
+미배정 0건·겹침 0건을 확인했다. `barca-data` 와 `barca-dashboard` 는
+동시에 돌려도 안전하다.
+
+경계에서 헷갈리기 쉬운 곳 둘:
+- `assets/portraits/` 는 `crawl_portraits.py` 의 출력이라 **barca-data 몫**이다.
+  `assets/` 의 나머지 사진 폴더는 barca-dashboard 몫이다.
+- `train_model.py` 는 `views/model.py` 가 읽는 **산출물을 만드는 쪽**이라
+  barca-data 몫이다.
+
 ### `.claude/agents/barca-qa.md`
 검수 전담 서브에이전트. 데이터 무결성 → 페이지 렌더 → **화면 문구와 실제
 수치의 일치** 세 층으로 본다. 이 프로젝트에서 실제로 터졌던 함정 일곱 가지를
