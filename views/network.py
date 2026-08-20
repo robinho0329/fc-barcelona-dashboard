@@ -75,6 +75,22 @@ st.markdown(metric_cards([
 
 # ---------------------------------------------------------------- 네트워크
 st.markdown('<div class="section">연계 지도</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="lede">
+동그라미 하나가 선수 하나, 두 선수를 잇는 선은 <b>그 둘 사이에서 나온 골</b>이다.
+한쪽이 건네고 다른 쪽이 넣었다는 뜻이며, 아래 세 가지로 읽으면 된다.<br><br>
+· <b>선이 굵을수록</b> 그 조합으로 골이 많이 나왔다. 오래 함께 뛰며 서로를
+  찾는 습관이 밴 짝일수록 굵어진다.<br>
+· <b>원이 클수록</b> 도움과 득점을 합쳐 골에 많이 관여했다. 크기는 실력이
+  아니라 <b>관여량</b>이라, 오래 뛴 선수가 자연히 커진다.<br>
+· <b>선이 몰리는 자리</b>가 그 시기 공격의 통로다. 한 명에게 선이 집중되면
+  팀이 그 선수에게 의존했다는 신호이고, 여러 명에게 고르게 퍼져 있으면
+  득점 경로가 분산돼 있었다는 뜻이다.<br><br>
+위쪽 <b>시즌</b>을 바꾸면 그 해의 조합만, <b>최소 연결 횟수</b>를 올리면 굵은
+관계만 남는다. 특정 시즌을 골라 숫자를 1로 낮추면 그 해 골이 어떤 경로로
+나왔는지 전부 볼 수 있다.
+</div>
+""", unsafe_allow_html=True)
 if strong.empty:
     st.info("최소 연결 횟수를 낮춰 보세요.")
 else:
@@ -118,8 +134,12 @@ else:
         yaxis=dict(range=[-1.35, 1.35], visible=False,
                    scaleanchor="x", scaleratio=1))
     st.plotly_chart(fig, use_container_width=True)
+    hub = involved.index[0]
+    hub_share = involved.iloc[0] / involved.sum() * 100
     st.caption(f"선 굵기 = 그 조합으로 나온 골 수 · 원 크기 = 도움+득점 관여 횟수. "
-               f"{min_link}골 이상 이어진 조합 {len(strong)}개만 그렸다.")
+               f"{min_link}골 이상 이어진 조합 {len(strong)}개만 그렸다. "
+               f"이 범위에서는 **{hub}**에게 선이 가장 많이 몰린다"
+               f"(연결의 {hub_share:.0f}%).")
 
 # ---------------------------------------------------------------- 상위 조합
 c1, c2 = st.columns(2)
