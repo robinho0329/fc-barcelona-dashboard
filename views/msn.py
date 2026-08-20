@@ -124,15 +124,25 @@ if not mvp.empty:
 </div>
 """, unsafe_allow_html=True)
 
+    # 2기와 같은 방식 — 셋이 함께 있는 사진 한 장을 세로로 잘라 카드에 쓴다.
+    if pathlib.Path("assets/mvp/line.jpg").exists():
+        st.markdown(f'<img class="msn-banner" src="{b64("mvp/line.jpg")}" '
+                    'alt="페드로 · 비야 · 메시">', unsafe_allow_html=True)
+        st.caption("2010/11 시즌. 왼쪽부터 페드로(17) · 다비드 비야(7) · 메시(10).")
+
+    MVP_CROP = {}
+    for _n, _f in [("Lionel Messi", "mvp/messi.jpg"), ("David Villa", "mvp/villa.jpg"),
+                   ("Pedro", "mvp/pedro.jpg")]:
+        if (pathlib.Path("assets") / _f).exists():
+            MVP_CROP[_n] = b64(_f)
     mvp_faces = portrait_map(MVP)
     cards = ""
     for name in MVP:
         part = mvp[mvp["Player"] == name]
         g, a = int(part["골"].sum()), int(part["도움"].sum())
         mp = int(part["경기"].sum())
-        src = mvp_faces.get(name, "")
-        # 1기는 트랜스퍼마르크트 증명사진(얼굴만)이라 2기처럼 잘라내면 확대돼 버린다
-        img = (f'<img class="msn-photo head" src="{src}" alt="{name}">' if src else "")
+        src = MVP_CROP.get(name) or mvp_faces.get(name, "")
+        img = (f'<img class="msn-photo" src="{src}" alt="{name}">' if src else "")
         cards += (
             f'<div class="msn-card" style="border-top:4px solid {MVP_COLOR[name]}">'
             f'{img}<div class="msn-body"><div class="msn-name">{MVP_KOR[name]}</div>'
@@ -142,6 +152,47 @@ if not mvp.empty:
             f'</div></div>')
     st.markdown(f'<div class="msn-grid">{cards}</div>', unsafe_allow_html=True)
 
+    # ---- 연혁
+    st.markdown('<div class="section">1기 연혁</div>', unsafe_allow_html=True)
+    MVP_HISTORY = [
+        ("2010.05", "비야 합류", "발렌시아에서 4천만 유로에 도착. 직전 남아공 "
+                                "월드컵에서 스페인의 결승골을 넣고 온 최전성기였다."),
+        ("2010.08", "페드로의 도약", "라 마시아 출신 윙어가 주전으로 올라서며 "
+                                   "오른쪽을 맡았다. 셋의 배치가 자리를 잡았다."),
+        ("2011.05", "웸블리 결승", "맨유를 3-1로 꺾고 유럽 정상. 페드로가 선제골, "
+                                 "메시가 추가골, 비야가 쐐기골을 넣었다."),
+        ("2011.12", "비야 정강이 골절", "클럽월드컵 알사드전에서 골절. 시즌 아웃되며 "
+                                     "삼각편대가 사실상 해체됐다."),
+        ("2012.05", "과르디올라 이임", "4년 임기를 마치고 떠났다. 비야는 2013년 "
+                                    "아틀레티코로, 페드로는 2015년 첼시로 향했다."),
+    ]
+    cards2 = "".join(
+        f'<div class="timeline-card"><div class="timeline-year">{y}</div>'
+        f'<div class="timeline-title">{ti}</div><div class="timeline-body">{b}</div></div>'
+        for y, ti, b in MVP_HISTORY)
+    st.markdown(f'<div class="timeline-grid">{cards2}</div>', unsafe_allow_html=True)
+
+    # ---- 트로피
+    st.markdown('<div class="section">1기가 든 트로피</div>', unsafe_allow_html=True)
+    st.markdown("""
+<div class="lede">
+셋이 함께 뛴 두 시즌 동안 바르사는 <b>6개 대회에서 우승</b>했다. 2010/11에
+리그와 챔피언스리그를 가져갔고, 2011년에는 UEFA 슈퍼컵과 클럽월드컵까지
+더했다. 다만 2011/12 리그는 레알 마드리드에 9점 차로 내줬다.
+</div>
+""", unsafe_allow_html=True)
+    MVP_TROPHIES = [
+        ("2010/11", "라리가 · 챔피언스리그", "웸블리에서 맨유 3-1. 리그는 승점 96점"),
+        ("2011", "수페르코파 · UEFA 슈퍼컵", "레알에 합계 5-4, 포르투에 2-0"),
+        ("2011/12", "클럽월드컵 · 코파 델 레이", "산투스 4-0, 빌바오 3-0. 리그는 2위"),
+    ]
+    cards3 = "".join(
+        f'<div class="timeline-card tl-win"><div class="timeline-year">{y}</div>'
+        f'<div class="timeline-title">{ti}</div><div class="timeline-body">{b}</div></div>'
+        for y, ti, b in MVP_TROPHIES)
+    st.markdown(f'<div class="timeline-grid">{cards3}</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="section">두 시즌 합계</div>', unsafe_allow_html=True)
     mvp_goals = int(mvp["골"].sum())
     mvp_team_total = int(mvp_team.sum())
     msn_goals = int(trio["골"].sum())
@@ -155,6 +206,48 @@ if not mvp.empty:
          f"셋 중 {int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum()) / max(mvp_goals, 1) * 100:.0f}%"),
         ("합계 도움", f"{int(mvp['도움'].sum())}도움", "전 대회 기준"),
     ]), unsafe_allow_html=True)
+
+    # ---- 시즌별 득점
+    st.markdown('<div class="section">1기 시즌별 득점</div>', unsafe_allow_html=True)
+    mv1, mv2 = st.columns(2)
+    with mv1:
+        fm = go.Figure()
+        for name in MVP:
+            ys = (mvp[mvp["Player"] == name].set_index("season")["골"]
+                  .reindex(MVP_SEASONS).fillna(0))
+            fm.add_trace(go.Bar(x=MVP_SEASONS, y=ys.values, name=MVP_KOR[name],
+                                marker_color=MVP_COLOR[name],
+                                hovertemplate=f"<b>{MVP_KOR[name]}</b><br>"
+                                              "%{x} %{y}골<extra></extra>"))
+        fm.update_layout(height=360, barmode="stack", yaxis_title="골",
+                         legend=dict(orientation="h", y=1.12), **PLOT)
+        fm.update_xaxes(gridcolor=GRID)
+        fm.update_yaxes(gridcolor=GRID)
+        st.plotly_chart(fm, use_container_width=True)
+        st.caption("전 대회 합산. 2011/12에 비야가 빠진 자리가 그대로 보인다")
+
+    with mv2:
+        sh = [mvp[mvp["season"] == s]["골"].sum()
+              / max(mvp_team.get(s, 1), 1) * 100 for s in MVP_SEASONS]
+        fs2 = go.Figure(go.Bar(x=MVP_SEASONS, y=sh, marker_color=GRANA,
+                               text=[f"{v:.0f}%" for v in sh], textposition="outside",
+                               textfont_color="#f2f6fc",
+                               hovertemplate="<b>%{x}</b><br>%{y:.1f}%<extra></extra>"))
+        fs2.update_layout(height=360, yaxis_title="팀 득점 중 셋의 비중(%)", **PLOT)
+        fs2.update_xaxes(gridcolor=GRID)
+        fs2.update_yaxes(gridcolor=GRID, range=[0, 100])
+        st.plotly_chart(fs2, use_container_width=True)
+        st.caption(f"비야가 빠진 2011/12에 {sh[0] - sh[1]:.0f}%p 떨어졌다")
+
+    with st.expander("1기 시즌별 기록 표"):
+        tb = (mvp.assign(선수=mvp["Player"].map(MVP_KOR))
+              [["season", "선수", "경기", "선발", "출전분", "골", "도움"]]
+              .sort_values(["season", "골"], ascending=[True, False]))
+        tb.columns = ["시즌", "선수", "경기", "선발", "출전분", "골", "도움"]
+        st.dataframe(tb, use_container_width=True, hide_index=True)
+
+    st.caption("1기는 셋 사이의 내부 삼각형(누가 누구에게)을 그리지 못한다. "
+               "도움-득점 짝을 주는 Understat이 2014/15부터라 이 시기가 비어 있다.")
 
 
 # ---------------------------------------------------------------- 2기 MSN

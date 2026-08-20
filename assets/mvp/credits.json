@@ -1,0 +1,26 @@
+{
+  "pedro": {
+    "file": "mvp/pedro.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 3인 사진(바르사 MVP 라인.jpg)에서 잘라냄"
+  },
+  "villa": {
+    "file": "mvp/villa.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 3인 사진(바르사 MVP 라인.jpg)에서 잘라냄"
+  },
+  "messi": {
+    "file": "mvp/messi.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 3인 사진(바르사 MVP 라인.jpg)에서 잘라냄"
+  },
+  "line": {
+    "file": "mvp/line.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 3인 사진(바르사 MVP 라인.jpg)에서 잘라냄"
+  }
+}
