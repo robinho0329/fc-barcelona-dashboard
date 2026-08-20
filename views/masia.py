@@ -43,12 +43,24 @@ st.markdown("""
 2011년 기숙사는 산트 조안 데스피의 오리올 토르트 훈련센터로 옮겼지만,
 ‘집에서 선수를 키워 1군의 정체성으로 연결한다’는 역할은 그대로 이어지고 있다.
 """)
-representatives = [
-    ("Carles Puyol", "수비 · 주장", "헌신과 리더십의 기준"),
-    ("Xavi", "미드필더", "점유와 위치 축구의 설계자"),
-    ("Andrés Iniesta", "미드필더", "좁은 공간을 푼 기술과 판단"),
-    ("Lionel Messi", "공격수", "아카데미가 배출한 최고 기록 보유자"),
-    ("Sergio Busquets", "미드필더", "보이지 않는 공간을 지배한 중심축"),
+# 라 마시아는 한 세대로 끝난 이야기가 아니라 지금도 이어진다. 그래서
+# 전성기 세대와 현재 세대를 나눠 보여준다.
+# 사진은 **바르사 유니폼**을 입은 것으로 쓴다. Transfermarkt 초상은 대표팀
+# 유니폼이거나 머리만 나와 클럽 페이지에 맞지 않는다. 지정한 파일이 없으면
+# 그때만 TM 초상으로 내려간다.
+GOLDEN_GEN = [
+    ("Carles Puyol", "수비 · 주장", "헌신과 리더십의 기준", "legends/puyol.jpg"),
+    ("Xavi", "미드필더", "점유와 위치 축구의 설계자", "legends/xavi.jpg"),
+    ("Andrés Iniesta", "미드필더", "좁은 공간을 푼 기술과 판단", "legends/iniesta.jpg"),
+    ("Lionel Messi", "공격수", "아카데미가 배출한 최고 기록 보유자", "legends/messi.jpg"),
+    ("Sergio Busquets", "미드필더", "보이지 않는 공간을 지배한 중심축", "masia/busquets.jpg"),
+]
+CURRENT_GEN = [
+    ("Lamine Yamal", "우측 윙어", "16세에 주전이 된 다음 세대의 얼굴", "masia/yamal.jpg"),
+    ("Pau Cubarsí", "센터백", "17세에 수비 라인을 맡은 계보의 증거", "masia/cubarsi.jpg"),
+    ("Gavi", "미드필더", "차비·이니에스타의 자리를 물려받은 투지", "masia/gavi.jpg"),
+    ("Pedri", "미드필더", "경기 속도를 조절하는 지금의 설계자", "masia/pedri.jpg"),
+    ("Fermín López", "공격형 미드필더", "결정적인 순간에 나타나는 침투", "masia/fermin.jpg"),
 ]
 portrait_index = load_json(PROCESSED / "portraits.json")
 st.image(str(ASSETS / "masia_lineage.jpg"), width="stretch")
@@ -78,21 +90,32 @@ history_cards = "".join(
 st.markdown(f'<div class="timeline-grid">{history_cards}</div>',
             unsafe_allow_html=True)
 
-st.markdown('<div class="section">라 마시아를 대표한 다섯 선수</div>',
-            unsafe_allow_html=True)
-rep_cols = st.columns(5, gap="small")
-for col, (name, role, note) in zip(rep_cols, representatives):
-    with col:
-        entry = portrait_index.get(_name_key(name), {})
-        src = b64(f"portraits/{entry['file']}") if entry.get("file") else ""
-        img = (f'<img src="{src}" alt="{name}">' if src
-               else '<div class="legend-noimg">사진 없음</div>')
-        st.markdown(f"""
-<div class="legend-card">{img}
+def rep_cards(people, accent: str) -> None:
+    """대표 선수 카드 한 줄. 사진은 잘라내지 않고 전체를 보여준다."""
+    cols = st.columns(len(people), gap="small")
+    for col, (name, role, note, photo) in zip(cols, people):
+        with col:
+            src = b64(photo) if photo else ""
+            if not src:  # 지정 사진이 없으면 TM 초상으로
+                entry = portrait_index.get(_name_key(name), {})
+                src = b64(f"portraits/{entry['file']}") if entry.get("file") else ""
+            img = (f'<img class="masia-photo" src="{src}" alt="{name}">' if src
+                   else '<div class="legend-noimg masia-photo">사진 없음</div>')
+            st.markdown(f"""
+<div class="legend-card masia-card" style="border-top:4px solid {accent}">{img}
   <div class="legend-cap"><b>{name}</b><span>{role}<br>{note}</span></div>
 </div>""", unsafe_allow_html=True)
-st.caption("이 계보는 라민 야말·파우 쿠바르시·가비 같은 새 세대로 이어지고 있다. "
-           "아래 수치는 명성이나 수상 경력이 아니라 실제 라리가 출전 시간으로 그 흐름을 본다.")
+
+
+st.markdown('<div class="section">전성기 세대</div>', unsafe_allow_html=True)
+rep_cards(GOLDEN_GEN, GRANA)
+st.caption("2008~2015년 팀의 뼈대를 이룬 아카데미 출신들. "
+           "2010년 발롱도르 최종 3인이 모두 여기서 나왔다.")
+
+st.markdown('<div class="section">지금의 세대</div>', unsafe_allow_html=True)
+rep_cards(CURRENT_GEN, GOLD)
+st.caption("계보는 끊기지 않았다. 아래 수치는 명성이나 수상 경력이 아니라 "
+           "실제 라리가 출전 시간으로 그 흐름을 본다.")
 
 # crawl_masia.py가 수집한 바르사 B 시즌 명단에 등장한 선수를 유스 출신으로 본다.
 # 이름은 악센트와 구두점을 제거한 키로만 정확히 대조한다. 성만 맞추면 Arturo

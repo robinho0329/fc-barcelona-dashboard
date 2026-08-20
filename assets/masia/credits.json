@@ -1,0 +1,20 @@
+{
+  "yamal": {
+    "file": "masia/yamal.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Biso",
+    "source": "https://commons.wikimedia.org/wiki/File:Lamine Yamal in 2025 (cropped2).jpg"
+  },
+  "cubarsi": {
+    "file": "masia/cubarsi.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Biso",
+    "source": "https://commons.wikimedia.org/wiki/File:Pau Cubarsí (cropped).jpg"
+  },
+  "gavi": {
+    "file": "masia/gavi.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "TheSoccerBoy",
+    "source": "https://commons.wikimedia.org/wiki/File:Gavi (footballer).jpg"
+  }
+}

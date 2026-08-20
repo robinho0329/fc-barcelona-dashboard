@@ -254,6 +254,14 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
       border-left:4px solid var(--gold);
       background:linear-gradient(150deg,rgba(13,32,56,.7),rgba(8,20,38,.7));}
 
+/* 라 마시아 대표 선수 — 초상을 잘라내면 이마와 턱이 날아간다.
+   감독 카드와 같은 방식으로 3:4 비율에 contain으로 담는다. */
+.masia-card{overflow:hidden;}
+.masia-photo{width:100%;height:auto !important;aspect-ratio:3/4;
+      object-fit:contain !important;object-position:center !important;
+      background:linear-gradient(150deg,#0d2038,#081426);}
+div.legend-noimg.masia-photo{display:flex;align-items:center;justify-content:center;}
+
 /* MSN 카드 — 세 사람을 나란히 */
 .msn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;}
 .msn-card{border-radius:14px;overflow:hidden;border:1px solid var(--line);

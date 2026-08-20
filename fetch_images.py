@@ -61,6 +61,19 @@ HOME = {
                "Johan Cruijff in actie, Bestanddeelnr 928-0907.jpg"],
 }
 
+# 라 마시아 대표 선수 — 반드시 **바르사 유니폼**을 입은 사진으로. Transfermarkt
+# 초상은 대표팀 유니폼이거나 머리만 나와 클럽 페이지에 맞지 않는다.
+MASIA = {
+    "yamal": ["Lamine Yamal in 2025 (cropped2).jpg",
+              "Lamine Yamal in 2025 (cropped).jpg",
+              "Lamine Yamal in 2025.jpg"],
+    "cubarsi": ["Pau Cubarsí (cropped).jpg", "Pau Cubarsí.jpg"],
+    "gavi": ["Gavi (footballer).jpg"],
+    "pedri": ["Pedri (cropped).jpg", "Pedri.jpg"],
+    "fermin": ["Fermín López (cropped).jpg", "Fermín López.jpg"],
+    "busquets": ["Sergio Busquest 2019 03 17 1.jpg", "S. Busquets (2009-05).jpg"],
+}
+
 CLASICO = {
     "sunyol": ["A Josep Sunyol.JPG",
                "37 Centenari de Josep Sunyol, Rambla 133.jpg",
@@ -198,7 +211,7 @@ def run(group: str, wants: dict, out: Path) -> None:
 
 
 def main() -> None:
-    groups = sys.argv[1:] or ["legends", "clasico", "home", "eras"]
+    groups = sys.argv[1:] or ["legends", "clasico", "home", "eras", "masia"]
     if "legends" in groups:
         run("legends", LEGENDS, ROOT / "assets" / "legends")
     if "clasico" in groups:
@@ -207,6 +220,8 @@ def main() -> None:
         run("home", HOME, ROOT / "assets")
     if "eras" in groups:
         run("eras", ERAS, ROOT / "assets" / "eras")
+    if "masia" in groups:
+        run("masia", MASIA, ROOT / "assets" / "masia")
 
 
 if __name__ == "__main__":

@@ -3,8 +3,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_parquet,
-                  load_seasons, metric_cards, setup)
+from pathlib import Path
+
+from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_dir,
+                  load_parquet, load_sb, load_seasons, load_understat,
+                  metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -232,84 +235,182 @@ f2.update_yaxes(gridcolor=GRID, type="category")
 st.plotly_chart(f2, use_container_width=True)
 
 # ---------------------------------------------------------------- 전술 성향
-# football-data가 2005/06부터 슈팅·코너·파울을 제공한다. 그 이전 감독은
-# 원본에 값이 없어 이 구역이 나오지 않는다.
-STYLE = {"슛": ("HS", "AS"), "유효슛": ("HST", "AST"), "코너": ("HC", "AC"),
-         "파울": ("HF", "AF"), "경고": ("HY", "AY")}
+# 네 소스를 재임 **날짜** 구간으로 잘라 감독별 성향을 만든다. 시즌으로 자르면
+# 세티엔처럼 시즌 중간에 부임한 감독이 앞사람 몫까지 가져간다.
+#   football-data (2005/06~)         슛·코너·파울·경고
+#   StatsBomb    (2003/04~2020/21)   패스량·성공률·짧은 패스 — 티키타카 지수와 같은 정의
+#   FBref 전 대회 (2014/15~)          점유율
+#   Understat    (2014/15~)          슛당 xG, xG 대비 골, 연계 분산도
+SHORT_PASS = 15
+GAME_COLS = {"슛": ("HS", "AS"), "유효슛": ("HST", "AST"), "코너": ("HC", "AC"),
+             "파울": ("HF", "AF"), "경고": ("HY", "AY")}
 
 
 @st.cache_data
-def style_table(stamp: float) -> pd.DataFrame:
-    """감독 재임 구간별 경기당 전술 지표. 20경기 미만은 표본이 얇아 뺀다."""
-    m = load_parquet(PROCESSED / "club_matches.parquet").copy()
-    if m.empty:
-        return pd.DataFrame()
-    m["date"] = pd.to_datetime(m["Date"], format="mixed", dayfirst=True)
-    home = m["HomeTeam"] == "Barcelona"
-    for name, (ours, theirs) in STYLE.items():
-        if {ours, theirs} <= set(m.columns):
-            m[name] = pd.to_numeric(m[ours].where(home, m[theirs]), errors="coerce")
-            m[f"상대{name}"] = pd.to_numeric(m[theirs].where(home, m[ours]), errors="coerce")
-    if "슛" not in m.columns:
+def style_table(stamp: str) -> pd.DataFrame:
+    mgr = load_parquet(PROCESSED / "managers.parquet")
+    if mgr.empty:
         return pd.DataFrame()
 
-    mgr = load_parquet(PROCESSED / "managers.parquet")
+    # 1) 경기 지표
+    m = load_parquet(PROCESSED / "club_matches.parquet").copy()
+    m["date"] = pd.to_datetime(m["Date"], format="mixed", dayfirst=True)
+    home = m["HomeTeam"] == "Barcelona"
+    for name, (a, b) in GAME_COLS.items():
+        if {a, b} <= set(m.columns):
+            m[name] = pd.to_numeric(m[a].where(home, m[b]), errors="coerce")
+            m["상대" + name] = pd.to_numeric(m[b].where(home, m[a]), errors="coerce")
+
+    # 2) 패스 — 경기 날짜를 붙여야 재임 구간으로 자를 수 있다
+    ps = load_sb("passes")
+    sbm = load_sb("matches")
+    if not ps.empty and not sbm.empty:
+        ps = ps.merge(sbm[["match_id", "date"]], on="match_id", how="left")
+        ps["date"] = pd.to_datetime(ps["date"])
+        ps["short"] = ps["length"] < SHORT_PASS
+
+    # 3) 점유율
+    ac = load_dir("fbref_allcomps")
+    if not ac.empty and "Poss" in ac.columns:
+        ac = ac.assign(Poss=pd.to_numeric(ac["Poss"], errors="coerce"),
+                       date=pd.to_datetime(ac["Date"], errors="coerce"))
+        ac = ac.dropna(subset=["Poss", "date"])
+
+    # 4) 슛·연계
+    us = load_understat()
+    us_b = (us.assign(date=pd.to_datetime(us["date"], errors="coerce"))
+            .pipe(lambda d: d[d["is_barca"]]) if not us.empty else pd.DataFrame())
+
     rows = []
     for r in mgr.itertuples():
-        part = m[(m["date"] >= r.start) & (m["date"] <= r.end)].dropna(subset=["슛"])
-        if len(part) < 20:
-            continue
-        rows.append({
-            "감독": r.표시명, "경기": len(part),
-            "경기당 슛": part["슛"].mean(),
-            "유효슛률": part["유효슛"].sum() / max(part["슛"].sum(), 1) * 100,
-            "경기당 코너": part["코너"].mean(),
-            "경기당 파울": part["파울"].mean(),
-            "허용 슛": part["상대슛"].mean(),
-            "경기당 경고": part["경고"].mean(),
-        })
+        lo, hi = r.start, r.end
+        rec = {"감독": r.표시명, "구분": r.role}
+
+        if "슛" in m.columns:
+            part = m[(m["date"] >= lo) & (m["date"] <= hi)].dropna(subset=["슛"])
+            if len(part) >= 20:
+                rec.update({
+                    "경기당 슛": part["슛"].mean(),
+                    "유효슛률": part["유효슛"].sum() / max(part["슛"].sum(), 1) * 100,
+                    "경기당 코너": part["코너"].mean(),
+                    "경기당 파울": part["파울"].mean(),
+                    "허용 슛": part["상대슛"].mean(),
+                    "경기당 경고": part["경고"].mean(),
+                })
+
+        if not ps.empty:
+            pp = ps[(ps["date"] >= lo) & (ps["date"] <= hi)]
+            n_games = pp["match_id"].nunique()
+            if n_games >= 10:
+                rec.update({
+                    "경기당 패스": len(pp) / n_games,
+                    "패스 성공률": pp["complete"].mean() * 100,
+                    "짧은 패스 비율": pp["short"].mean() * 100,
+                })
+
+        if not ac.empty:
+            aa = ac[(ac["date"] >= lo) & (ac["date"] <= hi)]
+            if len(aa) >= 15:
+                rec["점유율"] = aa["Poss"].mean()
+
+        if not us_b.empty:
+            uu = us_b[(us_b["date"] >= lo) & (us_b["date"] <= hi)]
+            if len(uu) >= 100:
+                goals = uu[uu["goal"]]
+                rec["슛당 xG"] = uu["xg"].mean()
+                rec["xG 대비 골"] = len(goals) - uu["xg"].sum()
+                asst = goals[goals["player_assisted"].notna()]
+                if len(asst) >= 20:
+                    people = pd.concat([asst["player_assisted"],
+                                        asst["player_name"]]).value_counts()
+                    share = people / people.sum()
+                    rec["연계 분산도"] = (1 - (share ** 2).sum()) * 100
+        rows.append(rec)
+
     return pd.DataFrame(rows)
 
 
-_cm = PROCESSED / "club_matches.parquet"
-style = style_table(_cm.stat().st_mtime if _cm.exists() else 0.0)
+def _stamp(*paths) -> str:
+    """파일이 바뀌면 캐시를 다시 계산하도록 수정 시각을 모은다."""
+    out = []
+    for raw in paths:
+        p = Path(raw)
+        if p.is_dir():
+            out += [f"{f.name}:{f.stat().st_mtime}" for f in sorted(p.glob("*.parquet"))]
+        elif p.exists():
+            out.append(f"{p.name}:{p.stat().st_mtime}")
+    return "|".join(out)
+
+
+style = style_table(_stamp(
+    PROCESSED / "managers.parquet", PROCESSED / "club_matches.parquet",
+    PROCESSED.parent / "statsbomb" / "passes.parquet",
+    PROCESSED.parent / "understat" / "shots.parquet",
+    PROCESSED.parent / "fbref_allcomps"))
 
 if not style.empty:
     st.markdown('<div class="section">전술 성향</div>', unsafe_allow_html=True)
     st.markdown("""
 <div class="lede">
-경기당 슛을 얼마나 만들고, 상대에게 얼마나 내주며, 얼마나 거칠게 싸웠는지.
-원본이 슈팅·코너·파울을 <b>2005/06 시즌부터</b> 제공해 그 이전 감독은 빠진다.
-20경기 미만을 지휘한 임시 감독도 표본이 얇아 제외했다.
+전술 페이지들이 쓰는 지표를 감독 단위로 다시 잘랐다. 재임 <b>날짜</b> 구간으로
+자르는데, 시즌 단위로 자르면 시즌 중간에 부임한 감독이 앞사람 몫까지 가져간다.<br><br>
+소스마다 덮는 기간이 달라 <b>모든 감독에게 모든 지표가 있지는 않다</b>.
+경기 지표는 2005/06부터, 패스는 2003/04~2020/21, 점유율·슛질·연계는 2014/15부터다.
+값이 없는 감독은 그 지표에서 빠지고, 표본이 얇은 구간도 제외했다.
 </div>
 """, unsafe_allow_html=True)
 
-    METRICS = ["경기당 슛", "유효슛률", "경기당 코너", "경기당 파울",
-               "허용 슛", "경기당 경고"]
-    metric = st.selectbox("지표", METRICS, key="style_metric")
-    # 허용 슛과 파울·경고는 낮을수록 좋은 지표라 색을 뒤집는다
-    lower_better = metric in {"허용 슛", "경기당 파울", "경기당 경고"}
-    srt = style.sort_values(metric, ascending=lower_better)
-    hi = GRANA if not lower_better else BLAU
-    colors = [GOLD if n == r["표시명"] else hi for n in srt["감독"]]
+    GROUPS = {
+        "경기 지표 (2005/06~)": ["경기당 슛", "유효슛률", "경기당 코너",
+                              "경기당 파울", "허용 슛", "경기당 경고"],
+        "패스 (2003/04~2020/21)": ["경기당 패스", "패스 성공률", "짧은 패스 비율"],
+        "점유 · 마무리 (2014/15~)": ["점유율", "슛당 xG", "xG 대비 골", "연계 분산도"],
+    }
+    HINT = {
+        "허용 슛": "낮을수록 상대에게 기회를 덜 줬다",
+        "경기당 파울": "낮을수록 덜 거칠게 싸웠다",
+        "경기당 경고": "낮을수록 덜 거칠게 싸웠다",
+        "짧은 패스 비율": "15야드 미만 패스의 비중 — 티키타카 지수와 같은 정의",
+        "경기당 패스": "티키타카 지수의 첫 번째 축",
+        "슛당 xG": "높을수록 좋은 자리에서 쐈다",
+        "xG 대비 골": "양수면 기대치보다 많이 넣었다",
+        "연계 분산도": "높을수록 골이 여러 선수에게 퍼졌다 — 연계 네트워크와 같은 정의",
+        "점유율": "전 대회 평균",
+    }
+    LOWER_BETTER = {"허용 슛", "경기당 파울", "경기당 경고"}
 
-    fs = go.Figure(go.Bar(
-        y=srt["감독"], x=srt[metric], orientation="h", marker_color=colors,
-        text=srt[metric].round(2), textposition="outside", textfont_color="#f2f6fc",
-        customdata=srt[["경기"]].values,
-        hovertemplate="<b>%{y}</b><br>" + metric + " %{x:.2f}<br>"
-                      "%{customdata[0]}경기<extra></extra>"))
-    fs.update_layout(height=max(320, 34 * len(srt)), xaxis_title=metric, **PLOT)
-    fs.update_xaxes(gridcolor=GRID, range=[0, float(srt[metric].max()) * 1.2])
-    fs.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(fs, use_container_width=True)
-    st.caption("금색 = 지금 고른 감독. "
-               + ("낮을수록 좋은 지표라 오름차순으로 놓았다."
-                  if lower_better else "높을수록 공격적이다."))
+    grp = st.selectbox("지표 묶음", list(GROUPS), key="style_group")
+    avail = [c for c in GROUPS[grp] if c in style.columns and style[c].notna().any()]
+    if not avail:
+        st.info("이 묶음에 쓸 수 있는 데이터가 없습니다.")
+    else:
+        metric = st.selectbox("지표", avail, key="style_metric")
+        lower = metric in LOWER_BETTER
+        srt = style.dropna(subset=[metric]).sort_values(metric, ascending=lower)
+        base = BLAU if lower else GRANA
+        colors = [GOLD if n == r["표시명"] else base for n in srt["감독"]]
 
-    with st.expander("전술 지표 표"):
+        fs = go.Figure(go.Bar(
+            y=srt["감독"], x=srt[metric], orientation="h", marker_color=colors,
+            text=srt[metric].round(2), textposition="outside",
+            textfont_color="#f2f6fc",
+            hovertemplate="<b>%{y}</b><br>" + metric + " %{x:.2f}<extra></extra>"))
+        fs.update_layout(height=max(320, 36 * len(srt)), xaxis_title=metric, **PLOT)
+        lo_x = min(0.0, float(srt[metric].min()) * 1.25)
+        fs.update_xaxes(gridcolor=GRID,
+                        range=[lo_x, float(srt[metric].max()) * 1.22],
+                        zerolinecolor="#2b4a72")
+        fs.update_yaxes(gridcolor=GRID, type="category")
+        st.plotly_chart(fs, use_container_width=True)
+
+        note = HINT.get(metric, "")
+        st.caption(f"금색 = 지금 고른 감독 · 대상 {len(srt)}명"
+                   + (f" · {note}" if note else "")
+                   + (". 낮을수록 좋은 지표라 오름차순으로 놓았다." if lower else ""))
+
+    with st.expander("전술 지표 표 (빈칸 = 그 시기에 원본이 없음)"):
         st.dataframe(style.set_index("감독").round(2),
-                     use_container_width=True, height=380)
+                     use_container_width=True, height=420)
 
 # ---------------------------------------------------------------- 전체 비교
 st.markdown('<div class="section">감독 전체 비교</div>', unsafe_allow_html=True)
