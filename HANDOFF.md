@@ -296,18 +296,30 @@ TM 선수 페이지에서 국적·키·주발·이적료를 받을 수 있다. 3
 
 ## Streamlit Cloud
 
-사용자가 이미 배포했다고 했으나 **URL을 받지 못했고, 확인도 못 했다.**
-아래 두 주소 모두 인증 페이지로 넘어간다(303 → `share.streamlit.io/-/auth/app`).
-앱이 private으로 설정돼 있다는 뜻이다.
+**배포돼 있고 정상 작동한다.**
 
-```
-https://fc-barcelona-dashboard.streamlit.app
-https://robinho0329-fc-barcelona-dashboard-app-master.streamlit.app
-```
+https://fc-barcelona-dashboard-vepaejsjfiwxmqjzmjgven.streamlit.app
 
-배포 자체는 되어 있고 GitHub `master`에 연결돼 있으면 푸시할 때마다 자동으로
-재배포된다. 확인이 필요하면 사용자에게 실제 URL을 묻거나, 앱 설정에서
-Public으로 바꿔 달라고 할 것.
+- 앱 설정은 **public and searchable**이라 로그인 없이 열린다.
+- GitHub `master`에 연결돼 있어 푸시하면 자동 재배포된다.
+- 17개 페이지 전부 HTTP 200 확인.
+
+### URL 확인할 때 주의
+
+Streamlit Cloud는 **존재하지 않는 주소에도 303을 돌려준다**
+(`share.streamlit.io/-/auth/app`으로 리다이렉트). 그래서 curl 응답 코드만으로는
+"주소가 틀렸다"와 "비공개다"를 구분할 수 없다. 반드시 브라우저로 열어
+`errors/not_found`가 뜨는지 확인할 것.
+
+주소는 앱 설정의 **General 탭** 또는 share.streamlit.io 대시보드 앱 카드에서
+볼 수 있다. 저장소 이름만으로 유추되지 않는 무작위 문자열이 붙는다.
+
+### Cloud에서 안 되는 것
+
+크롤링 스크립트는 Cloud에서 돌지 않는다. `undetected-chromedriver`와
+로컬 EPL 프로젝트 경로(`D:\workspace\EPL project`)에 의존하기 때문이다.
+대시보드는 이미 만들어진 parquet만 읽으므로 표시에는 문제가 없지만,
+**데이터 갱신은 로컬에서 하고 커밋해 올려야 한다.**
 
 ## 이미지 저작권
 

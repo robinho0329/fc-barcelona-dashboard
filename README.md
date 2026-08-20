@@ -3,6 +3,8 @@
 라리가 33시즌(1993/94~2025/26)을 중심으로 바르셀로나를 정리한 Streamlit 대시보드.
 공개 데이터 다섯 곳을 직접 수집해 모든 수치를 원본에서 계산한다.
 
+**배포** — https://fc-barcelona-dashboard-vepaejsjfiwxmqjzmjgven.streamlit.app
+
 **이어서 작업한다면 [HANDOFF.md](HANDOFF.md)를 먼저 읽을 것.** 함정과 남은 작업이
 정리돼 있다.
 
