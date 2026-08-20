@@ -8,6 +8,7 @@ football-data.co.uk 원본은 라리가만 담고 있어 챔피언스리그·코
   python crawl_allcomps.py 2015 2025  # 연도 범위
 """
 import logging
+import re
 import sys
 import time
 from io import StringIO
@@ -70,17 +71,16 @@ def parse(soup: BeautifulSoup) -> pd.DataFrame | None:
     return df.reset_index(drop=True)
 
 
-# FBref 대회 id → 표시명. 클럽 페이지는 대회별로 표를 따로 두고,
-# 마지막에 합산표(_combined)를 하나 더 붙인다.
-COMPS = {
-    "combined": "전 대회",
-    "12": "라리가",
-    "8": "챔피언스리그",
-    "569": "코파 델 레이",
-    "646": "수페르코파",
-    "14": "UEFA컵/유로파",
-    "19": "UEFA 슈퍼컵",
+# FBref 대회 id → 표시명. 목록을 하드코딩하면 그해만 나오는 대회를 놓친다.
+# 실제로 2015/16의 UEFA 슈퍼컵(id 122)이 빠져 '전 대회'가 대회 합보다 커졌다.
+# 그래서 페이지에 있는 표를 전부 훑고, 이름은 아래 표로 옮기되 모르는 id는
+# 그대로 남긴다.
+COMP_NAMES = {
+    "combined": "전 대회", "12": "라리가", "8": "챔피언스리그",
+    "569": "코파 델 레이", "646": "수페르코파", "14": "UEFA컵/유로파",
+    "19": "UEFA 슈퍼컵", "122": "UEFA 슈퍼컵", "1": "클럽월드컵",
 }
+COMP_ID_RE = re.compile(r"^stats_standard_(.+)$")
 
 
 def parse_players(soup: BeautifulSoup) -> pd.DataFrame | None:
@@ -89,17 +89,39 @@ def parse_players(soup: BeautifulSoup) -> pd.DataFrame | None:
     라리가만 담은 players.parquet과 달리 챔피언스리그·코파 델 레이까지 담는다.
     '대회' 열로 걸러 쓰면 되고, '전 대회'는 합산 행이라 다른 행과 더하면 중복이다.
     """
+    # 주석 안에 숨은 표까지 포함해 stats_standard_* 를 모두 찾는다
+    seen, tables = set(), []
+    pools = [soup]
+    for c in soup.find_all(string=lambda x: isinstance(x, Comment)):
+        if "stats_standard" in c:
+            pools.append(BeautifulSoup(c, "html.parser"))
+    for pool in pools:
+        for t in pool.find_all("table"):
+            tid = t.get("id", "")
+            m = COMP_ID_RE.match(tid)
+            if not m or tid in seen:
+                continue
+            seen.add(tid)
+            tables.append((m.group(1), t))
+
     frames = []
-    for key, label in COMPS.items():
-        t = find_table(soup, f"stats_standard_{key}")
-        if t is None:
-            continue
+    for key, t in tables:
         one = _shape_players(read_table(t))
         if one is None:
             continue
-        one["대회"] = label
+        one["대회"] = COMP_NAMES.get(key, f"기타({key})")
         frames.append(one)
-    return pd.concat(frames, ignore_index=True) if frames else None
+    if not frames:
+        return None
+    out = pd.concat(frames, ignore_index=True)
+    # 같은 표시명이 여러 id로 잡히면(예: 슈퍼컵) 합쳐 준다
+    keyed = ["Player", "season"] if "season" in out.columns else ["Player"]
+    dup = out[out.duplicated(keyed + ["대회"], keep=False)]
+    if len(dup):
+        num = [c for c in out.columns if c not in ("Player", "Nation", "Pos", "대회")]
+        out = (out.groupby(keyed + ["대회", "Nation", "Pos"], dropna=False)[num]
+               .sum(min_count=1).reset_index())
+    return out
 
 
 # FBref 표 맨 아래에 붙는 팀 합계 행. 선수로 섞이면 '최다 득점 578골 Squad Total'
@@ -112,6 +134,11 @@ def _shape_players(df: pd.DataFrame) -> pd.DataFrame | None:
     df = df[~df["Player"].isin(TOTAL_ROWS)]
     if df.empty:
         return None
+
+    # FBref는 시즌에 따라 출전 경기 열을 'MP'로도, 'Playing Time_MP'로도 준다.
+    # 한쪽만 잡으면 그 시즌 경기 수가 통째로 비어 '선발 > 경기' 같은 값이 나온다.
+    if "MP" not in df.columns and "Playing Time_MP" in df.columns:
+        df = df.rename(columns={"Playing Time_MP": "MP"})
 
     keep = {
         "Player": "Player", "Nation": "Nation", "Pos": "Pos", "Age": "Age",

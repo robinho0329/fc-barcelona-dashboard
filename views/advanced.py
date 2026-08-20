@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
-                  metric_cards, setup)
+                  metric_cards, portrait_map, position_map, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -133,20 +133,104 @@ st.markdown('<div class="section">지표 사이 관계</div>', unsafe_allow_html
 c1, c2 = st.columns(2)
 xm = c1.selectbox("가로축", list(METRICS) + ["패스 성공률"], index=0)
 ym = c2.selectbox("세로축", list(METRICS) + ["패스 성공률"], index=3)
-f3 = go.Figure(go.Scatter(
-    x=table[xm], y=table[ym], mode="markers+text",
-    text=[n.split()[-1] if len(table) <= 25 else "" for n in table.index],
-    textposition="top center", textfont=dict(size=9, color="#94a8c4"),
-    marker=dict(size=np.clip(table["분"] / 260, 7, 24), color=GRANA, opacity=.72,
-                line=dict(width=.8, color="#0b1b2f")),
-    customdata=np.stack([table.index, table["경기"], table["분"]], axis=-1),
-    hovertemplate="<b>%{customdata[0]}</b><br>" + xm + " %{x}<br>" + ym + " %{y}<br>"
-                  "%{customdata[1]}경기 · %{customdata[2]:,.0f}분<extra></extra>"))
-f3.update_layout(height=460, xaxis_title=f"90분당 {xm}", yaxis_title=f"90분당 {ym}", **PLOT)
-f3.update_xaxes(gridcolor=GRID)
-f3.update_yaxes(gridcolor=GRID)
+# 한 색으로 그리면 어느 점이 어떤 유형인지 알 수 없다. 세 가지를 겹쳐 쓴다.
+#   색   = 포지션
+#   위치 = 각 축 평균으로 나눈 사분면 (모서리에 유형 이름을 단다)
+#   사진 = 점이 적을 때만. 많으면 겹쳐서 오히려 못 읽는다
+POS_COLOR = {"골키퍼": "#4fb0a5", "수비수": BLAU, "미드필더": GOLD,
+             "공격수": GRANA, "미상": "#6b7d99"}
+POS_KO = {"GK": "골키퍼", "DF": "수비수", "MF": "미드필더", "FW": "공격수"}
+POS_ORDER = ["골키퍼", "수비수", "미드필더", "공격수", "미상"]
+PHOTO_LIMIT = 24          # 이보다 많으면 사진 대신 점으로 그린다
+
+pos_raw = position_map(table.index)
+table_pos = pd.Series({n: POS_KO.get(pos_raw.get(n, ""), "미상")
+                       for n in table.index})
+
+use_photo = st.checkbox(
+    f"선수 사진으로 보기 (대상 {len(table)}명 · {PHOTO_LIMIT}명 이하일 때만)",
+    value=len(table) <= PHOTO_LIMIT, disabled=len(table) > PHOTO_LIMIT,
+    help="사진은 점보다 크기 때문에 인원이 많으면 서로 가려 읽기 어려워진다. "
+         "위의 최소 출전 시간을 올려 인원을 줄이면 켤 수 있다.")
+photos = portrait_map(table.index) if use_photo else {}
+
+x_mid, y_mid = table[xm].mean(), table[ym].mean()
+f3 = go.Figure()
+for pos_name in POS_ORDER:
+    idx = table_pos[table_pos == pos_name].index
+    if len(idx) == 0:
+        continue
+    part = table.loc[idx]
+    # 이름은 눈에 띄는 점에만. 다 달면 겹쳐서 못 읽는다.
+    n_lbl = min(3, len(part))
+    top = (set(part.nlargest(n_lbl, xm).index)
+           | set(part.nlargest(n_lbl, ym).index))
+    show_text = not use_photo
+    f3.add_trace(go.Scatter(
+        x=part[xm], y=part[ym],
+        mode="markers+text" if show_text else "markers",
+        name=pos_name,
+        text=[n.split()[-1] if n in top else "" for n in part.index] if show_text else None,
+        textposition="top center", textfont=dict(size=9, color="#c3d2e6"),
+        marker=dict(size=np.clip(part["분"] / 260, 8, 26),
+                    color=POS_COLOR[pos_name],
+                    opacity=.25 if use_photo else .78,
+                    line=dict(width=.9, color="#0b1b2f")),
+        customdata=np.stack([part.index, part["경기"], part["분"]], axis=-1),
+        hovertemplate="<b>%{customdata[0]}</b> · " + pos_name + "<br>"
+                      + xm + " %{x}<br>" + ym + " %{y}<br>"
+                      "%{customdata[1]}경기 · %{customdata[2]:,.0f}분<extra></extra>"))
+
+# 사진 모드 — 마커 위에 얼굴을 얹고 이름을 아래에 단다
+imgs = []
+if use_photo:
+    x_span = max(table[xm].max() - table[xm].min(), 1e-6)
+    y_span = max(table[ym].max() - table[ym].min(), 1e-6)
+    for name in table.index:
+        uri = photos.get(name)
+        if not uri:
+            continue
+        imgs.append(dict(source=uri, x=table.loc[name, xm], y=table.loc[name, ym],
+                         sizex=x_span * 0.075, sizey=y_span * 0.075,
+                         xref="x", yref="y", xanchor="center", yanchor="middle",
+                         sizing="contain", layer="above"))
+    f3.add_trace(go.Scatter(
+        x=table[xm], y=table[ym] - y_span * 0.055, mode="text",
+        text=[n.split()[-1] for n in table.index],
+        textposition="middle center", textfont=dict(size=9, color="#dbe6f5"),
+        hoverinfo="skip", showlegend=False))
+
+# 사분면 — 각 축 평균으로 나누고 모서리에 유형 이름을 단다
+f3.add_vline(x=x_mid, line_dash="dot", line_color="#3d5a80")
+f3.add_hline(y=y_mid, line_dash="dot", line_color="#3d5a80")
+x_lo, x_hi = table[xm].min(), table[xm].max()
+y_lo, y_hi = table[ym].min(), table[ym].max()
+pad_x, pad_y = (x_hi - x_lo) * 0.06 or 1, (y_hi - y_lo) * 0.08 or 1
+for qx, qy, ax, ay, label in [
+    (x_hi, y_hi, "right", "top", f"{xm}↑ {ym}↑"),
+    (x_lo, y_hi, "left", "top", f"{xm}↓ {ym}↑"),
+    (x_lo, y_lo, "left", "bottom", f"{xm}↓ {ym}↓"),
+    (x_hi, y_lo, "right", "bottom", f"{xm}↑ {ym}↓"),
+]:
+    f3.add_annotation(x=qx, y=qy, text=label, showarrow=False,
+                      xanchor=ax, yanchor=ay,
+                      font=dict(size=10, color="#6f849f"))
+
+f3.update_layout(height=560 if use_photo else 500,
+                 xaxis_title=f"90분당 {xm}", yaxis_title=f"90분당 {ym}",
+                 images=imgs, legend=dict(orientation="h", y=1.1), **PLOT)
+f3.update_xaxes(gridcolor=GRID, range=[x_lo - pad_x, x_hi + pad_x])
+f3.update_yaxes(gridcolor=GRID, range=[y_lo - pad_y * 1.4, y_hi + pad_y])
 st.plotly_chart(f3, use_container_width=True)
-st.caption("점 크기 = 출전 시간")
+
+n_unknown = int((table_pos == "미상").sum())
+n_photo = sum(1 for n in table.index if photos.get(n)) if use_photo else 0
+st.caption(
+    "색 = 포지션 · 점 크기 = 출전 시간 · 점선 = 각 축의 평균. "
+    "네 모서리 글씨가 그 사분면의 성격이다 — 오른쪽 위로 갈수록 두 지표가 모두 높다."
+    + (f" 사진 {n_photo}/{len(table)}명 (없는 선수는 점으로)." if use_photo
+       else " 이름은 각 포지션에서 두 축 상위 3명에게만 달았다.")
+    + (f" 포지션을 못 찾은 {n_unknown}명은 '미상'으로 묶었다." if n_unknown else ""))
 
 with st.expander("전체 수치 표"):
     st.dataframe(table.round(2), use_container_width=True, height=430)

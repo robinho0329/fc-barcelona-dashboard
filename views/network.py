@@ -104,12 +104,12 @@ else:
     positions = position_map(people)
 
     # 포지션 띠로 세로 배치. 왼쪽이 골문, 오른쪽이 골대 — 실제 라인업과 같은 방향.
-    BANDS = [("GK", "골키퍼", 0.5), ("DF", "수비수", 2.2),
-             ("MF", "미드필더", 4.4), ("FW", "공격수", 6.6)]
+    ORDER_BANDS = [("GK", "골키퍼"), ("DF", "수비수"),
+                   ("MF", "미드필더"), ("FW", "공격수")]
     BAND_COLOR = {"GK": "#4fb0a5", "DF": BLAU, "MF": GOLD, "FW": GRANA}
     BAND_W = 1.55
 
-    grouped = {code: [] for code, *_ in BANDS}
+    grouped = {code: [] for code, _ in ORDER_BANDS}
     for name in people:
         grouped.get(positions.get(name) or "MF", grouped["MF"]).append(name)
     # 관여가 많은 선수를 가운데로 모아 선이 덜 엉키게 한다
@@ -119,6 +119,13 @@ else:
         for i, n in enumerate(ranked):
             (mid if i % 2 == 0 else out).append(n)
         grouped[code] = out[::-1] + mid
+
+    # 사람이 없는 칸(대개 골키퍼)은 빼고 남은 칸만 고르게 벌린다. 빈 칸을
+    # 그대로 두면 한쪽에 빈 공간이 생겨 그림이 치우쳐 보인다.
+    used = [(c, lbl) for c, lbl in ORDER_BANDS if grouped[c]]
+    step = 2.2
+    BANDS = [(c, lbl, 0.9 + i * step) for i, (c, lbl) in enumerate(used)]
+    X_MAX = 0.9 + (len(used) - 1) * step + 0.9 if used else 2.0
 
     tallest = max((len(v) for v in grouped.values()), default=1)
     # 한 칸에 선수가 많을수록 세로를 늘려 사진과 이름이 겹치지 않게 한다.
@@ -208,7 +215,7 @@ else:
         height=HEIGHT, shapes=shapes,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         images=imgs, margin=dict(l=10, r=10, t=40, b=10),
-        xaxis=dict(range=[-0.5, 7.6], visible=False),
+        xaxis=dict(range=[0.0, X_MAX], visible=False),
         yaxis=dict(range=[-0.9, SPAN + 1.1], visible=False))
     st.plotly_chart(fig, use_container_width=True)
 

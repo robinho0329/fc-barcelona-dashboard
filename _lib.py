@@ -497,15 +497,25 @@ def _position_index(stamp: str) -> dict:
         if parts:
             by_sur.setdefault(parts[-1], set()).add(v)
     surname = {k: next(iter(v)) for k, v in by_sur.items() if len(v) == 1}
-    return {"exact": exact, "surname": surname}
+    return {"exact": exact, "surname": surname,
+            "tokens": {k: frozenset(k.split()) for k in exact}}
 
 
 def position_map(names) -> dict:
-    """주어진 이름들의 주 포지션. 못 찾으면 빈 문자열."""
+    """주어진 이름들의 주 포지션. 못 찾으면 빈 문자열.
+
+    소스마다 이름 길이가 다르다. StatsBomb은 정식 이름을 쓰고
+    (`Lionel Andrés Messi Cuccittini`) FBref는 약칭을 쓴다(`Lionel Messi`).
+    그래서 정확히 같은 키 → 성 → **토큰 포함** 순으로 세 번 찾는다.
+    토큰 포함은 FBref 이름의 모든 조각이 상대 이름 안에 들어 있으면 같은
+    사람으로 보는 방식이고, 후보가 둘 이상이면 애매하므로 버린다.
+    """
     d = PROCESSED.parent / "fbref_allcomps_players"
     files = sorted(d.glob("*.parquet")) if d.exists() else []
     stamp = "|".join(f"{f.name}:{f.stat().st_mtime}" for f in files)
     idx = _position_index(stamp)
+    tokens = idx.get("tokens", {})
+
     out = {}
     for n in names:
         key = _name_key(n)
@@ -514,5 +524,16 @@ def position_map(names) -> dict:
             parts = key.split()
             if parts:
                 p = idx["surname"].get(parts[-1])
+        if not p and key:
+            q = set(key.split())
+            hits = [k for k, tk in tokens.items() if tk and tk <= q]
+            if len(hits) == 1:
+                p = idx["exact"][hits[0]]
+            elif len(hits) > 1:
+                # 조각이 가장 많이 겹치는 하나가 유일할 때만 채택
+                best = max(len(tokens[k]) for k in hits)
+                top = [k for k in hits if len(tokens[k]) == best]
+                if len(top) == 1:
+                    p = idx["exact"][top[0]]
         out[n] = p or ""
     return out

@@ -225,7 +225,7 @@ if not links.empty:
         nx, ny = -(fy1 - fy0), (fx1 - fx0)
         norm = (nx ** 2 + ny ** 2) ** .5 or 1
         sign = 1 if a == lo else -1
-        off = 0.30 * sign
+        off = 0.34 * sign
         cx, cy = mx + nx / norm * off, my + ny / norm * off
         t = np.linspace(0, 1, 40)
         bx = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t ** 2 * x1
@@ -241,9 +241,17 @@ if not links.empty:
                            xref="x", yref="y", axref="x", ayref="y",
                            showarrow=True, arrowhead=3, arrowsize=1.3,
                            arrowwidth=2, arrowcolor=COLOR[a], text="")
-        # 숫자는 곡선 정점에 — 두 방향이 반대로 휘어 서로 떨어진다
-        lx = 0.25 * x0 + 0.5 * cx + 0.25 * x1
-        ly = 0.25 * y0 + 0.5 * cy + 0.25 * y1
+        # 라벨을 곡선 정점(t=0.5)에 두면 여섯 개가 삼각형 가운데로 몰려 겹친다.
+        # 각자 **출발점 쪽**(t=0.28)에 두면 여섯 방향이 서로 다른 자리를 잡는다.
+        t_lab = 0.28
+        lx = ((1 - t_lab) ** 2 * x0 + 2 * (1 - t_lab) * t_lab * cx
+              + t_lab ** 2 * x1)
+        ly = ((1 - t_lab) ** 2 * y0 + 2 * (1 - t_lab) * t_lab * cy
+              + t_lab ** 2 * y1)
+        # 삼각형 바깥으로 조금 더 밀어 선과 겹치지 않게 한다
+        push = 0.30 * sign
+        lx += nx / norm * push
+        ly += ny / norm * push
         fig.add_annotation(x=lx, y=ly, text=f"<b>{KOR[a]} → {KOR[b]}<br>{r.골}골</b>",
                            showarrow=False, font=dict(size=11, color="#f2f6fc"),
                            bgcolor="rgba(4,16,31,.88)",
@@ -262,11 +270,11 @@ if not links.empty:
         hoverinfo="skip"))
 
     fig.update_layout(
-        height=620, images=imgs,
+        height=660, images=imgs,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(range=[-2.0, 2.0], visible=False, constrain="domain"),
-        yaxis=dict(range=[-1.7, 1.8], visible=False, scaleanchor="x", scaleratio=1))
+        xaxis=dict(range=[-2.3, 2.3], visible=False, constrain="domain"),
+        yaxis=dict(range=[-1.9, 2.0], visible=False, scaleanchor="x", scaleratio=1))
     st.plotly_chart(fig, use_container_width=True)
     st.caption(f"라리가 경기만 집계. 셋 사이에서만 {int(links['골'].sum())}골이 나왔다. "
                "선 색과 화살표는 도움을 준 쪽이다. 원본에 도움이 기록되지 않은 골"

@@ -21,6 +21,7 @@ INBOX = ROOT / "assets" / "_inbox"
 ASSETS = ROOT / "assets"
 LEGENDS = ASSETS / "legends"
 CLASICO = ASSETS / "clasico"
+ERAS_DIR = ASSETS / "eras"
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger("inbox")
@@ -39,6 +40,10 @@ TARGETS = {
     "stoichkov": ["legends"],
     "suarez": ["legends"],
     "camp_nou": ["home"],
+    # 역사·시대 분석 카드
+    "era_dreamteam": ["eras"], "era_transition": ["eras"],
+    "era_rijkaard": ["eras"], "era_pep": ["eras"],
+    "era_msn": ["eras"], "era_post": ["eras"], "era_rebuild": ["eras"],
     # 엘클라시코 갤러리
     "figo": ["clasico"],
     "sunyol": ["clasico"],
@@ -48,8 +53,10 @@ TARGETS = {
     "bernabeu": ["clasico"],
 }
 
-STORE = {"legends": LEGENDS, "home": ASSETS, "clasico": CLASICO}
+STORE = {"legends": LEGENDS, "home": ASSETS, "clasico": CLASICO,
+         "eras": ERAS_DIR}
 MAX_W = 900
+MAX_W_WIDE = 1200  # 시대 카드처럼 가로로 쓰는 이미지
 
 
 def save_as(src: Path, dest: Path) -> None:
@@ -83,7 +90,11 @@ def main() -> None:
 
     applied = 0
     for f in files:
-        key = f.stem.lower().split("_")[0].split("-")[0].strip()
+        # 파일명이 그대로 키다. 예전에는 '_' 앞만 잘라 썼는데 era_dreamteam 처럼
+        # 밑줄이 든 키가 'era'로 잘려 버렸다. 이제는 전체 이름으로 먼저 찾고,
+        # 없을 때만 구분자 앞부분으로 한 번 더 본다.
+        stem = f.stem.lower().strip()
+        key = stem if stem in TARGETS else stem.split("_")[0].split("-")[0].strip()
         if key not in TARGETS:
             log.warning("건너뜀 %-22s — 대상 이름이 아닙니다 (%s)",
                         f.name, ", ".join(TARGETS))
