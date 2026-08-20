@@ -409,3 +409,107 @@ st.markdown("""
 2017년 여름 파리로 떠났고, 그 뒤 바르사는 이 조합을 다시 만들지 못했다.
 </div>
 """, unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------- 앞선 삼각편대
+# MSN 이전에도 삼각편대가 있었다. 과르디올라 말기의 메시·비야·페드로다.
+# 같은 기준(FBref 전 대회)으로 재서 두 조합을 나란히 놓는다.
+MVP = ["Lionel Messi", "David Villa", "Pedro"]
+MVP_SEASONS = ["2010/11", "2011/12"]
+MVP_KOR = {"Lionel Messi": "메시", "David Villa": "비야", "Pedro": "페드로"}
+MVP_COLOR = {"Lionel Messi": GRANA, "David Villa": GOLD, "Pedro": BLAU}
+
+
+@st.cache_data
+def mvp_stats(stamp: str) -> pd.DataFrame:
+    ac = load_dir("fbref_allcomps_players")
+    if ac.empty:
+        return pd.DataFrame()
+    return ac[(ac["대회"] == "전 대회") & ac["Player"].isin(MVP)
+              & ac["season"].isin(MVP_SEASONS)].copy()
+
+
+@st.cache_data
+def mvp_team_goals(stamp: str) -> pd.Series:
+    ac = load_dir("fbref_allcomps_players")
+    if ac.empty:
+        return pd.Series(dtype=float)
+    return (ac[(ac["대회"] == "전 대회") & ac["season"].isin(MVP_SEASONS)]
+            .groupby("season")["골"].sum())
+
+
+mvp = mvp_stats(_stamp)
+mvp_team = mvp_team_goals(_stamp)
+
+if not mvp.empty:
+    st.markdown('<div class="section">그 전의 삼각편대 — 메시 · 비야 · 페드로</div>',
+                unsafe_allow_html=True)
+    st.markdown("""
+<div class="lede">
+MSN이 처음은 아니었다. 과르디올라 마지막 두 시즌, 메시 옆에는 <b>다비드 비야</b>와
+<b>페드로</b>가 있었다. 셋 다 발이 빠르고 뒷공간을 노려, 점유율로 상대를 눌러 놓고
+한 번에 찌르는 방식이었다. 아래는 MSN과 <b>같은 기준</b>(FBref 전 대회 합산)으로
+잰 수치다.
+</div>
+""", unsafe_allow_html=True)
+
+    mvp_faces = portrait_map(MVP)
+    cards = ""
+    for name in MVP:
+        part = mvp[mvp["Player"] == name]
+        g, a = int(part["골"].sum()), int(part["도움"].sum())
+        mp = int(part["경기"].sum())
+        src = mvp_faces.get(name, "")
+        img = (f'<img class="msn-photo" src="{src}" alt="{name}">' if src else "")
+        cards += (
+            f'<div class="msn-card" style="border-top:4px solid {MVP_COLOR[name]}">'
+            f'{img}<div class="msn-body"><div class="msn-name">{MVP_KOR[name]}</div>'
+            f'<div class="msn-full">{name}</div>'
+            f'<div class="msn-line"><b>{g}</b>골 · <b>{a}</b>도움</div>'
+            f'<div class="msn-sub">{mp}경기 · 경기당 {g / max(mp, 1):.2f}골</div>'
+            f'</div></div>')
+    st.markdown(f'<div class="msn-grid">{cards}</div>', unsafe_allow_html=True)
+
+    mvp_goals = int(mvp["골"].sum())
+    mvp_team_total = int(mvp_team.sum())
+    msn_goals = int(trio["골"].sum())
+    msn_team_total = int(sum(team.get(s, 0) for s in SEASONS))
+    st.markdown(metric_cards([
+        ("합계 득점", f"{mvp_goals}골",
+         f"{MVP_SEASONS[0]}~{MVP_SEASONS[-1]} · 2시즌"),
+        ("팀 득점 비중", f"{mvp_goals / max(mvp_team_total, 1) * 100:.1f}%",
+         f"팀 {mvp_team_total}골 중"),
+        ("메시 비중", f"{int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum())}골",
+         f"셋 중 {int(mvp[mvp['Player'] == 'Lionel Messi']['골'].sum()) / max(mvp_goals, 1) * 100:.0f}%"),
+        ("합계 도움", f"{int(mvp['도움'].sum())}도움", "전 대회 기준"),
+    ]), unsafe_allow_html=True)
+
+    # 두 조합을 한 눈에 — 시즌 수가 달라 '시즌당'으로 맞춘다
+    comp = pd.DataFrame([
+        {"조합": "MVP (2010~12)", "시즌당 득점": mvp_goals / len(MVP_SEASONS),
+         "팀 득점 비중": mvp_goals / max(mvp_team_total, 1) * 100},
+        {"조합": "MSN (2014~17)", "시즌당 득점": msn_goals / len(SEASONS),
+         "팀 득점 비중": msn_goals / max(msn_team_total, 1) * 100},
+    ])
+    cc1, cc2 = st.columns(2)
+    for col, metric, unit in [(cc1, "시즌당 득점", "골"), (cc2, "팀 득점 비중", "%")]:
+        with col:
+            fc = go.Figure(go.Bar(
+                x=comp["조합"], y=comp[metric], marker_color=[GOLD, GRANA],
+                text=comp[metric].round(1), textposition="outside",
+                textfont_color="#f2f6fc",
+                hovertemplate="<b>%{x}</b><br>" + metric + " %{y:.1f}"
+                              + unit + "<extra></extra>"))
+            fc.update_layout(height=320, yaxis_title=f"{metric} ({unit})", **PLOT)
+            fc.update_xaxes(gridcolor=GRID)
+            fc.update_yaxes(gridcolor=GRID,
+                            range=[0, float(comp[metric].max()) * 1.25])
+            st.plotly_chart(fc, use_container_width=True)
+
+    st.caption(
+        f"MVP는 2시즌 {mvp_goals}골(팀의 "
+        f"{mvp_goals / max(mvp_team_total, 1) * 100:.1f}%), MSN은 3시즌 {msn_goals}골"
+        f"(팀의 {msn_goals / max(msn_team_total, 1) * 100:.1f}%). "
+        "시즌 수가 달라 왼쪽은 시즌당으로 맞춰 비교했다. 비중은 MVP가 더 높은데, "
+        "그만큼 공격을 셋에게 의존했다는 뜻이기도 하다."
+    )
