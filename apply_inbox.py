@@ -23,6 +23,7 @@ LEGENDS = ASSETS / "legends"
 CLASICO = ASSETS / "clasico"
 ERAS_DIR = ASSETS / "eras"
 MVP_DIR = ASSETS / "mvp"
+MSN_DIR = ASSETS / "msn"
 MASIA_DIR = ASSETS / "masia"
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -42,6 +43,8 @@ TARGETS = {
     "stoichkov": ["legends"],
     "suarez": ["legends"],
     "camp_nou": ["home"],
+    # 삼각편대 2기 (MSN) — 선수별 사진
+    "msn_messi": ["msn"], "msn_suarez": ["msn"], "msn_neymar": ["msn"],
     # 삼각편대 1기 (MVP) — 선수별 사진
     "mvp_messi": ["mvp"], "mvp_villa": ["mvp"], "mvp_pedro": ["mvp"],
     # 라 마시아 대표 선수 (바르사 유니폼 사진으로 넣을 것)
@@ -61,14 +64,16 @@ TARGETS = {
 }
 
 STORE = {"legends": LEGENDS, "home": ASSETS, "clasico": CLASICO,
-         "eras": ERAS_DIR, "masia": MASIA_DIR, "mvp": MVP_DIR}
+         "eras": ERAS_DIR, "masia": MASIA_DIR, "mvp": MVP_DIR, "msn": MSN_DIR}
 MAX_W = 900
 MAX_W_WIDE = 1200  # 시대 카드처럼 가로로 쓰는 이미지
 
 
 # 반입 키와 실제 파일명이 다른 경우. mvp_messi 는 legends/messi 와 겹치지
 # 않게 키를 나눴을 뿐, 저장은 mvp/messi.jpg 로 해야 페이지가 읽는다.
-FILENAME = {"mvp_messi": "messi", "mvp_villa": "villa", "mvp_pedro": "pedro"}
+FILENAME = {"mvp_messi": "messi", "mvp_villa": "villa", "mvp_pedro": "pedro",
+            "msn_messi": "messi", "msn_suarez": "suarez",
+            "msn_neymar": "neymar"}
 
 
 def save_as(src: Path, dest: Path) -> None:

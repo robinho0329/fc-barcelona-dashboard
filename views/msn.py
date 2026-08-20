@@ -6,8 +6,88 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_dir, load_seasons,
-                  load_understat, metric_cards, portrait_map, setup)
+from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_dir, load_sb,
+                  load_seasons, load_understat, metric_cards,
+                  portrait_map, setup)
+
+def draw_triangle(links: pd.DataFrame, order: list, kor: dict, color: dict,
+                  photos: dict, note: str) -> None:
+    """세 사람 사이의 도움→득점을 삼각형으로 그린다.
+
+    같은 두 사람 사이에 방향이 둘이라 곡선을 겹치지 않게 해야 한다. 법선을
+    **항상 삼각형 바깥**으로 돌리고 반지름만 다르게 줘 동심 아치로 만든다.
+    한쪽이라도 안으로 휘면 그 라벨들이 무게중심에 겹쳐 쌓인다.
+    """
+    R = 1.62
+    ang = {order[0]: np.pi / 2,
+           order[1]: np.pi / 2 + 2 * np.pi / 3,
+           order[2]: np.pi / 2 - 2 * np.pi / 3}
+    pos = {n: (R * np.cos(a), R * np.sin(a)) for n, a in ang.items()}
+
+    fig = go.Figure()
+    for r in links.itertuples():
+        a, b = r.도움, r.득점
+        if a not in pos or b not in pos:
+            continue
+        x0, y0 = pos[a]
+        x1, y1 = pos[b]
+        mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+        lo, hi = sorted((a, b), key=order.index)
+        fx0, fy0 = pos[lo]
+        fx1, fy1 = pos[hi]
+        nx, ny = -(fy1 - fy0), (fx1 - fx0)
+        norm = (nx ** 2 + ny ** 2) ** .5 or 1
+        nx, ny = nx / norm, ny / norm
+        if nx * mx + ny * my < 0:
+            nx, ny = -nx, -ny
+        off = 0.45 if a == lo else 1.65
+        cx, cy = mx + nx * off, my + ny * off
+        t_ = np.linspace(0, 1, 40)
+        bx = (1 - t_) ** 2 * x0 + 2 * (1 - t_) * t_ * cx + t_ ** 2 * x1
+        by = (1 - t_) ** 2 * y0 + 2 * (1 - t_) * t_ * cy + t_ ** 2 * y1
+        fig.add_trace(go.Scatter(
+            x=bx, y=by, mode="lines",
+            line=dict(color=color[a], width=2.5 + r.골 * 0.6), opacity=.85,
+            hovertemplate=f"<b>{kor[a]} \u2192 {kor[b]}</b><br>{r.골}골<extra></extra>",
+            showlegend=False))
+        fig.add_annotation(x=bx[36], y=by[36], ax=bx[32], ay=by[32],
+                           xref="x", yref="y", axref="x", ayref="y",
+                           showarrow=True, arrowhead=3, arrowsize=1.3,
+                           arrowwidth=2, arrowcolor=color[a], text="")
+        tl = 0.5
+        lx = (1 - tl) ** 2 * x0 + 2 * (1 - tl) * tl * cx + tl ** 2 * x1
+        ly = (1 - tl) ** 2 * y0 + 2 * (1 - tl) * tl * cy + tl ** 2 * y1
+        lx += nx * 0.16
+        ly += ny * 0.16
+        fig.add_annotation(x=lx, y=ly, text=f"<b>{r.골}</b>", showarrow=False,
+                           font=dict(size=20, color="#f2f6fc"),
+                           bgcolor="rgba(4,16,31,.92)",
+                           bordercolor=color[a], borderwidth=2, borderpad=5)
+
+    imgs = [dict(source=photos[n], x=x, y=y, sizex=1.55, sizey=1.55,
+                 xref="x", yref="y", xanchor="center", yanchor="middle",
+                 sizing="contain", layer="above")
+            for n, (x, y) in pos.items() if photos.get(n)]
+    for n in order:
+        fig.add_annotation(x=pos[n][0], y=pos[n][1] - 0.92,
+                           text=f"<b>{kor[n]}</b>", showarrow=False,
+                           font=dict(size=16, color="#f2f6fc"),
+                           bgcolor="rgba(4,16,31,.9)",
+                           bordercolor=color[n], borderwidth=1.5, borderpad=3)
+    fig.update_layout(
+        height=760, images=imgs,
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=10, r=10, t=30, b=10),
+        xaxis=dict(range=[-2.7, 2.7], visible=False, constrain="domain"),
+        yaxis=dict(range=[-3.0, 2.8], visible=False, scaleanchor="x", scaleratio=1))
+    st.plotly_chart(fig, use_container_width=True)
+
+    tbl = (links.assign(도움=links["도움"].map(kor), 득점=links["득점"].map(kor))
+           .sort_values("골", ascending=False)[["도움", "득점", "골"]])
+    st.dataframe(tbl.reset_index(drop=True), use_container_width=True,
+                 hide_index=True)
+    st.caption(note)
+
 
 seasons = load_seasons()
 setup(seasons)
@@ -46,7 +126,10 @@ def trio_links(stamp: float) -> pd.DataFrame:
         return pd.DataFrame()
     g = u[u["is_barca"] & u["goal"] & u["season"].isin(SEASONS)
           & u["player_name"].isin(TRIO) & u["player_assisted"].isin(TRIO)]
-    return g.groupby(["player_assisted", "player_name"]).size().reset_index(name="골")
+    out = (g.groupby(["player_assisted", "player_name"]).size()
+           .reset_index(name="골"))
+    out.columns = ["도움", "득점", "골"]
+    return out
 
 
 _d = pathlib.Path("data/fbref_allcomps_players")
@@ -90,6 +173,32 @@ MVP = ["Lionel Messi", "David Villa", "Pedro"]
 MVP_SEASONS = ["2010/11", "2011/12"]
 MVP_KOR = {"Lionel Messi": "메시", "David Villa": "비야", "Pedro": "페드로"}
 MVP_COLOR = {"Lionel Messi": GRANA, "David Villa": GOLD, "Pedro": BLAU}
+
+
+# StatsBomb 은 선수 이름을 전체 이름으로 준다. FBref 짧은 이름과 잇는다.
+SB_MVP = {"Lionel Andrés Messi Cuccittini": "Lionel Messi",
+          "David Villa Sánchez": "David Villa",
+          "Pedro Eliezer Rodríguez Ledesma": "Pedro"}
+
+
+@st.cache_data
+def mvp_links(stamp: float) -> pd.DataFrame:
+    """1기 셋 사이에서 나온 골.
+
+    Understat 은 2014/15부터라 이 시기가 비어 있다. 대신 StatsBomb 슛의
+    shot.key_pass_id 를 그 슛을 만든 패스 이벤트와 이어 도움 준 선수를 얻는다.
+    """
+    sh = load_sb("shots")
+    if sh.empty or "assisted_by" not in sh.columns:
+        return pd.DataFrame()
+    g = sh[sh["is_barca"] & sh["goal"] & sh["season"].isin(["2010/11", "2011/12"])
+           & sh["player"].isin(SB_MVP) & sh["assisted_by"].isin(SB_MVP)]
+    if g.empty:
+        return pd.DataFrame()
+    out = (g.groupby([g["assisted_by"].map(SB_MVP), g["player"].map(SB_MVP)])
+           .size().reset_index(name="골"))
+    out.columns = ["도움", "득점", "골"]
+    return out
 
 
 @st.cache_data
@@ -248,8 +357,27 @@ if not mvp.empty:
         tb.columns = ["시즌", "선수", "경기", "선발", "출전분", "골", "도움"]
         st.dataframe(tb, use_container_width=True, hide_index=True)
 
-    st.caption("1기는 셋 사이의 내부 삼각형(누가 누구에게)을 그리지 못한다. "
-               "도움-득점 짝을 주는 Understat이 2014/15부터라 이 시기가 비어 있다.")
+    # ---- 셋 사이의 삼각형
+    _sb = pathlib.Path("data/statsbomb/shots.parquet")
+    mvp_tri = mvp_links(_sb.stat().st_mtime if _sb.exists() else 0.0)
+    if not mvp_tri.empty:
+        st.markdown('<div class="section">1기 · 셋 사이의 삼각형</div>',
+                    unsafe_allow_html=True)
+        st.markdown("""
+<div class="lede">
+셋이 서로 건네 넣은 골만 뽑았다. 화살표는 <b>도움 → 득점</b> 방향이고 숫자는
+그렇게 나온 골 수다. 2기와 달리 이 시기는 Understat에 없어, <b>StatsBomb</b>
+원본에서 슛을 만든 패스를 되짚어 도움 준 선수를 찾았다.
+</div>
+""", unsafe_allow_html=True)
+        draw_triangle(
+            mvp_tri, MVP, MVP_KOR, MVP_COLOR, MVP_CROP,
+            f"라리가 경기만 집계. 셋 사이에서만 {int(mvp_tri['골'].sum())}골이 나왔다. "
+            "메시가 두 사람에게 건넨 쪽이 가장 굵다. 도움이 기록되지 않은 골"
+            "(직접 프리킥·개인 돌파 등)은 애초에 빠져 있어 실제 합작은 이보다 많다.")
+    else:
+        st.caption("1기의 내부 삼각형을 만들 데이터가 없다. "
+                   "`python fetch_statsbomb.py` 를 먼저 실행하면 채워진다.")
 
 
 # ---------------------------------------------------------------- 2기 MSN
@@ -268,7 +396,9 @@ for name in TRIO:
     a = int(part["도움"].sum())
     mp = int(part["경기"].sum())
     src = photos.get(name, "")
-    img = (f'<img class="msn-photo" src="{src}" alt="{name}">' if src else "")
+    # 잘라낸 뒷모습이 아니라 개별 사진이라 비율이 제각각이다. 1기와 같이
+    # 채우되 얼굴이 남도록 위쪽을 기준으로 자른다.
+    img = (f'<img class="msn-photo whole" src="{src}" alt="{name}">' if src else "")
     cards += (
         f'<div class="msn-card" style="border-top:4px solid {COLOR[name]}">{img}'
         f'<div class="msn-body"><div class="msn-name">{KOR[name]}</div>'
@@ -384,102 +514,12 @@ if not links.empty:
 이 조합의 특징이었다.
 </div>
 """, unsafe_allow_html=True)
-
-    # 반지름 1로 두면 세로 0.74짜리 사진 세 장이 서로 닿고, 변도 짧아 라벨이
-    # 놓일 자리가 없다. 넉넉히 키운다.
-    R = 1.62
-    ang = {"Lionel Messi": np.pi / 2,
-           "Luis Suárez": np.pi / 2 + 2 * np.pi / 3,
-           "Neymar": np.pi / 2 - 2 * np.pi / 3}
-    pos = {n: (R * np.cos(a), R * np.sin(a)) for n, a in ang.items()}
-
-    fig = go.Figure()
-    for r in links.itertuples():
-        a, b = r.player_assisted, r.player_name
-        if a not in pos or b not in pos:
-            continue
-        x0, y0 = pos[a]
-        x1, y1 = pos[b]
-        # 같은 두 사람 사이에 방향이 둘이라, 곡선을 서로 반대쪽으로 크게 휘어
-        # 겹치지 않게 한다. 휘는 쪽은 도움을 준 사람이 누구냐로 정한다.
-        mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-        # 법선은 **고정된 순서**로 계산해야 한다. a→b와 b→a에서 그대로 구하면
-        # 법선이 뒤집히고 부호까지 뒤집혀 서로 상쇄돼, 두 곡선이 같은 쪽에
-        # 겹쳐 그려진다.
-        lo, hi = sorted((a, b), key=TRIO.index)
-        fx0, fy0 = pos[lo]
-        fx1, fy1 = pos[hi]
-        nx, ny = -(fy1 - fy0), (fx1 - fx0)
-        norm = (nx ** 2 + ny ** 2) ** .5 or 1
-        nx, ny = nx / norm, ny / norm
-        if nx * mx + ny * my < 0:     # 법선은 언제나 삼각형 **바깥**을 향하게
-            nx, ny = -nx, -ny
-        # 한쪽이라도 안으로 휘면 그 라벨들이 무게중심에 겹쳐 쌓인다.
-        # 둘 다 밖으로 보내고 반지름만 다르게 줘 동심 아치로 만든다.
-        off = 0.45 if a == lo else 1.65
-        cx, cy = mx + nx * off, my + ny * off
-        t = np.linspace(0, 1, 40)
-        bx = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t ** 2 * x1
-        by = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t ** 2 * y1
-        fig.add_trace(go.Scatter(
-            x=bx, y=by, mode="lines",
-            line=dict(color=COLOR[a], width=2.5 + r.골 * 0.6), opacity=.85,
-            hovertemplate=f"<b>{KOR[a]} → {KOR[b]}</b><br>{r.골}골<extra></extra>",
-            showlegend=False))
-        # 화살촉 — 받는 쪽 가까이에 방향을 표시
-        hx, hy = bx[32], by[32]
-        fig.add_annotation(x=bx[36], y=by[36], ax=hx, ay=hy,
-                           xref="x", yref="y", axref="x", ayref="y",
-                           showarrow=True, arrowhead=3, arrowsize=1.3,
-                           arrowwidth=2, arrowcolor=COLOR[a], text="")
-        # 라벨은 곡선의 정점(t=0.5)에 둔다. 한 변의 두 곡선이 서로 반대쪽으로
-        # 휘므로 정점 여섯 개는 저절로 여섯 자리에 흩어지고, 노드(사진)에서
-        # 가장 멀어진다. 선 위에 얹히지 않게 바깥으로 조금 더 민다.
-        t_lab = 0.5
-        lx = ((1 - t_lab) ** 2 * x0 + 2 * (1 - t_lab) * t_lab * cx
-              + t_lab ** 2 * x1)
-        ly = ((1 - t_lab) ** 2 * y0 + 2 * (1 - t_lab) * t_lab * cy
-              + t_lab ** 2 * y1)
-        lx += nx * 0.16
-        ly += ny * 0.16
-        fig.add_annotation(x=lx, y=ly, text=f"<b>{r.골}</b>",
-                           showarrow=False, font=dict(size=15, color="#f2f6fc"),
-                           bgcolor="rgba(4,16,31,.92)",
-                           bordercolor=COLOR[a], borderwidth=2, borderpad=5)
-
-    imgs = []
-    for name, (x, y) in pos.items():
-        if photos.get(name):
-            imgs.append(dict(source=photos[name], x=x, y=y, sizex=.80, sizey=1.74,
-                             xref="x", yref="y", xanchor="center",
-                             yanchor="middle", sizing="contain", layer="above"))
-    # 사진 높이의 절반이 0.37이라 -0.36에 두면 이름이 사진 위에 겹친다.
-    for name in TRIO:
-        fig.add_annotation(x=pos[name][0], y=pos[name][1] - 1.02,
-                           text=f"<b>{KOR[name]}</b>", showarrow=False,
-                           font=dict(size=13, color="#f2f6fc"),
-                           bgcolor="rgba(4,16,31,.9)",
-                           bordercolor=COLOR[name], borderwidth=1.5, borderpad=3)
-
-    fig.update_layout(
-        height=760, images=imgs,
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(range=[-2.7, 2.7], visible=False, constrain="domain"),
-        yaxis=dict(range=[-3.0, 2.8], visible=False, scaleanchor="x", scaleratio=1))
-    st.plotly_chart(fig, use_container_width=True)
-
-    # 곡선 위 숫자만으로는 방향을 못 읽는다. 여섯 조합을 표로 같이 준다.
-    tbl = (links.assign(**{"도움": links["player_assisted"].map(KOR),
-                           "득점": links["player_name"].map(KOR)})
-           .sort_values("골", ascending=False)[["도움", "득점", "골"]])
-    st.dataframe(tbl.reset_index(drop=True), use_container_width=True,
-                 hide_index=True)
-
-    st.caption(f"라리가 경기만 집계. 셋 사이에서만 {int(links['골'].sum())}골이 나왔다. "
-               "선 색과 화살표는 도움을 준 쪽이다. 원본에 도움이 기록되지 않은 골"
-               "(직접 프리킥·개인 돌파·세컨드볼 등)은 애초에 빠져 있어, 실제 합작은 "
-               "이보다 많다.")
+    draw_triangle(
+        links, TRIO, KOR, COLOR, photos,
+        f"라리가 경기만 집계. 셋 사이에서만 {int(links['골'].sum())}골이 나왔다. "
+        "선 색과 화살표는 도움을 준 쪽이다. 원본에 도움이 기록되지 않은 골"
+        "(직접 프리킥·개인 돌파·세컨드볼 등)은 애초에 빠져 있어, 실제 합작은 "
+        "이보다 많다.")
 
 # ---------------------------------------------------------------- 공격 루트
 @st.cache_data

@@ -16,5 +16,23 @@
     "license": "사용자 제공",
     "artist": "사용자 제공",
     "source": "era_msn.jpg 에서 잘라냄"
+  },
+  "msn_messi": {
+    "file": "msn/messi.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (msn_messi.jpg)"
+  },
+  "msn_neymar": {
+    "file": "msn/neymar.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (msn_neymar.jpg)"
+  },
+  "msn_suarez": {
+    "file": "msn/suarez.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (msn_suarez.webp)"
   }
 }

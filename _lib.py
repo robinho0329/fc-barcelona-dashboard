@@ -242,7 +242,8 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
       background:linear-gradient(145deg,var(--panel),var(--panel2));display:flex;
       flex-direction:column;}
 /* 시대 사진은 가로 장면이라 중앙 기준으로 담는다 */
-.era-photo{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:center;
+.era-photo{width:100%;aspect-ratio:16/9;object-fit:cover!important;
+      object-position:center!important;
       display:block;background:#081426;}
 .era-body{padding:1rem 1.15rem 1.1rem;flex:1;}
 .era-caption{color:var(--gold);font-size:.68rem;letter-spacing:.08em;margin-top:.65rem;

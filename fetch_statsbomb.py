@@ -110,6 +110,13 @@ def parse_events(match_id: int, meta: dict) -> tuple[list, list, dict]:
     events = get_json(f"events/{match_id}.json", f"events_{match_id}.json")
     shots, passes, players = [], [], {}
 
+    # 슛의 shot.key_pass_id 는 그 슛을 만든 **패스 이벤트의 id**다.
+    # 이걸로 도움을 준 선수를 찾을 수 있다. Understat(2014/15~)과 달리
+    # StatsBomb 은 2004/05까지 있어, 이 연결이 있어야 그 이전 시즌의
+    # 연계도 볼 수 있다.
+    pass_player = {e["id"]: (e.get("player") or {}).get("name")
+                   for e in events if e["type"]["name"] == "Pass"}
+
     for e in events:
         etype = e["type"]["name"]
         team = e.get("team", {}).get("name", "")
@@ -138,6 +145,7 @@ def parse_events(match_id: int, meta: dict) -> tuple[list, list, dict]:
                 "body_part": sh.get("body_part", {}).get("name", ""),
                 "technique": sh.get("technique", {}).get("name", ""),
                 "pattern": e.get("play_pattern", {}).get("name", ""),
+                "assisted_by": pass_player.get(sh.get("key_pass_id")),
             })
             if player:
                 players[player]["shots"] += 1
