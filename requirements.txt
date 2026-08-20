@@ -1,4 +1,8 @@
+# 대시보드 실행에 필요한 것만. 수집 스크립트가 쓰는
+# undetected-chromedriver·selenium·scikit-learn·beautifulsoup4·Pillow는
+# Cloud에서 돌지 않으므로 여기 넣지 않는다(HANDOFF의 Streamlit Cloud 참고).
 streamlit>=1.36
 pandas>=2.0
+numpy>=1.26
 pyarrow>=14
 plotly>=5.20

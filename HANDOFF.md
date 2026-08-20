@@ -11,8 +11,9 @@ StatsBomb·Understat(이벤트), Transfermarkt(사진·감독) 다섯 소스를 
 ## 실행
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py            # 기본 8501, 개발 중에는 8531을 썼다
+pip install -r requirements.txt       # 대시보드 실행용 (Cloud도 이걸 본다)
+pip install -r requirements-dev.txt   # 수집·학습까지 돌릴 때
+streamlit run app.py                  # 기본 8501, 개발 중에는 8531을 썼다
 ```
 
 `.claude/launch.json`(워크스페이스 루트)에 `barcelona` 항목이 있고 포트는 8531이다.

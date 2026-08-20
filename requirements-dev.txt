@@ -1,0 +1,15 @@
+# 수집·학습 스크립트용. 로컬에서만 쓴다.
+#   crawl_fbref.py / crawl_allcomps.py / crawl_portraits.py /
+#   crawl_managers.py / crawl_masia.py / fetch_understat.py
+#     → undetected-chromedriver, selenium, beautifulsoup4, lxml
+#       (+ D:\workspace\EPL project 의 crawlers.base_agent 를 임포트한다)
+#   fetch_statsbomb.py / fetch_images.py → requests, Pillow
+#   train_model.py → scikit-learn
+-r requirements.txt
+undetected-chromedriver>=3.5
+selenium>=4.20
+beautifulsoup4>=4.12
+lxml>=5.0
+requests>=2.31
+Pillow>=10.0
+scikit-learn>=1.4

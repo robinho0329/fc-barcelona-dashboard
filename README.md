@@ -31,10 +31,13 @@
 ## 실행
 
 ```bash
-pip install -r requirements.txt
-python build_data.py        # 원본 CSV → 집계
+pip install -r requirements.txt      # 대시보드 실행용
+python build_data.py                 # 원본 CSV → 집계
 streamlit run app.py
 ```
+
+수집 스크립트까지 돌리려면 `requirements-dev.txt`를 쓴다(크롬 자동화·sklearn 포함).
+Cloud에서는 수집이 돌지 않으므로 배포에는 `requirements.txt`만 필요하다.
 
 수집부터 다시 하려면 HANDOFF.md의 실행 순서를 따를 것.
 
