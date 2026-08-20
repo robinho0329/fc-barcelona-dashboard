@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 # StatsBomb 원본 이벤트 캐시 (1.3GB). 집계 결과만 커밋한다.
 data/.sb_cache/
+
+# 사진 반입용 임시 폴더 (apply_inbox.py 가 비운다)
+assets/_inbox/

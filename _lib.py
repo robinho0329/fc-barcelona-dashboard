@@ -267,8 +267,13 @@ div.legend-noimg.masia-photo{display:flex;align-items:center;justify-content:cen
 .msn-card{border-radius:14px;overflow:hidden;border:1px solid var(--line);
       background:linear-gradient(150deg,var(--panel),var(--panel2));
       display:flex;flex-direction:column;}
-.msn-photo{width:100%;aspect-ratio:3/4;max-height:260px;object-fit:contain;
+.msn-photo{width:100%;height:300px;object-fit:cover!important;
+      object-position:center 28%!important;
       background:linear-gradient(150deg,#0d2038,#081426);}
+.msn-banner{width:100%;height:400px;object-fit:cover!important;
+      object-position:center 30%!important;
+      border-radius:14px;border:1px solid var(--line);
+      display:block;margin:.2rem 0 .4rem;}
 .msn-body{padding:.9rem 1.1rem 1.1rem;}
 .msn-name{color:var(--ink);font-size:1.25rem;font-weight:860;}
 .msn-full{color:var(--muted);font-size:.72rem;letter-spacing:.06em;margin-top:.1rem;}
@@ -311,6 +316,61 @@ div.legend-noimg.masia-photo{display:flex;align-items:center;justify-content:cen
   .hero h1{white-space:normal;}
   .hero-vs{flex-direction:column;align-items:flex-start;gap:.2rem;}
 }
+
+/* ---- 데이터 센터형 홈 카드 -------------------------------------------- */
+.dc-card{border:1px solid var(--line);border-radius:16px;padding:1.05rem 1.15rem;
+      background:linear-gradient(155deg,var(--panel),var(--panel2));height:100%;}
+.dc-head{display:flex;align-items:baseline;justify-content:space-between;
+      gap:.6rem;margin-bottom:.75rem;}
+.dc-title{color:var(--ink);font-size:.98rem;font-weight:800;letter-spacing:.01em;}
+.dc-note{color:var(--muted);font-size:.72rem;}
+/* 히어로 — 큰 배너 카드 */
+.dc-hero{position:relative;border:1px solid var(--line);border-radius:18px;
+      overflow:hidden;background:linear-gradient(120deg,#0b1e38 0%,#12294a 45%,
+      #4a1030 100%);padding:1.5rem 1.7rem 1.6rem;min-height:430px;
+      display:flex;flex-direction:column;justify-content:center;}
+.dc-hero::after{content:"";position:absolute;inset:0;
+      background:radial-gradient(circle at 82% 22%,rgba(255,199,44,.20),transparent 58%);
+      pointer-events:none;}
+.dc-kick{color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.16em;
+      text-transform:uppercase;}
+.dc-hero h2{color:#fff;font-size:2.5rem;font-weight:900;margin:.3rem 0 .1rem;
+      line-height:1.06;letter-spacing:-.02em;}
+.dc-sub{color:#b9cbe4;font-size:.9rem;margin-bottom:1.1rem;}
+.dc-score{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;
+      position:relative;z-index:1;}
+.dc-team{color:#fff;font-size:1.0rem;font-weight:800;}
+.dc-num{color:var(--gold);font-size:2.3rem;font-weight:900;line-height:1;}
+.dc-vs{color:#8fa6c4;font-size:.8rem;font-weight:800;letter-spacing:.1em;}
+/* 오른쪽 요약 */
+.dc-rank{color:var(--gold);font-size:3.5rem;font-weight:900;line-height:.95;}
+.dc-rank small{font-size:1.1rem;color:#b9cbe4;font-weight:700;margin-left:.15rem;}
+.dc-wdl{color:var(--ink);font-size:1.5rem;font-weight:900;}
+.dc-wdl small{font-size:.8rem;color:var(--muted);font-weight:700;margin-left:.1rem;}
+.dc-bar{height:7px;border-radius:99px;background:#132a46;overflow:hidden;
+      margin:.45rem 0 .2rem;}
+.dc-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--grana),
+      var(--gold));}
+.dc-dots{display:flex;gap:.28rem;flex-wrap:wrap;}
+.dc-dot{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:.72rem;font-weight:900;color:#04101f;}
+.dc-w{background:var(--gold);} .dc-d{background:#7d92ad;} .dc-l{background:#8d2440;color:#fff;}
+.dc-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;
+      padding:.42rem 0;border-bottom:1px solid rgba(255,255,255,.055);}
+.dc-row:last-child{border-bottom:none;}
+.dc-rl{color:#c8d7ea;font-size:.82rem;display:flex;align-items:center;gap:.5rem;
+      min-width:0;}
+.dc-rl b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;
+      white-space:nowrap;}
+.dc-rr{color:var(--gold);font-size:.95rem;font-weight:800;white-space:nowrap;}
+.dc-pill{font-size:.66rem;font-weight:900;border-radius:5px;padding:.1rem .34rem;
+      color:#04101f;}
+.dc-idx{color:var(--muted);font-size:.74rem;width:1.1rem;text-align:right;
+      font-weight:800;flex:none;}
+.dc-face{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none;
+      background:#0d2038;}
+[data-testid="stColumn"]>div,[data-testid="stColumn"]>div>div{height:100%;}
+@media(max-width:900px){.dc-hero h2{font-size:1.9rem;}.dc-rank{font-size:2.6rem;}}
 </style>
 """
 

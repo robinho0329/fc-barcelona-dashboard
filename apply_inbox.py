@@ -22,6 +22,7 @@ ASSETS = ROOT / "assets"
 LEGENDS = ASSETS / "legends"
 CLASICO = ASSETS / "clasico"
 ERAS_DIR = ASSETS / "eras"
+MASIA_DIR = ASSETS / "masia"
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger("inbox")
@@ -40,6 +41,9 @@ TARGETS = {
     "stoichkov": ["legends"],
     "suarez": ["legends"],
     "camp_nou": ["home"],
+    # 라 마시아 대표 선수 (바르사 유니폼 사진으로 넣을 것)
+    "yamal": ["masia"], "cubarsi": ["masia"], "gavi": ["masia"],
+    "pedri": ["masia"], "fermin": ["masia"], "busquets": ["masia"],
     # 역사·시대 분석 카드
     "era_dreamteam": ["eras"], "era_transition": ["eras"],
     "era_rijkaard": ["eras"], "era_pep": ["eras"],
@@ -54,7 +58,7 @@ TARGETS = {
 }
 
 STORE = {"legends": LEGENDS, "home": ASSETS, "clasico": CLASICO,
-         "eras": ERAS_DIR}
+         "eras": ERAS_DIR, "masia": MASIA_DIR}
 MAX_W = 900
 MAX_W_WIDE = 1200  # 시대 카드처럼 가로로 쓰는 이미지
 

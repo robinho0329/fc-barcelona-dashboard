@@ -1,0 +1,20 @@
+{
+  "suarez": {
+    "file": "msn/suarez.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "era_msn.jpg 에서 잘라냄"
+  },
+  "neymar": {
+    "file": "msn/neymar.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "era_msn.jpg 에서 잘라냄"
+  },
+  "messi": {
+    "file": "msn/messi.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "era_msn.jpg 에서 잘라냄"
+  }
+}

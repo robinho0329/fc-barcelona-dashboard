@@ -1,20 +1,38 @@
 {
   "yamal": {
     "file": "masia/yamal.jpg",
-    "license": "CC BY 4.0",
-    "artist": "Biso",
-    "source": "https://commons.wikimedia.org/wiki/File:Lamine Yamal in 2025 (cropped2).jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (yamal.jpg)"
   },
   "cubarsi": {
     "file": "masia/cubarsi.jpg",
-    "license": "CC BY 4.0",
-    "artist": "Biso",
-    "source": "https://commons.wikimedia.org/wiki/File:Pau Cubarsí (cropped).jpg"
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (cubarsi.jpg)"
   },
   "gavi": {
     "file": "masia/gavi.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (gavi.jpg)"
+  },
+  "pedri": {
+    "file": "masia/pedri.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (pedri.jpg)"
+  },
+  "fermin": {
+    "file": "masia/fermin.jpg",
+    "license": "사용자 제공",
+    "artist": "사용자 제공",
+    "source": "직접 전달한 파일 (fermin.jpg)"
+  },
+  "busquets": {
+    "file": "masia/busquets.jpg",
     "license": "CC BY-SA 4.0",
-    "artist": "TheSoccerBoy",
-    "source": "https://commons.wikimedia.org/wiki/File:Gavi (footballer).jpg"
+    "artist": "הגמל התימני",
+    "source": "https://commons.wikimedia.org/wiki/File:Sergio Busquest 2019 03 17 1.jpg"
   }
 }

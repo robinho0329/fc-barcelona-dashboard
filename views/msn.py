@@ -58,7 +58,15 @@ trio = trio_stats(_stamp)
 team = team_goals(_stamp)
 links = trio_links(_u.stat().st_mtime if _u.exists() else 0.0)
 
+# 트랜스퍼마르크트 증명사진은 얼굴만 나오고 소속팀도 제각각이다(수아레스는
+# 인터 마이애미, 네이마르는 대표팀). 역사 페이지에 쓰던 2015/16 3인 사진을
+# 세로로 잘라 쓰고, 없을 때만 증명사진으로 떨어진다.
+CROP = {"Lionel Messi": "msn/messi.jpg", "Luis Suárez": "msn/suarez.jpg",
+        "Neymar": "msn/neymar.jpg"}
 photos = portrait_map(TRIO)
+for _n, _rel in CROP.items():
+    if (pathlib.Path("assets") / _rel).exists():
+        photos[_n] = b64(_rel)
 
 st.markdown(f"""
 <div class="hero">
@@ -70,6 +78,12 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+# 세 사람이 함께 있는 한 장. 아래 카드 사진은 모두 이 사진에서 잘라낸 것이다.
+if pathlib.Path("assets/eras/era_msn.jpg").exists():
+    st.markdown(f'<img class="msn-banner" src="{b64("eras/era_msn.jpg")}" '
+                'alt="수아레스 · 네이마르 · 메시">', unsafe_allow_html=True)
+    st.caption("2015/16 캄 노우. 왼쪽부터 수아레스(9) · 네이마르(11) · 메시(10).")
 
 if trio.empty:
     st.warning("선수 데이터가 없습니다. `python crawl_allcomps.py`를 먼저 실행하세요.")
@@ -201,10 +215,13 @@ if not links.empty:
 </div>
 """, unsafe_allow_html=True)
 
+    # 반지름 1로 두면 세로 0.74짜리 사진 세 장이 서로 닿고, 변도 짧아 라벨이
+    # 놓일 자리가 없다. 넉넉히 키운다.
+    R = 1.62
     ang = {"Lionel Messi": np.pi / 2,
            "Luis Suárez": np.pi / 2 + 2 * np.pi / 3,
            "Neymar": np.pi / 2 - 2 * np.pi / 3}
-    pos = {n: (np.cos(a), np.sin(a)) for n, a in ang.items()}
+    pos = {n: (R * np.cos(a), R * np.sin(a)) for n, a in ang.items()}
 
     fig = go.Figure()
     for r in links.itertuples():
@@ -224,9 +241,13 @@ if not links.empty:
         fx1, fy1 = pos[hi]
         nx, ny = -(fy1 - fy0), (fx1 - fx0)
         norm = (nx ** 2 + ny ** 2) ** .5 or 1
-        sign = 1 if a == lo else -1
-        off = 0.34 * sign
-        cx, cy = mx + nx / norm * off, my + ny / norm * off
+        nx, ny = nx / norm, ny / norm
+        if nx * mx + ny * my < 0:     # 법선은 언제나 삼각형 **바깥**을 향하게
+            nx, ny = -nx, -ny
+        # 한쪽이라도 안으로 휘면 그 라벨들이 무게중심에 겹쳐 쌓인다.
+        # 둘 다 밖으로 보내고 반지름만 다르게 줘 동심 아치로 만든다.
+        off = 0.45 if a == lo else 1.65
+        cx, cy = mx + nx * off, my + ny * off
         t = np.linspace(0, 1, 40)
         bx = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t ** 2 * x1
         by = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t ** 2 * y1
@@ -241,41 +262,50 @@ if not links.empty:
                            xref="x", yref="y", axref="x", ayref="y",
                            showarrow=True, arrowhead=3, arrowsize=1.3,
                            arrowwidth=2, arrowcolor=COLOR[a], text="")
-        # 라벨을 곡선 정점(t=0.5)에 두면 여섯 개가 삼각형 가운데로 몰려 겹친다.
-        # 각자 **출발점 쪽**(t=0.28)에 두면 여섯 방향이 서로 다른 자리를 잡는다.
-        t_lab = 0.28
+        # 라벨은 곡선의 정점(t=0.5)에 둔다. 한 변의 두 곡선이 서로 반대쪽으로
+        # 휘므로 정점 여섯 개는 저절로 여섯 자리에 흩어지고, 노드(사진)에서
+        # 가장 멀어진다. 선 위에 얹히지 않게 바깥으로 조금 더 민다.
+        t_lab = 0.5
         lx = ((1 - t_lab) ** 2 * x0 + 2 * (1 - t_lab) * t_lab * cx
               + t_lab ** 2 * x1)
         ly = ((1 - t_lab) ** 2 * y0 + 2 * (1 - t_lab) * t_lab * cy
               + t_lab ** 2 * y1)
-        # 삼각형 바깥으로 조금 더 밀어 선과 겹치지 않게 한다
-        push = 0.30 * sign
-        lx += nx / norm * push
-        ly += ny / norm * push
-        fig.add_annotation(x=lx, y=ly, text=f"<b>{KOR[a]} → {KOR[b]}<br>{r.골}골</b>",
-                           showarrow=False, font=dict(size=11, color="#f2f6fc"),
-                           bgcolor="rgba(4,16,31,.88)",
-                           bordercolor=COLOR[a], borderwidth=1.5, borderpad=4)
+        lx += nx * 0.16
+        ly += ny * 0.16
+        fig.add_annotation(x=lx, y=ly, text=f"<b>{r.골}</b>",
+                           showarrow=False, font=dict(size=15, color="#f2f6fc"),
+                           bgcolor="rgba(4,16,31,.92)",
+                           bordercolor=COLOR[a], borderwidth=2, borderpad=5)
 
     imgs = []
     for name, (x, y) in pos.items():
         if photos.get(name):
-            imgs.append(dict(source=photos[name], x=x, y=y, sizex=.52, sizey=.52,
+            imgs.append(dict(source=photos[name], x=x, y=y, sizex=.80, sizey=1.74,
                              xref="x", yref="y", xanchor="center",
                              yanchor="middle", sizing="contain", layer="above"))
-    fig.add_trace(go.Scatter(
-        x=[pos[n][0] for n in TRIO], y=[pos[n][1] - 0.36 for n in TRIO],
-        mode="text", text=[KOR[n] for n in TRIO], textposition="middle center",
-        textfont=dict(size=13, color="#f2f6fc"), showlegend=False,
-        hoverinfo="skip"))
+    # 사진 높이의 절반이 0.37이라 -0.36에 두면 이름이 사진 위에 겹친다.
+    for name in TRIO:
+        fig.add_annotation(x=pos[name][0], y=pos[name][1] - 1.02,
+                           text=f"<b>{KOR[name]}</b>", showarrow=False,
+                           font=dict(size=13, color="#f2f6fc"),
+                           bgcolor="rgba(4,16,31,.9)",
+                           bordercolor=COLOR[name], borderwidth=1.5, borderpad=3)
 
     fig.update_layout(
-        height=660, images=imgs,
+        height=760, images=imgs,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(range=[-2.3, 2.3], visible=False, constrain="domain"),
-        yaxis=dict(range=[-1.9, 2.0], visible=False, scaleanchor="x", scaleratio=1))
+        xaxis=dict(range=[-2.7, 2.7], visible=False, constrain="domain"),
+        yaxis=dict(range=[-3.0, 2.8], visible=False, scaleanchor="x", scaleratio=1))
     st.plotly_chart(fig, use_container_width=True)
+
+    # 곡선 위 숫자만으로는 방향을 못 읽는다. 여섯 조합을 표로 같이 준다.
+    tbl = (links.assign(**{"도움": links["player_assisted"].map(KOR),
+                           "득점": links["player_name"].map(KOR)})
+           .sort_values("골", ascending=False)[["도움", "득점", "골"]])
+    st.dataframe(tbl.reset_index(drop=True), use_container_width=True,
+                 hide_index=True)
+
     st.caption(f"라리가 경기만 집계. 셋 사이에서만 {int(links['골'].sum())}골이 나왔다. "
                "선 색과 화살표는 도움을 준 쪽이다. 원본에 도움이 기록되지 않은 골"
                "(직접 프리킥·개인 돌파·세컨드볼 등)은 애초에 빠져 있어, 실제 합작은 "
