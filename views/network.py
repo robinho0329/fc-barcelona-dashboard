@@ -6,44 +6,85 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_seasons,
-                  load_understat, metric_cards, portrait_map, position_map, setup)
+from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
+                  load_understat, metric_cards, portrait_map, position_map,
+                  sb_names, setup)
 
 seasons = load_seasons()
 setup(seasons)
 
 
-@st.cache_data
-def links(stamp: float) -> pd.DataFrame:
-    """어시스트 → 득점 조합. Understat이 두 이름을 모두 주므로 이쪽을 쓴다.
+# 표본이 이보다 적은 시즌은 뺀다. 1973/74처럼 몇 경기만 있는 시즌을 섞으면
+# 시즌별 비교가 엉킨다.
+MIN_GOALS = 20
 
-    StatsBomb 패스에도 어시스트 표시가 있지만 '받은 사람'이 없어 조합을 만들 수
-    없다. Understat은 골마다 player(득점)와 player_assisted(도움)를 함께 준다.
+
+@st.cache_data
+def links(stamp: str) -> pd.DataFrame:
+    """어시스트 → 득점 조합. 두 원본을 시즌으로 나눠 붙인다.
+
+    Understat은 골마다 득점자와 도움자를 함께 주지만 2014/15부터다.
+    StatsBomb은 2004/05까지 거슬러 가는데 도움자가 바로 들어 있지 않다.
+    대신 슛의 shot.key_pass_id 가 그 슛을 만든 패스 이벤트를 가리키므로,
+    그 패스를 던진 선수가 도움자다(fetch_statsbomb.py 에서 assisted_by 로 넣어 둠).
+
+    겹치는 시즌은 Understat을 쓴다. 지금까지 이 페이지가 보여 온 값이고,
+    도움이 기록된 비율도 조금 더 높다.
     """
     u = load_understat()
-    if u.empty:
+    us = pd.DataFrame()
+    if not u.empty:
+        d = u[u["is_barca"] & u["goal"] & u["player_assisted"].notna()].copy()
+        d = d[d["player_assisted"].astype(str).str.strip() != ""]
+        us = d.rename(columns={"player_assisted": "도움", "player_name": "득점"})
+        us = us[["season", "도움", "득점"]].assign(출처="Understat")
+
+    sb = load_sb("shots")
+    sbd = pd.DataFrame()
+    if not sb.empty and "assisted_by" in sb.columns:
+        g = sb[sb["is_barca"] & sb["goal"] & sb["assisted_by"].notna()].copy()
+        if not g.empty:
+            # 이름을 FBref 쪽으로 맞춰야 두 원본이 같은 사람으로 묶인다
+            g["도움"] = sb_names(g["assisted_by"]).values
+            g["득점"] = sb_names(g["player"]).values
+            sbd = g[["season", "도움", "득점"]].assign(출처="StatsBomb")
+
+    if us.empty and sbd.empty:
         return pd.DataFrame()
-    d = u[u["is_barca"] & u["goal"] & u["player_assisted"].notna()].copy()
-    d = d[d["player_assisted"].astype(str).str.strip() != ""]
-    return d.rename(columns={"player_assisted": "도움", "player_name": "득점"})
+    have = set(us["season"]) if not us.empty else set()
+    parts = [x for x in (us, sbd[~sbd["season"].isin(have)] if not sbd.empty else sbd)
+             if not x.empty]
+    out = pd.concat(parts, ignore_index=True)
+
+    keep = out.groupby("season").size()
+    return out[out["season"].isin(keep[keep >= MIN_GOALS].index)].copy()
 
 
-_u = pathlib.Path("data/understat/shots.parquet")
-raw = links(_u.stat().st_mtime if _u.exists() else 0.0)
+def _stamp() -> str:
+    """두 원본 중 하나라도 바뀌면 다시 계산한다."""
+    out = []
+    for rel in ("data/understat/shots.parquet", "data/statsbomb/shots.parquet"):
+        f = pathlib.Path(rel)
+        out.append(f"{rel}:{f.stat().st_mtime if f.exists() else 0}")
+    return "|".join(out)
+
+
+raw = links(_stamp())
 
 st.markdown(f"""
 <div class="hero">
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
-  <div class="hero-kicker">Assist Network · Understat</div>
+  <div class="hero-kicker">Assist Network · StatsBomb + Understat</div>
   <h1>연계 네트워크</h1>
   <div class="hero-motto">골은 혼자 만들지 않는다. 누가 누구에게 건네 골이 됐는지,
-  바르사를 굴린 조합을 찾아본다.</div>
+  바르사를 굴린 조합을 찾아본다. 두 원본을 붙여 <b>2004/05</b>까지 거슬러 본다.</div>
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
 
 if raw.empty:
-    st.warning("어시스트 데이터가 없습니다. `python fetch_understat.py`를 먼저 실행하세요.")
+    st.warning("어시스트 데이터가 없습니다. `python fetch_understat.py` 와 "
+               "`python fetch_statsbomb.py` 를 먼저 실행하세요.")
     st.stop()
 
 # ---------------------------------------------------------------- 필터
@@ -244,7 +285,7 @@ st.markdown("""
 
 
 @st.cache_data
-def season_structure(stamp: float) -> pd.DataFrame:
+def season_structure(stamp: str) -> pd.DataFrame:
     """시즌별 연계 구조. 분산도는 허핀달 지수를 뒤집어 0~100으로 만든 값이다."""
     src = links(stamp)
     if src.empty:
@@ -265,7 +306,7 @@ def season_structure(stamp: float) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("시즌").reset_index(drop=True)
 
 
-struct = season_structure(_u.stat().st_mtime if _u.exists() else 0.0)
+struct = season_structure(_stamp())
 
 if struct.empty:
     st.info("시즌별 구조를 계산할 데이터가 없습니다.")
@@ -435,15 +476,28 @@ with st.expander("조합 전체 표"):
     tb.columns = ["도움", "득점", "골"]
     st.dataframe(tb.reset_index(drop=True), use_container_width=True, height=420)
 
+_us = raw[raw["출처"] == "Understat"]
+_sb = raw[raw["출처"] == "StatsBomb"]
+us_n, sb_n = len(_us), len(_sb)
+us_from = _us["season"].min() if us_n else "-"
+sb_from = _sb["season"].min() if sb_n else "-"
+sb_to = _sb["season"].max() if sb_n else "-"
+
 st.markdown(f"""
 <div class="credits">
-<b>데이터</b> Understat — 바르셀로나가 넣은 골 가운데 도움이 기록된
-{len(raw):,}건. 시즌 범위는 {raw['season'].min()}~{raw['season'].max()}이며
+<b>데이터</b> 바르셀로나가 넣은 골 가운데 도움이 기록된 {len(raw):,}건.
+시즌 범위는 {raw['season'].min()}~{raw['season'].max()}이며
 <b>라리가 경기만</b> 담겨 있다. 챔피언스리그·코파에서 나온 조합은 빠진다.<br>
-<b>StatsBomb을 쓰지 않은 이유</b> 패스 이벤트에 어시스트 표시는 있지만 그 패스를
-받아 넣은 선수가 기록돼 있지 않아 조합을 만들 수 없다. Understat은 골마다
-득점자와 도움을 함께 주므로 이쪽을 썼다.<br>
+<b>원본 둘을 붙였다</b> {us_from}~는 <b>Understat</b>({us_n:,}건) — 골마다
+득점자와 도움자를 함께 준다. 그 이전 {sb_from}~{sb_to}는 <b>StatsBomb</b>
+({sb_n:,}건) — 도움자가 바로 들어 있지 않아, 슛의 <code>key_pass_id</code>가
+가리키는 패스 이벤트를 찾아 그 패스를 던진 선수를 도움자로 삼았다.
+겹치는 시즌은 Understat을 썼다.<br>
+<b>이름</b> StatsBomb은 전체 이름(Lionel Andrés Messi Cuccittini)을 쓴다.
+같은 사람으로 묶으려고 FBref 쪽 짧은 이름으로 맞췄다.<br>
 <b>주의</b> 도움 없이 나온 골(직접 프리킥, 개인 돌파, 상대 실책 등)은 애초에
-빠져 있다. 함께 뛴 시간이 길수록 조합 수가 커지는 것도 감안해서 봐야 한다.
+빠져 있다. 도움이 기록된 비율은 시즌마다 61~73%로 달라, 시즌 간 비교는
+절대 건수보다 비중으로 보는 편이 낫다. 함께 뛴 시간이 길수록 조합 수가
+커지는 것도 감안해서 봐야 한다. 골 20건이 안 되는 시즌은 뺐다.
 </div>
 """, unsafe_allow_html=True)

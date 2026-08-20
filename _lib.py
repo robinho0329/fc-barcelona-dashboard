@@ -608,3 +608,92 @@ def position_map(names) -> dict:
                     p = idx["exact"][top[0]]
         out[n] = p or ""
     return out
+
+
+# StatsBomb 은 선수를 전체 이름으로 준다(Lionel Andrés Messi Cuccittini).
+# FBref·Understat 은 짧은 이름을 쓰므로 한쪽으로 맞춰야 같은 사람으로 묶인다.
+# 성이 겹치고 이름 첫 토큰이 서로의 접두사면 같은 사람으로 본다
+# (Daniel Alves da Silva ↔ Dani Alves). 그걸로 안 되는 것만 아래에 적는다.
+SB_ALIAS = {
+    "Alexandre Dimitri Song-Billong": "Alex Song",
+    "Aliaksandr Hleb": "Alexander Hleb",
+    "Anderson Luís de Souza": "Deco",
+    "Anssumane Fati": "Ansu Fati",
+    "Carles Rexach i Cerdà": "Carles Rexach",
+    "David Villa Sánchez": "David Villa",
+    "Diego Armando Maradona": "Diego Maradona",
+    "Francesc Fàbregas i Soler": "Cesc Fàbregas",
+    "Hugo Alejandro Sotil Yerén": "Hugo Sotil",
+    "José Paulo Bezzera Maciel Júnior": "Paulinho",
+    "Juan Manuel Asensi Ripoll": "Juan Manuel Asensi",
+    "Julio Alberto Moreno Casas": "Julio Alberto",
+    "Marcial Manuel Pina Morales": "Marcial",
+    "Moriba Kourouma Kourouma": "Ilaix Moriba",
+    "Rafael Alcântara do Nascimento": "Rafinha",
+    "Ricard Puig Martí": "Riqui Puig",
+    "Sylvio Mendes Campos Junior": "Sylvinho",
+    "Víctor Muñoz Manrique": "Víctor Muñoz",
+    "Xavier Hernández Creus": "Xavi",
+}
+# 이름 사이에 끼는 관사·전치사. 비교에서 빼야 성을 제대로 집는다.
+_PARTICLE = {"de", "da", "do", "dos", "das", "di", "del", "la", "le",
+             "van", "von", "i", "y", "el"}
+
+
+def _name_tokens(name: str) -> list:
+    return [w for w in _name_key(name).split() if w not in _PARTICLE]
+
+
+@st.cache_data
+def _sb_name_index(stamp: str) -> dict:
+    """StatsBomb 전체 이름 -> FBref 짧은 이름."""
+    ac = load_dir("fbref_allcomps_players")
+    canon = sorted(set(ac["Player"].dropna())) if not ac.empty else []
+    ct = {c: _name_tokens(c) for c in canon}
+    exact = {_name_key(c): c for c in canon}
+
+    sh = load_sb("shots")
+    if sh.empty:
+        return {}
+    names = set()
+    for col in ("player", "assisted_by"):
+        if col in sh.columns:
+            names |= set(sh[col].dropna())
+
+    out = {}
+    for n in names:
+        if n in SB_ALIAS:
+            out[n] = SB_ALIAS[n]
+            continue
+        k = _name_key(n)
+        if k in exact:
+            out[n] = exact[k]
+            continue
+        nt = _name_tokens(n)
+        ns = set(nt)
+        best = []
+        for c, tk in ct.items():
+            if not tk or not (set(tk) & ns):
+                continue
+            if tk[-1] not in ns and (not nt or nt[-1] not in set(tk)):
+                continue
+            a, b = tk[0], nt[0] if nt else ""
+            if not (a.startswith(b) or b.startswith(a)):
+                continue
+            best.append((len(set(tk) & ns), c))
+        if best:
+            best.sort(reverse=True)
+            if len(best) == 1 or best[0][0] > best[1][0]:
+                out[n] = best[0][1]
+                continue
+        # 못 찾으면 전체 이름 그대로 둔다. 옛 시즌 선수는 FBref(1993/94~)에
+        # 아예 없어서 맞출 상대가 없다.
+        out[n] = n
+    return out
+
+
+def sb_names(series) -> pd.Series:
+    """StatsBomb 이름 열을 통용 이름으로 바꾼다."""
+    d = PROCESSED.parent / "statsbomb" / "shots.parquet"
+    stamp = f"{d.stat().st_mtime}" if d.exists() else "0"
+    return pd.Series(series).map(_sb_name_index(stamp)).fillna(pd.Series(series))
