@@ -84,8 +84,20 @@ def _stamp(*paths) -> str:
 ## 끝내기 전에
 
 ```bash
-for s in / eras legends managers clasico players masia advanced tikitaka network msn shots passes seasons model coverage; do
-  printf "%-12s %s\n" "$s" "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8501/$s)"
+# 포트를 박지 않는다. 떠 있는 것을 찾고, 없으면 직접 띄운다.
+PORT=""
+for p in 8501 8502 8503 8533; do
+  curl -s -o /dev/null -w "%{http_code}" "http://localhost:$p" 2>/dev/null \n    | grep -q 200 && PORT=$p && break
+done
+if [ -z "$PORT" ]; then
+  echo "떠 있는 서버가 없다. 아래로 띄운 뒤 다시 확인할 것:"
+  echo '  "/d/workspace/EPL project/.venv/Scripts/python.exe" -m streamlit run app.py --server.port 8501 --server.headless true'
+  exit 1
+fi
+echo "포트 $PORT"
+# 루트는 빈 문자열로 둔다. "/" 로 쓰면 URL 에 슬래시가 겹쳐 400 이 난다.
+for s in "" eras legends managers clasico players masia advanced tikitaka network msn shots passes seasons model coverage; do
+  printf "%-12s %s\n" "$s" "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/$s)"
 done
 ```
 
