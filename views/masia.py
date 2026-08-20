@@ -116,6 +116,11 @@ st.markdown('<div class="section">지금의 세대</div>', unsafe_allow_html=Tru
 rep_cards(CURRENT_GEN, GOLD)
 st.caption("계보는 끊기지 않았다. 아래 수치는 명성이나 수상 경력이 아니라 "
            "실제 라리가 출전 시간으로 그 흐름을 본다.")
+# 현역 선수는 자유 라이선스 경기 사진이 거의 없어 보도사진을 썼다.
+# 저작권이 있는 사진이므로 출처를 밝혀 둔다.
+st.caption("사진 출처 · 가비, 페르민 로페스 — Getty Images (각각 sportalkorea, "
+           "InterFootball 경유). 저작권이 있는 보도사진이며 비상업 학습 목적으로 "
+           "인용했다. 나머지는 직접 전달받은 파일이다.")
 
 # crawl_masia.py가 수집한 바르사 B 시즌 명단에 등장한 선수를 유스 출신으로 본다.
 # 이름은 악센트와 구두점을 제거한 키로만 정확히 대조한다. 성만 맞추면 Arturo

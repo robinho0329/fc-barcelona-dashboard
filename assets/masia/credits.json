@@ -13,9 +13,9 @@
   },
   "gavi": {
     "file": "masia/gavi.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (gavi.jpg)"
+    "license": "저작권 있음 (보도사진)",
+    "artist": "Getty Images",
+    "source": "sportalkorea 경유 · 사진 내 워터마크로 확인"
   },
   "pedri": {
     "file": "masia/pedri.jpg",
@@ -25,9 +25,9 @@
   },
   "fermin": {
     "file": "masia/fermin.jpg",
-    "license": "사용자 제공",
-    "artist": "사용자 제공",
-    "source": "직접 전달한 파일 (fermin.jpg)"
+    "license": "저작권 있음 (보도사진)",
+    "artist": "Getty Images",
+    "source": "InterFootball 경유 · 사진 내 워터마크로 확인"
   },
   "busquets": {
     "file": "masia/busquets.jpg",

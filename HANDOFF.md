@@ -312,12 +312,14 @@ Streamlit 기본 스타일이 `img` 에 `object-fit: scale-down` 을 걸어 둔�
 
 ## 남은 작업
 
-### 1. 저작권 정리 — 유일하게 남은 항목
+없다. 사용자가 요청한 것과 정리 항목을 모두 처리했다.
 
-`assets/masia/gavi.jpg` 와 `fermin.jpg` 에 Getty Images / InterFootball
-워터마크가 있다. 공개 저장소이고 Streamlit Cloud 로 배포 중이므로,
-워터마크 없는 것으로 바꾸거나 카드 캡션에 출처를 다는 편이 안전하다.
-사용자에게 알렸고 지금은 그대로 두기로 했다.
+가비·페르민 사진은 Getty Images 보도사진이라 워터마크가 있다. 교체 대신
+**출처 표기**로 처리하기로 했다(사용자 결정). `assets/masia/credits.json` 에
+실제 출처를 적었고, 라 마시아 페이지 '지금의 세대' 아래에 캡션으로 밝혔다.
+나중에 자유 라이선스 사진을 구하면 `assets/_inbox/` 에 `gavi.jpg`,
+`fermin.jpg` 로 넣고 `python apply_inbox.py` 를 돌리면 된다.
+그때 credits.json 의 해당 항목도 함께 고쳐야 한다.
 
 ## 확인해 본 결과 손댈 필요 없던 것
 
