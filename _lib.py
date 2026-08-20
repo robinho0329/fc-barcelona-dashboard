@@ -254,6 +254,20 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
       border-left:4px solid var(--gold);
       background:linear-gradient(150deg,rgba(13,32,56,.7),rgba(8,20,38,.7));}
 
+/* MSN 카드 — 세 사람을 나란히 */
+.msn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;}
+.msn-card{border-radius:14px;overflow:hidden;border:1px solid var(--line);
+      background:linear-gradient(150deg,var(--panel),var(--panel2));
+      display:flex;flex-direction:column;}
+.msn-photo{width:100%;aspect-ratio:3/4;max-height:260px;object-fit:contain;
+      background:linear-gradient(150deg,#0d2038,#081426);}
+.msn-body{padding:.9rem 1.1rem 1.1rem;}
+.msn-name{color:var(--ink);font-size:1.25rem;font-weight:860;}
+.msn-full{color:var(--muted);font-size:.72rem;letter-spacing:.06em;margin-top:.1rem;}
+.msn-line{color:var(--gold);font-size:1.02rem;font-weight:700;margin-top:.6rem;}
+.msn-line b{color:var(--ink);font-size:1.3rem;}
+.msn-sub{color:var(--muted);font-size:.76rem;margin-top:.25rem;}
+
 /* 갤러리 — 클라시코 역사 이미지 */
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
 .gallery figure{margin:0;border-radius:14px;overflow:hidden;background:var(--panel2);
@@ -285,7 +299,7 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .credits{color:#6f849f;font-size:.68rem;line-height:1.7;border-top:1px solid var(--line);
       padding-top:.9rem;margin-top:2rem;}
 @media(max-width:900px){
-  .metric-grid,.timeline-grid,.photo-grid,.gallery,.era-grid{grid-template-columns:1fr;}
+  .metric-grid,.timeline-grid,.photo-grid,.gallery,.era-grid,.msn-grid{grid-template-columns:1fr;}
   .hero h1{white-space:normal;}
   .hero-vs{flex-direction:column;align-items:flex-start;gap:.2rem;}
 }

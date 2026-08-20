@@ -27,6 +27,7 @@ nav = st.navigation({
     "전술": [
         st.Page("views/tikitaka.py", title="티키타카 지수", icon="🔄"),
         st.Page("views/network.py", title="연계 네트워크", icon="🔗"),
+        st.Page("views/msn.py", title="MSN 삼각편대", icon="🔺"),
     ],
     "이벤트 데이터": [
         st.Page("views/shots.py", title="xG · 슈팅 맵", icon="🎯"),

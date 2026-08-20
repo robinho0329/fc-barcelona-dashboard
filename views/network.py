@@ -222,6 +222,140 @@ else:
         f"이 범위에서는 {hub}에게 선이 가장 많이 몰린다(연결의 {hub_share:.0f}%)."
         + (f" 포지션을 못 찾은 {unknown}명은 미드필더 칸에 뒀다." if unknown else ""))
 
+# ---------------------------------------------------------------- 시즌별 구조
+st.markdown('<div class="section">시즌마다 연계가 어떻게 달랐나</div>',
+            unsafe_allow_html=True)
+st.markdown("""
+<div class="lede">
+같은 골 수라도 <b>몇 명이 얼마나 다양한 조합으로</b> 만들었는지는 시즌마다 다르다.
+소수에게 몰리면 그 선수가 빠졌을 때 팀이 멈추고, 여러 조합으로 퍼져 있으면
+경로가 많다는 뜻이다. 아래 <b>분산도</b>는 도움·득점 관여가 얼마나 고르게
+나뉘었는지를 0~100으로 나타낸 값이다. 한 명이 다 하면 낮고, 고루 나눠 가지면
+높다.
+</div>
+""", unsafe_allow_html=True)
+
+
+@st.cache_data
+def season_structure(stamp: float) -> pd.DataFrame:
+    """시즌별 연계 구조. 분산도는 허핀달 지수를 뒤집어 0~100으로 만든 값이다."""
+    src = links(stamp)
+    if src.empty:
+        return pd.DataFrame()
+    rows = []
+    for season, g in src.groupby("season"):
+        pairs_n = g.groupby(["도움", "득점"]).size()
+        people = pd.concat([g["도움"], g["득점"]]).value_counts()
+        share = people / people.sum()
+        rows.append({
+            "시즌": season, "골": len(g), "참여 선수": len(people),
+            "조합 수": len(pairs_n),
+            "최다 허브 비중": share.iloc[0] * 100,
+            "허브": people.index[0],
+            "분산도": (1 - (share ** 2).sum()) * 100,
+            "조합당 골": len(g) / len(pairs_n),
+        })
+    return pd.DataFrame(rows).sort_values("시즌").reset_index(drop=True)
+
+
+struct = season_structure(_u.stat().st_mtime if _u.exists() else 0.0)
+
+if struct.empty:
+    st.info("시즌별 구조를 계산할 데이터가 없습니다.")
+else:
+    ERA_OF = [("MSN", "2012/13", "2016/17", "#e0748f"),
+              ("포스트 펩", "2017/18", "2020/21", "#7ab8ff"),
+              ("재건", "2021/22", "2025/26", "#4fb0a5")]
+
+    def era_color(sea: str) -> str:
+        for _, a, b, c in ERA_OF:
+            if a <= sea <= b:
+                return c
+        return "#6b7d99"
+
+    struct["색"] = struct["시즌"].map(era_color)
+
+    best = struct.loc[struct["분산도"].idxmax()]
+    worst = struct.loc[struct["분산도"].idxmin()]
+    st.markdown(metric_cards([
+        ("가장 분산된 시즌", f"{best['시즌']}",
+         f"분산도 {best['분산도']:.1f} · {int(best['참여 선수'])}명 참여"),
+        ("가장 집중된 시즌", f"{worst['시즌']}",
+         f"분산도 {worst['분산도']:.1f} · {worst['허브']} {worst['최다 허브 비중']:.0f}%"),
+        ("최다 조합", f"{int(struct['조합 수'].max())}",
+         f"{struct.loc[struct['조합 수'].idxmax(), '시즌']}"),
+        ("조합당 골 최고", f"{struct['조합당 골'].max():.2f}",
+         f"{struct.loc[struct['조합당 골'].idxmax(), '시즌']} · 같은 짝이 반복"),
+    ]), unsafe_allow_html=True)
+
+    fs1 = go.Figure()
+    fs1.add_trace(go.Bar(
+        x=struct["시즌"], y=struct["분산도"], name="분산도",
+        marker_color=struct["색"],
+        customdata=struct[["참여 선수", "조합 수", "허브", "최다 허브 비중"]].values,
+        hovertemplate="<b>%{x}</b><br>분산도 %{y:.1f}<br>"
+                      "참여 %{customdata[0]}명 · 조합 %{customdata[1]}개<br>"
+                      "최다 허브 %{customdata[2]} (%{customdata[3]:.0f}%)<extra></extra>"))
+    fs1.add_trace(go.Scatter(
+        x=struct["시즌"], y=struct["최다 허브 비중"], name="최다 허브 비중(%)",
+        mode="lines+markers", line=dict(color=GOLD, width=2.6), yaxis="y2"))
+    fs1.update_layout(
+        height=380,
+        yaxis=dict(title="분산도 (0~100)", gridcolor=GRID, range=[70, 100]),
+        yaxis2=dict(title="허브 비중(%)", overlaying="y", side="right",
+                    range=[0, 40], showgrid=False),
+        legend=dict(orientation="h", y=1.14), **PLOT)
+    fs1.update_xaxes(gridcolor=GRID, tickangle=-60)
+    st.plotly_chart(fs1, use_container_width=True)
+    st.caption("막대가 높을수록 골이 여러 선수에게 퍼져 있고, 금색 선이 높을수록 "
+               "한 선수에게 몰려 있다. 둘은 반대로 움직인다.")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        fs2 = go.Figure()
+        fs2.add_trace(go.Bar(x=struct["시즌"], y=struct["조합 수"], name="조합 수",
+                             marker_color=BLAU))
+        fs2.add_trace(go.Scatter(x=struct["시즌"], y=struct["참여 선수"],
+                                 name="참여 선수", mode="lines+markers",
+                                 line=dict(color=GRANA, width=2.6)))
+        fs2.update_layout(height=320, yaxis_title="개 / 명",
+                          legend=dict(orientation="h", y=1.14), **PLOT)
+        fs2.update_xaxes(gridcolor=GRID, tickangle=-60)
+        fs2.update_yaxes(gridcolor=GRID)
+        st.plotly_chart(fs2, use_container_width=True)
+        st.caption("골을 만든 서로 다른 조합의 수와, 관여한 선수 수")
+
+    with c2:
+        fs3 = go.Figure(go.Bar(
+            x=struct["시즌"], y=struct["조합당 골"], marker_color=struct["색"],
+            hovertemplate="<b>%{x}</b><br>조합당 %{y:.2f}골<extra></extra>"))
+        fs3.update_layout(height=320, yaxis_title="조합당 골", **PLOT)
+        fs3.update_xaxes(gridcolor=GRID, tickangle=-60)
+        fs3.update_yaxes(gridcolor=GRID)
+        st.plotly_chart(fs3, use_container_width=True)
+        st.caption("높을수록 같은 짝이 반복해서 골을 만들었다는 뜻이다")
+
+    st.markdown(f"""
+<div class="lede">
+결과는 <b>직관과 반대로 나온다</b>. 가장 화려했다는 MSN 시대
+({struct.loc[struct['시즌'] == '2014/15', '시즌'].iloc[0] if '2014/15' in set(struct['시즌']) else '2014/15'}·2015/16)가
+오히려 <b>가장 집중된</b> 시즌이고, 메시가 떠난 뒤인 2021/22가 가장 분산돼 있다.
+셋이서 다 해결하던 팀과, 여럿이 나눠 넣는 팀의 차이다.<br><br>
+그러니 <b>분산도가 높다고 더 좋은 팀은 아니다</b>. 2014/15는 분산도가 낮았지만
+트레블을 했고, 2021/22는 분산도가 가장 높았지만 무관이었다. 이 지표는 잘하고
+못하고가 아니라 <b>득점 경로가 어떤 모양이었나</b>를 말해 준다.<br><br>
+<b>티키타카 지수</b>와도 다른 것을 잰다. 그쪽은 공이 어떻게 돌았는지(패스),
+이쪽은 골이 누구에게서 나왔는지(득점 관여)를 본다. 패스를 아무리 촘촘히 돌려도
+마무리를 한 명이 도맡으면 분산도는 낮게 나온다.
+</div>
+""", unsafe_allow_html=True)
+
+    with st.expander("시즌별 구조 표"):
+        tb = struct[["시즌", "골", "참여 선수", "조합 수", "조합당 골",
+                     "허브", "최다 허브 비중", "분산도"]].copy()
+        st.dataframe(tb.round(2).set_index("시즌"),
+                     use_container_width=True, height=430)
+
 # ---------------------------------------------------------------- 상위 조합
 c1, c2 = st.columns(2)
 with c1:
