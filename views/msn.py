@@ -128,7 +128,7 @@ if not mvp.empty:
     if pathlib.Path("assets/mvp/line.jpg").exists():
         st.markdown(f'<img class="msn-banner" src="{b64("mvp/line.jpg")}" '
                     'alt="페드로 · 비야 · 메시">', unsafe_allow_html=True)
-        st.caption("2010/11 시즌. 왼쪽부터 페드로(17) · 다비드 비야(7) · 메시(10).")
+        st.caption("가슴의 카타르 재단 로고로 보아 2011/12 시즌. 왼쪽부터 다비드 비야(7) · 메시 · 페드로.")
 
     MVP_CROP = {}
     for _n, _f in [("Lionel Messi", "mvp/messi.jpg"), ("David Villa", "mvp/villa.jpg"),
@@ -142,7 +142,9 @@ if not mvp.empty:
         g, a = int(part["골"].sum()), int(part["도움"].sum())
         mp = int(part["경기"].sum())
         src = MVP_CROP.get(name) or mvp_faces.get(name, "")
-        img = (f'<img class="msn-photo" src="{src}" alt="{name}">' if src else "")
+        # 1기 사진은 배너에서 잘라낸 것이라 세로로 짧다. 2기처럼 cover 로
+        # 다시 자르면 머리가 날아가므로 전체를 보여준다.
+        img = (f'<img class="msn-photo whole" src="{src}" alt="{name}">' if src else "")
         cards += (
             f'<div class="msn-card" style="border-top:4px solid {MVP_COLOR[name]}">'
             f'{img}<div class="msn-body"><div class="msn-name">{MVP_KOR[name]}</div>'

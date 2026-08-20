@@ -22,6 +22,7 @@ ASSETS = ROOT / "assets"
 LEGENDS = ASSETS / "legends"
 CLASICO = ASSETS / "clasico"
 ERAS_DIR = ASSETS / "eras"
+MVP_DIR = ASSETS / "mvp"
 MASIA_DIR = ASSETS / "masia"
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -41,6 +42,8 @@ TARGETS = {
     "stoichkov": ["legends"],
     "suarez": ["legends"],
     "camp_nou": ["home"],
+    # 삼각편대 1기 (MVP) — 선수별 사진
+    "mvp_messi": ["mvp"], "mvp_villa": ["mvp"], "mvp_pedro": ["mvp"],
     # 라 마시아 대표 선수 (바르사 유니폼 사진으로 넣을 것)
     "yamal": ["masia"], "cubarsi": ["masia"], "gavi": ["masia"],
     "pedri": ["masia"], "fermin": ["masia"], "busquets": ["masia"],
@@ -58,9 +61,14 @@ TARGETS = {
 }
 
 STORE = {"legends": LEGENDS, "home": ASSETS, "clasico": CLASICO,
-         "eras": ERAS_DIR, "masia": MASIA_DIR}
+         "eras": ERAS_DIR, "masia": MASIA_DIR, "mvp": MVP_DIR}
 MAX_W = 900
 MAX_W_WIDE = 1200  # 시대 카드처럼 가로로 쓰는 이미지
+
+
+# 반입 키와 실제 파일명이 다른 경우. mvp_messi 는 legends/messi 와 겹치지
+# 않게 키를 나눴을 뿐, 저장은 mvp/messi.jpg 로 해야 페이지가 읽는다.
+FILENAME = {"mvp_messi": "messi", "mvp_villa": "villa", "mvp_pedro": "pedro"}
 
 
 def save_as(src: Path, dest: Path) -> None:
@@ -79,7 +87,8 @@ def note_source(store: Path, key: str, filename: str) -> None:
     """출처를 '사용자 제공'으로 남긴다. 커먼즈 항목은 건드리지 않는다."""
     p = store / "credits.json"
     meta = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-    rel = f"{key}.jpg" if store == ASSETS else f"{store.name}/{key}.jpg"
+    name = FILENAME.get(key, key)
+    rel = f"{name}.jpg" if store == ASSETS else f"{store.name}/{name}.jpg"
     meta[key] = {"file": rel, "license": "사용자 제공", "artist": "사용자 제공",
                  "source": f"직접 전달한 파일 ({filename})"}
     p.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -106,7 +115,7 @@ def main() -> None:
         dests = TARGETS[key]
         for d in dests:
             store = STORE[d]
-            save_as(f, store / f"{key}.jpg")
+            save_as(f, store / f"{FILENAME.get(key, key)}.jpg")
             note_source(store, key, f.name)
         log.info("반영 %-14s <- %-26s (%s)", key, f.name, " + ".join(dests))
         applied += 1
