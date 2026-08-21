@@ -118,6 +118,18 @@ if idx.empty:
     st.warning("패스 데이터가 없습니다. `python fetch_statsbomb.py`를 먼저 실행하세요.")
     st.stop()
 
+# ---------------------------------------------------------------- 커버리지 한계
+_all_seasons = seasons["Season"].tolist()
+_covered = set(idx["season"])
+_missing = [s for s in _all_seasons if s not in _covered and ORDER.index(s) > ORDER.index(idx["season"].iloc[-1])]
+if _missing:
+    st.warning(
+        f"**최근 {len(_missing)}시즌({_missing[0]}~{_missing[-1]})은 지수에 없다.** "
+        f"패스 좌표를 주는 무료 소스가 StatsBomb Open Data뿐인데, 바르사 경기 공개가 "
+        f"{idx['season'].iloc[-1]}에서 멈춰 있다. Understat은 슛 이벤트만 주고 패스는 "
+        f"애초에 제공하지 않아 대체할 수 없다. 아래 지수 곡선은 {idx['season'].iloc[0]}~"
+        f"{idx['season'].iloc[-1]}까지만 그려지고, 그 이후는 점유율(FBref)로만 이어 본다.")
+
 # ---------------------------------------------------------------- 유래
 st.markdown('<div class="section">티키타카라는 말은 어디서 왔나</div>',
             unsafe_allow_html=True)

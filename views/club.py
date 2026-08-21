@@ -153,8 +153,74 @@ with k3:
                 f'<div class="dc-note">라리가</div></div>{body}</div>',
                 unsafe_allow_html=True)
 
-st.caption("모두 실제 경기 기록에서 집계한 값이다. 라리가 전체 순위표는 원본에 "
-           "바르사 경기만 있어 만들 수 없어, 팀 성적과 최근 폼으로 대신했다.")
+st.caption("모두 실제 경기 기록에서 집계한 값이다.")
+
+# ---- 라리가 순위표
+# 원본(football-data SP1)에는 20개 팀 전 경기가 들어 있어 전체 순위표를
+# 만들 수 있다. build_data.py 의 league_table() 이 라리가 규정대로
+# 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 순으로 세운다.
+standings = load_parquet(PROCESSED / "standings.parquet")
+if not standings.empty:
+    st.markdown(f'<div class="section">{latest["Season"]} 라리가 순위</div>',
+                unsafe_allow_html=True)
+    tbl = (standings[standings["season"] == latest["Season"]]
+           .sort_values("rank"))
+    if not tbl.empty:
+        # 바르사 앞뒤만 보여준다. 20팀을 다 세우면 첫 화면이 표로 덮인다.
+        pos = int(tbl[tbl["team"] == "Barcelona"]["rank"].iloc[0])
+        lo, hi = max(1, pos - 3), min(len(tbl), pos + 3)
+        near = tbl[(tbl["rank"] >= lo) & (tbl["rank"] <= hi)]
+        rows = ""
+        for r in near.itertuples():
+            me = r.team == "Barcelona"
+            rows += (
+                f'<div class="dc-row"'
+                + (' style="background:rgba(165,0,68,.18);border-radius:7px;'
+                   'padding-left:.4rem;padding-right:.4rem"' if me else "")
+                + f'><div class="dc-rl"><span class="dc-idx">{r.rank}</span>'
+                f'<b>{r.team}</b>'
+                f'<span class="dc-note">{r.W}승 {r.D}무 {r.L}패 · '
+                f'{r.GD:+d}</span></div>'
+                f'<div class="dc-rr">{r.Pts}점</div></div>')
+        s1, s2 = st.columns([1, 1], gap="medium")
+        with s1:
+            st.markdown(
+                f'<div class="dc-card"><div class="dc-head">'
+                f'<div class="dc-title">순위표 (바르사 주변)</div>'
+                f'<div class="dc-note">{len(tbl)}팀 중 {pos}위</div></div>'
+                f'{rows}</div>', unsafe_allow_html=True)
+        with s2:
+            champ = tbl.iloc[0]
+            gap = int(champ["Pts"]) - int(tbl[tbl["team"] == "Barcelona"]["Pts"].iloc[0])
+            rival = tbl[tbl["team"] == "Real Madrid"]
+            rival_txt = (f'{int(rival["rank"].iloc[0])}위 · {int(rival["Pts"].iloc[0])}점'
+                         if not rival.empty else "기록 없음")
+            st.markdown(
+                f'<div class="dc-card"><div class="dc-head">'
+                f'<div class="dc-title">이 시즌 한눈에</div>'
+                f'<div class="dc-note">라리가</div></div>'
+                f'<div class="dc-row"><div class="dc-rl"><b>우승</b></div>'
+                f'<div class="dc-rr">{champ["team"]} {int(champ["Pts"])}점</div></div>'
+                f'<div class="dc-row"><div class="dc-rl"><b>1위와 승점 차</b></div>'
+                f'<div class="dc-rr">{"우승" if gap == 0 else f"{gap}점"}</div></div>'
+                f'<div class="dc-row"><div class="dc-rl"><b>레알 마드리드</b></div>'
+                f'<div class="dc-rr">{rival_txt}</div></div>'
+                f'<div class="dc-row"><div class="dc-rl"><b>최다 득점</b></div>'
+                f'<div class="dc-rr">{tbl.nlargest(1, "GF")["team"].iloc[0]} '
+                f'{int(tbl["GF"].max())}골</div></div>'
+                f'<div class="dc-row"><div class="dc-rl"><b>최소 실점</b></div>'
+                f'<div class="dc-rr">{tbl.nsmallest(1, "GA")["team"].iloc[0]} '
+                f'{int(tbl["GA"].min())}골</div></div>'
+                f'</div>', unsafe_allow_html=True)
+
+        with st.expander(f'{latest["Season"]} 전체 순위표'):
+            show = tbl[["rank", "team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"]]
+            show.columns = ["순위", "팀", "경기", "승", "무", "패",
+                            "득점", "실점", "득실차", "승점"]
+            st.dataframe(show, use_container_width=True, hide_index=True)
+    st.caption("라리가 규정대로 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 "
+               "순으로 세웠다. 원본에 20개 팀 전 경기가 들어 있어 전체 순위를 "
+               "그대로 계산할 수 있다.")
 
 # ---------------------------------------------------------------- 클럽 정체성
 st.markdown('<div class="section">클럽 정체성</div>', unsafe_allow_html=True)

@@ -430,8 +430,8 @@ def credits_block(seasons: pd.DataFrame, credits: dict, extra: str = "") -> str:
 <div class="credits">
 <b>데이터</b> football-data.co.uk 라리가(SP1) 원본 —
 {seasons['Season'].iloc[0]}~{seasons['Season'].iloc[-1]} 전 경기 결과에서 직접 집계.
-순위는 승점 → 골득실 → 다득점 순으로 산출한 값으로, 상대전적 우선 규정을 적용하는
-공식 순위와 일부 시즌에서 다를 수 있음.{extra}<br>
+순위는 라리가 규정대로 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 순으로
+산출한다.{extra}<br>
 <b>이미지</b> 클럽 엠블럼은 FC Barcelona 소유. 사진 출처:<br>{lines}
 </div>
 """

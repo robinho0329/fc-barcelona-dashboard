@@ -19,6 +19,9 @@ nav = st.navigation({
     "라이벌": [
         st.Page("views/clasico.py", title="엘클라시코", icon="⚔️"),
     ],
+    "기록 · 대회": [
+        st.Page("views/competitions.py", title="대회별 성적", icon="🏆"),
+    ],
     "선수": [
         st.Page("views/players.py", title="선수 아카이브", icon="👤"),
         st.Page("views/masia.py", title="라 마시아", icon="🌱"),

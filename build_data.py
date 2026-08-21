@@ -113,6 +113,14 @@ def main() -> None:
     table = league_table(df)
     table.to_parquet(OUT / "league_table.parquet", index=False)
 
+    # 대시보드가 쓰기 쉬운 표준 순위표. league_table과 내용은 같고
+    # season 열 이름·타입만 정리한다 (P/W/D/L/GF/GA를 정수로 캐스팅).
+    standings = table.rename(columns={"Season": "season"})
+    int_cols = ["P", "W", "D", "L", "GF", "GA", "GD", "Pts", "rank"]
+    standings[int_cols] = standings[int_cols].astype(int)
+    standings = standings[["season", "team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "rank"]]
+    standings.to_parquet(OUT / "standings.parquet", index=False)
+
     # 리그 전체 경기도 남긴다. 상대 팀의 그 시점 폼을 계산하려면 바르사
     # 경기만으로는 부족하다.
     df.to_parquet(OUT / "all_matches.parquet", index=False)
