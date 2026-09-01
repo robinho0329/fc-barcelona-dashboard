@@ -357,6 +357,21 @@ cp barcelona/.claude/agents/barca-*.md .claude/agents/
 - `train_model.py` 는 `views/model.py` 가 읽는 **산출물을 만드는 쪽**이라
   barca-data 몫이다.
 
+### `tools/smoke.py`
+페이지가 실제로 그려지는지 훑는다. `audit.py` 가 데이터를 본다면 이쪽은 화면이다.
+
+**200 만 봐서는 안 된다** — Streamlit 은 페이지가 예외로 죽어도 200 을 준다.
+그래서 `AppTest` 로 각 페이지를 **실행해** 예외를 잡고, HTTP 도 함께 본다.
+페이지 목록은 `app.py` 의 `st.Page` 에서 읽으므로 페이지를 늘려도 따라간다.
+
+```
+"/d/workspace/EPL project/.venv/Scripts/python.exe" tools/smoke.py
+```
+
+일부러 예외를 넣어 잡히는지 확인했다(종료 코드 실패 1 / 정상 0).
+다만 브라우저에서만 드러나는 것(CSS 무시, 라벨 겹침, 이미지 미로딩)은
+여전히 사람이 봐야 한다.
+
 ### `.claude/agents/barca-qa.md`
 검수 전담 서브에이전트. 데이터 무결성 → 페이지 렌더 → **화면 문구와 실제
 수치의 일치** 세 층으로 본다. 이 프로젝트에서 실제로 터졌던 함정 일곱 가지를
