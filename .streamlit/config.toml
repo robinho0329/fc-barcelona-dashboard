@@ -1,6 +1,9 @@
+# 색 값의 기준은 _lib.py 의 CSS `:root` 블록이다. 여기 값을 바꾸려면
+# 그쪽도 같이 바꿔라 — 두 곳에 따로 적어두면 나중에 갈라진다.
 [theme]
 base = "dark"
 primaryColor = "#a50044"
 backgroundColor = "#04101f"
 secondaryBackgroundColor = "#0a1c33"
 textColor = "#f2f6fc"
+font = "sans serif"

@@ -102,9 +102,36 @@ PHOTOS = [
 
 CSS = """
 <style>
+/* 한글 웹폰트 — Pretendard. jsDelivr CDN이 막히면(예: 사내망) 브라우저가
+   자동으로 다음 폴백으로 넘어간다. Cloud에서 CDN이 막히는 경우는 확인되지
+   않았지만, 막혀도 시스템 한글 폰트(맑은 고딕/애플고딕)로 자연히 떨어진다. */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
 :root{--grana:#a50044;--blau:#004d98;--gold:#edbb00;
       --bg:#04101f;--panel:#0a1c33;--panel2:#061527;
-      --ink:#f2f6fc;--muted:#94a8c4;--line:#173355;}
+      --ink:#f2f6fc;--muted:#94a8c4;--line:#173355;
+      --font:'Pretendard','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',
+             -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+
+html, body, [class*="css"], [data-testid="stAppViewContainer"],
+section[data-testid="stSidebar"], .stMarkdown, .stText,
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"],
+div[data-baseweb="select"], div[data-baseweb="input"], .stDataFrame,
+[data-testid="stExpander"], .stTabs, button, input, textarea, label{
+      font-family:var(--font) !important;}
+
+/* 우리가 st.markdown 으로 그린 것(카드·히어로·지표 105개 클래스)은 위 규칙의
+   자식이라 Streamlit 쪽 규칙에 밀려 기본 폰트로 남는다. 컨테이너째 잡는다.
+   아이콘 폰트(Material Symbols)는 마크다운 밖에 있어 영향을 받지 않는다 —
+   확인함. `*` 에 !important 를 걸 때는 이걸 반드시 확인할 것. */
+[data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] *{
+      font-family:var(--font) !important;}
+
+/* 표·지표의 숫자는 자릿수가 흔들리면 세로 정렬이 깨진다.
+   Pretendard는 숫자 자체가 고정폭이라 tabular-nums로 폭 흔들림만 한 번 더 막는다. */
+[data-testid="stMetricValue"], [data-testid="stDataFrame"] *, .metric-value,
+.dc-num, .dc-rank, .dc-wdl, .timeline-score, .msn-line b{
+      font-variant-numeric:tabular-nums;}
 
 /* 액센트 — 세녜라 줄무늬는 이 크기에서 뭉개져 붉은 덩어리로 보인다.
    대신 블라우/그라나 2톤 바로 통일하고, 노랑은 글자 강조에만 쓴다. */
