@@ -119,7 +119,7 @@ with c1:
     f1.update_layout(height=380, yaxis_title="경기당 승점", **PLOT)
     f1.update_xaxes(gridcolor=GRID, tickangle=-30)
     f1.update_yaxes(gridcolor=GRID, range=[0, float(agg["경기당승점"].max()) * 1.2])
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
     st.caption("시대별 경기당 승점")
 
 with c2:
@@ -132,7 +132,7 @@ with c2:
                      legend=dict(orientation="h", y=1.1), **PLOT)
     f2.update_xaxes(gridcolor=GRID, tickangle=-30)
     f2.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption("시대별 경기당 득점 · 실점")
 
 # ---------------------------------------------------------------- 시즌 흐름
@@ -154,7 +154,7 @@ f3.update_layout(height=420, yaxis_title="경기당 승점",
                  legend=dict(orientation="h", y=1.16), **PLOT)
 f3.update_xaxes(gridcolor=GRID, tickangle=-60, categoryorder="array", categoryarray=ORDER)
 f3.update_yaxes(gridcolor=GRID)
-st.plotly_chart(f3, use_container_width=True)
+st.plotly_chart(f3, width="stretch")
 st.caption("별 표시 = 그 시즌 라리가 우승")
 
 # ---------------------------------------------------------------- 순위 분포
@@ -170,13 +170,13 @@ for name, *_ in [(n, ) for n, *_ in ERAS]:
 f4.update_layout(height=380, yaxis_title="최종 순위", showlegend=False, **PLOT)
 f4.update_xaxes(gridcolor=GRID, tickangle=-30)
 f4.update_yaxes(gridcolor=GRID, autorange="reversed", dtick=1)
-st.plotly_chart(f4, use_container_width=True)
+st.plotly_chart(f4, width="stretch")
 st.caption("위쪽일수록 좋은 순위. 점 하나가 한 시즌이다.")
 
 with st.expander("시대별 시즌 목록"):
     tb = seasons[["Season", "시대", "P", "W", "D", "L", "GF", "GA", "Pts", "rank", "PPG"]].copy()
     tb.columns = ["시즌", "시대", "경기", "승", "무", "패", "득점", "실점", "승점", "순위", "경기당승점"]
-    st.dataframe(tb.set_index("시즌"), use_container_width=True, height=430)
+    st.dataframe(tb.set_index("시즌"), width="stretch", height=430)
 
 st.markdown("""
 <div class="credits">

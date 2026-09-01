@@ -90,7 +90,7 @@ if mode == "구역별 밀도":
     lay = pitch_layout(height=500, showlegend=False)
     lay["shapes"] = pitch_shapes()
     fig.update_layout(**lay)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.caption("패스를 **시작한** 지점 기준. 공격 방향은 오른쪽.")
 
 elif mode == "도착 지점":
@@ -106,7 +106,7 @@ elif mode == "도착 지점":
     lay = pitch_layout(height=500, showlegend=False)
     lay["shapes"] = pitch_shapes()
     fig.update_layout(**lay)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.caption("패스가 **도착한** 지점 기준.")
 
 else:  # 패스 화살표
@@ -131,7 +131,7 @@ else:  # 패스 화살표
     lay = pitch_layout(height=500, showlegend=True,
                        legend=dict(orientation="h", y=1.06))
     fig.update_layout(**lay)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.caption(f"{len(sample):,}건 표시"
                + (f" (전체 {len(src):,}건 중 무작위 표본)" if len(src) > cap else "")
                + ". 선 하나가 패스 하나다.")
@@ -155,7 +155,7 @@ with c1:
                                  range=[0, 100], showgrid=False),
                      legend=dict(orientation="h", y=1.14), **PLOT)
     f2.update_xaxes(gridcolor=GRID, title="길이(야드)")
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
 
 with c2:
     st.markdown('<div class="section">전진 패스 상위 선수</div>', unsafe_allow_html=True)
@@ -168,7 +168,7 @@ with c2:
     f3.update_layout(height=320, xaxis_title="전진 패스 수", **PLOT)
     f3.update_xaxes(gridcolor=GRID)
     f3.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
 
 st.markdown("""
 <div class="credits">

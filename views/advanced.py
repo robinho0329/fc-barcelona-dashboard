@@ -91,7 +91,7 @@ f1 = go.Figure(go.Bar(
 f1.update_layout(height=460, xaxis_title=f"90분당 {metric}", **PLOT)
 f1.update_xaxes(gridcolor=GRID, range=[0, float(top[metric].max()) * 1.18])
 f1.update_yaxes(gridcolor=GRID, type="category")
-st.plotly_chart(f1, use_container_width=True)
+st.plotly_chart(f1, width="stretch")
 
 # ---------------------------------------------------------------- 선수 비교
 st.markdown('<div class="section">선수 비교 (레이더)</div>', unsafe_allow_html=True)
@@ -124,7 +124,7 @@ else:
         legend=dict(orientation="h", y=1.1),
         paper_bgcolor="rgba(0,0,0,0)", font=dict(color="#94a8c4", size=12),
         margin=dict(l=40, r=40, t=50, b=20))
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption("각 축은 이 필터 안 최댓값을 100으로 놓은 상대값이다. "
                "숫자에 마우스를 올리면 실제 90분당 값이 나온다.")
 
@@ -221,7 +221,7 @@ f3.update_layout(height=560 if use_photo else 500,
                  images=imgs, legend=dict(orientation="h", y=1.1), **PLOT)
 f3.update_xaxes(gridcolor=GRID, range=[x_lo - pad_x, x_hi + pad_x])
 f3.update_yaxes(gridcolor=GRID, range=[y_lo - pad_y * 1.4, y_hi + pad_y])
-st.plotly_chart(f3, use_container_width=True)
+st.plotly_chart(f3, width="stretch")
 
 n_unknown = int((table_pos == "미상").sum())
 n_photo = sum(1 for n in table.index if photos.get(n)) if use_photo else 0
@@ -233,7 +233,7 @@ st.caption(
     + (f" 포지션을 못 찾은 {n_unknown}명은 '미상'으로 묶었다." if n_unknown else ""))
 
 with st.expander("전체 수치 표"):
-    st.dataframe(table.round(2), use_container_width=True, height=430)
+    st.dataframe(table.round(2), width="stretch", height=430)
 
 st.markdown("""
 <div class="credits">

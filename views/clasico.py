@@ -178,7 +178,7 @@ f1 = go.Figure(go.Bar(
 f1.update_layout(height=310, yaxis_title="골 득실차", showlegend=False, **PLOT)
 f1.update_xaxes(gridcolor=GRID)
 f1.update_yaxes(gridcolor=GRID, zerolinecolor="#2b4a72")
-st.plotly_chart(f1, use_container_width=True)
+st.plotly_chart(f1, width="stretch")
 
 # ---------------------------------------------------------------- 시대별
 c1, c2 = st.columns(2)
@@ -196,7 +196,7 @@ with c1:
                      legend=dict(orientation="h", y=1.14), **PLOT)
     f2.update_xaxes(gridcolor=GRID)
     f2.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption(f"2020년대는 {int(dec.loc['2020s', '승'])}승 {int(dec.loc['2020s', '무'])}무 "
                f"{int(dec.loc['2020s', '패'])}패로 처음 열세다.")
 
@@ -211,7 +211,7 @@ with c2:
     f3.update_layout(height=300, xaxis_title="경기 수", **PLOT)
     f3.update_xaxes(gridcolor=GRID, range=[0, int(sc.max()) + 2])
     f3.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
     st.caption("바르사 기준 스코어 (득점-실점)")
 
 # ---------------------------------------------------------------- 기록
@@ -269,6 +269,6 @@ else:
     tb = view[["Season", "date", "venue", "score", "result", "gd"]].copy()
     tb["date"] = tb["date"].dt.strftime("%Y-%m-%d")
     tb.columns = ["시즌", "날짜", "장소", "스코어", "결과", "득실차"]
-    st.dataframe(tb.set_index("날짜"), use_container_width=True, height=380)
+    st.dataframe(tb.set_index("날짜"), width="stretch", height=380)
 
 st.markdown(credits_block(seasons, credits, CLASICO_NOTE), unsafe_allow_html=True)

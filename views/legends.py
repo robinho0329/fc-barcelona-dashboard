@@ -211,7 +211,7 @@ for row in (LEGENDS[:5], LEGENDS[5:]):
 </div>""", unsafe_allow_html=True)
             # 라벨에 이름을 또 넣으면 카드와 중복돼 지저분하다. 위치로 대상이 분명하다.
             label = "선택됨" if st.session_state.legend == lg["key"] else "자세히"
-            if st.button(label, key=f"btn_{lg['key']}", use_container_width=True,
+            if st.button(label, key=f"btn_{lg['key']}", width="stretch",
                          disabled=st.session_state.legend == lg["key"]):
                 st.session_state.legend = lg["key"]
                 st.rerun()
@@ -277,7 +277,7 @@ else:
                          legend=dict(orientation="h", y=1.14), **PLOT)
         f0.update_xaxes(gridcolor=GRID)
         f0.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(f0, use_container_width=True)
+        st.plotly_chart(f0, width="stretch")
         st.caption("대회별 골·도움. FBref 클럽 페이지의 대회별 표를 그대로 합산했다.")
 
 # ---------------------------------------------------------------- 이벤트 스탯
@@ -320,7 +320,7 @@ else:
                          legend=dict(orientation="h", y=1.12), **PLOT)
         f1.update_xaxes(gridcolor=GRID, tickangle=-45)
         f1.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(f1, use_container_width=True)
+        st.plotly_chart(f1, width="stretch")
         st.caption("StatsBomb이 공개한 라리가 경기만 집계한 값이다. 위의 통산 기록과 "
                    "숫자가 다른 것은 범위가 좁아서이며, 이 구역은 통산 합계가 아니라 "
                    "패스·드리블·압박 같은 플레이 성향을 보기 위한 것이다.")

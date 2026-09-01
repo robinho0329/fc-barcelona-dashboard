@@ -197,7 +197,7 @@ fig.add_hline(y=idx["지수"].mean(), line_dash="dot", line_color="#94a8c4",
 fig.update_layout(height=400, yaxis_title="티키타카 지수 (0~100)", **PLOT)
 fig.update_xaxes(gridcolor=GRID, tickangle=-60)
 fig.update_yaxes(gridcolor=GRID, range=[0, 105])
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 st.caption("막대 색 = 감독 시대. " + " · ".join(f"{n}" for n, *_ in ERA_OF))
 
 # ---------------------------------------------------------------- 구성 요소
@@ -210,7 +210,7 @@ with c1:
     f2.update_layout(height=320, yaxis_title="경기당 패스", **PLOT)
     f2.update_xaxes(gridcolor=GRID, tickangle=-60)
     f2.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption(f"최고 {idx['경기당패스'].max():.0f}회 "
                f"({idx.loc[idx['경기당패스'].idxmax(), 'season']})")
 
@@ -224,7 +224,7 @@ with c2:
                      legend=dict(orientation="h", y=1.14), **PLOT)
     f3.update_xaxes(gridcolor=GRID, tickangle=-60)
     f3.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
     st.caption(f"짧은 패스 = {SHORT_PASS}야드 미만")
 
 # ---------------------------------------------------------------- 시대별
@@ -246,7 +246,7 @@ f4 = go.Figure(go.Bar(
 f4.update_layout(height=360, yaxis_title="평균 지수", **PLOT)
 f4.update_xaxes(gridcolor=GRID)
 f4.update_yaxes(gridcolor=GRID, range=[0, 110])
-st.plotly_chart(f4, use_container_width=True)
+st.plotly_chart(f4, width="stretch")
 
 # ---------------------------------------------------------------- 점유율
 if not poss.empty:
@@ -267,7 +267,7 @@ StatsBomb 패스 좌표가 {idx['season'].iloc[-1]}에서 끊겨 지수도 거�
     f5.update_layout(height=340, yaxis_title="평균 점유율(%)", **PLOT)
     f5.update_xaxes(gridcolor=GRID, tickangle=-60)
     f5.update_yaxes(gridcolor=GRID, range=[50, 75])
-    st.plotly_chart(f5, use_container_width=True)
+    st.plotly_chart(f5, width="stretch")
     hi = poss.loc[poss["점유율"].idxmax()]
     st.caption(f"전 대회 기준. 최고 {hi['점유율']:.1f}% ({hi['season']}) · "
                f"최근 {poss.iloc[-1]['season']} {poss.iloc[-1]['점유율']:.1f}%")
@@ -278,7 +278,7 @@ with st.expander("시즌별 수치 표"):
               "평균길이", "점유율", "지수"]].copy()
     tb.columns = ["시즌", "시대", "집계 경기", "경기당 패스", "성공률(%)",
                   "짧은 패스(%)", "평균 길이", "점유율(%)", "지수"]
-    st.dataframe(tb.round(1).set_index("시즌"), use_container_width=True, height=430)
+    st.dataframe(tb.round(1).set_index("시즌"), width="stretch", height=430)
 
 st.markdown(f"""
 <div class="credits">

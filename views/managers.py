@@ -89,7 +89,7 @@ for start in range(0, len(mg), PER_ROW):
   <span>{r['첫시즌'][:4]}~{r['끝시즌'][:4]}{tag}</span></div>
 </div>""", unsafe_allow_html=True)
             label = "선택됨" if st.session_state.manager == idx else "자세히"
-            if st.button(label, key=f"mg_{idx}", use_container_width=True,
+            if st.button(label, key=f"mg_{idx}", width="stretch",
                          disabled=st.session_state.manager == idx):
                 st.session_state.manager = idx
                 st.rerun()
@@ -214,7 +214,7 @@ if len(by_season) > 1:
     f1.update_layout(height=320, yaxis_title="경기당 승점", **PLOT)
     f1.update_xaxes(gridcolor=GRID)
     f1.update_yaxes(gridcolor=GRID, range=[0, 3.1])
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
 
 # 상대별 성적
 st.markdown('<div class="section">상대별 성적 (최다 맞대결 10팀)</div>', unsafe_allow_html=True)
@@ -232,7 +232,7 @@ f2.update_layout(height=380, barmode="stack", xaxis_title="경기 수",
                  legend=dict(orientation="h", y=1.1), **PLOT)
 f2.update_xaxes(gridcolor=GRID)
 f2.update_yaxes(gridcolor=GRID, type="category")
-st.plotly_chart(f2, use_container_width=True)
+st.plotly_chart(f2, width="stretch")
 
 # ---------------------------------------------------------------- 전술 성향
 # 네 소스를 재임 **날짜** 구간으로 잘라 감독별 성향을 만든다. 시즌으로 자르면
@@ -401,7 +401,7 @@ if not style.empty:
                         range=[lo_x, float(srt[metric].max()) * 1.22],
                         zerolinecolor="#2b4a72")
         fs.update_yaxes(gridcolor=GRID, type="category")
-        st.plotly_chart(fs, use_container_width=True)
+        st.plotly_chart(fs, width="stretch")
 
         note = HINT.get(metric, "")
         st.caption(f"금색 = 지금 고른 감독 · 대상 {len(srt)}명"
@@ -410,7 +410,7 @@ if not style.empty:
 
     with st.expander("전술 지표 표 (빈칸 = 그 시기에 원본이 없음)"):
         st.dataframe(style.set_index("감독").round(2),
-                     use_container_width=True, height=420)
+                     width="stretch", height=420)
 
 # ---------------------------------------------------------------- 전체 비교
 st.markdown('<div class="section">감독 전체 비교</div>', unsafe_allow_html=True)
@@ -432,7 +432,7 @@ else:
     f3.update_layout(height=max(320, 30 * len(comp)), xaxis_title="경기당 승점", **PLOT)
     f3.update_xaxes(gridcolor=GRID, range=[0, 3.0])
     f3.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
     st.caption("금색 = 지금 고른 감독 · 회색 = 임시 감독")
 
 with st.expander("감독 전체 기록 표"):
@@ -440,7 +440,7 @@ with st.expander("감독 전체 기록 표"):
              "득점", "실점", "승점", "승률", "경기당승점", "우승"]].copy()
     tb.columns = ["감독", "구분", "첫 시즌", "끝 시즌", "시즌", "경기", "승", "무", "패",
                   "득점", "실점", "승점", "승률", "경기당승점", "리그 우승"]
-    st.dataframe(tb.set_index("감독"), use_container_width=True, height=430)
+    st.dataframe(tb.set_index("감독"), width="stretch", height=430)
 
 st.markdown("""
 <div class="credits">

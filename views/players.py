@@ -118,7 +118,7 @@ tbl = tbl.sort_values("출전분", ascending=False)
 photos = portrait_map(tbl["선수"].unique())
 tbl.insert(0, "사진", tbl["선수"].map(photos))
 st.dataframe(
-    tbl.set_index("선수"), use_container_width=True, height=430,
+    tbl.set_index("선수"), width="stretch", height=430,
     column_config={"사진": st.column_config.ImageColumn("사진", width="small")})
 st.caption(f"사진은 Transfermarkt 시즌 스쿼드에서 받은 것으로, "
            f"{sum(1 for v in photos.values() if v)}/{len(photos)}명 붙어 있다.")
@@ -142,7 +142,7 @@ with c1:
                      legend=dict(orientation="h", y=1.08), **PLOT)
     f1.update_xaxes(gridcolor=GRID)
     f1.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
     st.caption("골 기준 상위 12명 · 도움을 쌓아 표시")
 
 with c2:
@@ -153,7 +153,7 @@ with c2:
     f2.update_layout(height=420, xaxis_title="출전 시간(분)", **PLOT)
     f2.update_xaxes(gridcolor=GRID)
     f2.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption("출전 시간 기준 상위 12명")
 
 # ---------------------------------------------------------------- 선수 궤적
@@ -173,7 +173,7 @@ if picked:
                      legend=dict(orientation="h", y=1.1), **PLOT)
     f3.update_xaxes(gridcolor=GRID, tickangle=-45)
     f3.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
 else:
     st.info("선수를 한 명 이상 고르세요.")
 

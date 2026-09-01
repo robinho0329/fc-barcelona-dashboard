@@ -217,7 +217,7 @@ if not standings.empty:
             show = tbl[["rank", "team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"]]
             show.columns = ["순위", "팀", "경기", "승", "무", "패",
                             "득점", "실점", "득실차", "승점"]
-            st.dataframe(show, use_container_width=True, hide_index=True)
+            st.dataframe(show, width="stretch", hide_index=True)
     st.caption("라리가 규정대로 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 "
                "순으로 세웠다. 원본에 20개 팀 전 경기가 들어 있어 전체 순위를 "
                "그대로 계산할 수 있다.")
@@ -290,7 +290,7 @@ fig.add_hline(y=seasons["PPG"].mean(), line_dash="dot", line_color=BLAU,
 fig.update_layout(height=340, yaxis_title="경기당 승점", **PLOT)
 fig.update_xaxes(gridcolor=GRID, tickangle=-60)
 fig.update_yaxes(gridcolor=GRID)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 st.caption("금색 = 해당 시즌 라리가 우승")
 
 c1, c2 = st.columns(2)
@@ -304,7 +304,7 @@ with c1:
     f2.update_layout(height=300, yaxis_title="우승 횟수", **PLOT)
     f2.update_xaxes(gridcolor=GRID)
     f2.update_yaxes(gridcolor=GRID, range=[0, int(dec.max()) + 2])
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
 
 with c2:
     st.markdown('<div class="section">시즌별 득점 · 실점</div>', unsafe_allow_html=True)
@@ -316,11 +316,11 @@ with c2:
     f3.update_layout(height=300, yaxis_title="골", legend=dict(orientation="h", y=1.12), **PLOT)
     f3.update_xaxes(gridcolor=GRID, tickangle=-60)
     f3.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
 
 with st.expander("시즌별 전체 기록 보기"):
     tbl = seasons[["Season", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "rank", "PPG"]].copy()
     tbl.columns = ["시즌", "경기", "승", "무", "패", "득점", "실점", "득실차", "승점", "순위", "경기당승점"]
-    st.dataframe(tbl.set_index("시즌"), use_container_width=True, height=420)
+    st.dataframe(tbl.set_index("시즌"), width="stretch", height=420)
 
 st.markdown(credits_block(seasons, credits), unsafe_allow_html=True)

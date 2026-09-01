@@ -258,7 +258,7 @@ else:
         images=imgs, margin=dict(l=10, r=10, t=40, b=10),
         xaxis=dict(range=[0.0, X_MAX], visible=False),
         yaxis=dict(range=[-0.9, SPAN + 1.1], visible=False))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     hub = involved.index[0]
     hub_share = involved.iloc[0] / involved.sum() * 100
@@ -354,7 +354,7 @@ else:
                     range=[0, 40], showgrid=False),
         legend=dict(orientation="h", y=1.14), **PLOT)
     fs1.update_xaxes(gridcolor=GRID, tickangle=-60)
-    st.plotly_chart(fs1, use_container_width=True)
+    st.plotly_chart(fs1, width="stretch")
     st.caption("막대가 높을수록 골이 여러 선수에게 퍼져 있고, 금색 선이 높을수록 "
                "한 선수에게 몰려 있다. 둘은 반대로 움직인다.")
 
@@ -370,7 +370,7 @@ else:
                           legend=dict(orientation="h", y=1.14), **PLOT)
         fs2.update_xaxes(gridcolor=GRID, tickangle=-60)
         fs2.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(fs2, use_container_width=True)
+        st.plotly_chart(fs2, width="stretch")
         st.caption("골을 만든 서로 다른 조합의 수와, 관여한 선수 수")
 
     with c2:
@@ -380,7 +380,7 @@ else:
         fs3.update_layout(height=320, yaxis_title="조합당 골", **PLOT)
         fs3.update_xaxes(gridcolor=GRID, tickangle=-60)
         fs3.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(fs3, use_container_width=True)
+        st.plotly_chart(fs3, width="stretch")
         st.caption("높을수록 같은 짝이 반복해서 골을 만들었다는 뜻이다")
 
     st.markdown(f"""
@@ -402,7 +402,7 @@ else:
         tb = struct[["시즌", "골", "참여 선수", "조합 수", "조합당 골",
                      "허브", "최다 허브 비중", "분산도"]].copy()
         st.dataframe(tb.round(2).set_index("시즌"),
-                     use_container_width=True, height=430)
+                     width="stretch", height=430)
 
 # ---------------------------------------------------------------- 상위 조합
 c1, c2 = st.columns(2)
@@ -417,7 +417,7 @@ with c1:
     f2.update_layout(height=440, xaxis_title="골", **PLOT)
     f2.update_xaxes(gridcolor=GRID, range=[0, int(top["골"].max()) * 1.2])
     f2.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
 
 with c2:
     st.markdown('<div class="section">도움 · 득점 관여</div>', unsafe_allow_html=True)
@@ -435,7 +435,7 @@ with c2:
                      legend=dict(orientation="h", y=1.08), **PLOT)
     f3.update_xaxes(gridcolor=GRID)
     f3.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
 
 # ---------------------------------------------------------------- 상호 연계
 st.markdown('<div class="section">주고받은 사이</div>', unsafe_allow_html=True)
@@ -469,12 +469,12 @@ else:
                      legend=dict(orientation="h", y=1.08), **PLOT)
     f4.update_xaxes(gridcolor=GRID)
     f4.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f4, use_container_width=True)
+    st.plotly_chart(f4, width="stretch")
 
 with st.expander("조합 전체 표"):
     tb = pairs.copy()
     tb.columns = ["도움", "득점", "골"]
-    st.dataframe(tb.reset_index(drop=True), use_container_width=True, height=420)
+    st.dataframe(tb.reset_index(drop=True), width="stretch", height=420)
 
 _us = raw[raw["출처"] == "Understat"]
 _sb = raw[raw["출처"] == "StatsBomb"]

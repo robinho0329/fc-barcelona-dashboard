@@ -87,7 +87,7 @@ with c1:
                      legend=dict(orientation="h", y=1.12), **PLOT)
     f1.update_xaxes(gridcolor=GRID)
     f1.update_yaxes(gridcolor=GRID, range=[0, 100])
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
     lift = cal["실제승률"].iloc[-1] - cal["실제승률"].iloc[0]
     st.caption(f"모델이 가장 자신 있어 한 25%는 실제로 {cal['실제승률'].iloc[-1]:.1f}% 승리했고, "
                f"가장 불안해한 25%는 {cal['실제승률'].iloc[0]:.1f}%였다. 격차 {lift:.1f}%p.")
@@ -103,7 +103,7 @@ with c2:
                     [1, "rgba(165,0,68,.9)"]],
         hovertemplate="%{y} → %{x}<br>%{z}경기<extra></extra>", showscale=False))
     f2.update_layout(height=360, **PLOT)
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption("모델은 사실상 '승'만 고른다. 무승부와 패배를 거의 못 짚는데, "
                "이건 데이터가 승리로 크게 치우쳐 있어서다.")
 
@@ -132,7 +132,7 @@ f3.update_layout(height=340,
                              showgrid=False, range=[0, 1.2]),
                  legend=dict(orientation="h", y=1.14), **PLOT)
 f3.update_xaxes(gridcolor=GRID)
-st.plotly_chart(f3, use_container_width=True)
+st.plotly_chart(f3, width="stretch")
 
 # ---------------------------------------------------------------- 피처 방향
 st.markdown('<div class="section">무엇이 승리 확률을 밀어올리나</div>', unsafe_allow_html=True)
@@ -154,7 +154,7 @@ f4 = go.Figure(go.Bar(
 f4.update_layout(height=460, xaxis_title="로지스틱 회귀 계수 (승 클래스)", **PLOT)
 f4.update_xaxes(gridcolor=GRID, zerolinecolor="#2b4a72")
 f4.update_yaxes(gridcolor=GRID, type="category")
-st.plotly_chart(f4, use_container_width=True)
+st.plotly_chart(f4, width="stretch")
 st.caption("그라나 = 승리 확률을 올리는 방향 · 흰색 = 내리는 방향. "
            "표준화한 값의 계수라 서로 크기를 비교할 수 있다. "
            "상대 순위는 숫자가 클수록 약한 팀이라는 뜻이다.")
@@ -186,7 +186,7 @@ else:
     show.columns = ["날짜", "시즌", "장소", "상대", "승 확률", "무 확률", "패 확률",
                     "예측", "실제", "적중"]
     st.dataframe(show.sort_values("날짜", ascending=False).set_index("날짜"),
-                 use_container_width=True, height=430)
+                 width="stretch", height=430)
 
 st.markdown("""
 <div class="credits">

@@ -115,7 +115,7 @@ with c1:
     f1.update_layout(height=360, xaxis_title="경기 수", **PLOT)
     f1.update_xaxes(gridcolor=GRID, range=[0, int(sc.max()) * 1.2])
     f1.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
 
 with c2:
     st.markdown('<div class="section">상대별 전적 (상위 12팀)</div>', unsafe_allow_html=True)
@@ -133,7 +133,7 @@ with c2:
                      legend=dict(orientation="h", y=1.1), **PLOT)
     f2.update_xaxes(gridcolor=GRID)
     f2.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
 
 # ---------------------------------------------------------------- 시즌 흐름
 st.markdown('<div class="section">시즌별 경기 수와 승률</div>', unsafe_allow_html=True)
@@ -154,7 +154,7 @@ f3.update_layout(height=340,
                              range=[0, 100], showgrid=False),
                  legend=dict(orientation="h", y=1.14), **PLOT)
 f3.update_xaxes(gridcolor=GRID, tickangle=-60)
-st.plotly_chart(f3, use_container_width=True)
+st.plotly_chart(f3, width="stretch")
 
 # ---------------------------------------------------------------- 표
 st.markdown('<div class="section">경기 목록</div>', unsafe_allow_html=True)
@@ -168,7 +168,7 @@ tb = view[cols].copy()
 tb["date"] = tb["date"].dt.strftime("%Y-%m-%d")
 tb.columns = labels
 st.dataframe(tb.sort_values("날짜", ascending=False).set_index("날짜"),
-             use_container_width=True, height=460)
+             width="stretch", height=460)
 st.caption("슛·유효슛·코너·경고는 2005/06 시즌부터 원본에 들어 있어, "
            "그 이전 경기는 빈칸이다.")
 

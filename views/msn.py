@@ -80,11 +80,11 @@ def draw_triangle(links: pd.DataFrame, order: list, kor: dict, color: dict,
         margin=dict(l=10, r=10, t=30, b=10),
         xaxis=dict(range=[-2.7, 2.7], visible=False, constrain="domain"),
         yaxis=dict(range=[-3.0, 2.8], visible=False, scaleanchor="x", scaleratio=1))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     tbl = (links.assign(도움=links["도움"].map(kor), 득점=links["득점"].map(kor))
            .sort_values("골", ascending=False)[["도움", "득점", "골"]])
-    st.dataframe(tbl.reset_index(drop=True), use_container_width=True,
+    st.dataframe(tbl.reset_index(drop=True), width="stretch",
                  hide_index=True)
     st.caption(note)
 
@@ -353,7 +353,7 @@ if not mvp.empty:
                          legend=dict(orientation="h", y=1.12), **PLOT)
         fm.update_xaxes(gridcolor=GRID)
         fm.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(fm, use_container_width=True)
+        st.plotly_chart(fm, width="stretch")
         st.caption("전 대회 합산. 2011/12에 비야가 빠진 자리가 그대로 보인다")
 
     with mv2:
@@ -366,7 +366,7 @@ if not mvp.empty:
         fs2.update_layout(height=360, yaxis_title="팀 득점 중 셋의 비중(%)", **PLOT)
         fs2.update_xaxes(gridcolor=GRID)
         fs2.update_yaxes(gridcolor=GRID, range=[0, 100])
-        st.plotly_chart(fs2, use_container_width=True)
+        st.plotly_chart(fs2, width="stretch")
         st.caption(f"비야가 빠진 2011/12에 {sh[0] - sh[1]:.0f}%p 떨어졌다")
 
     with st.expander("1기 시즌별 기록 표"):
@@ -374,7 +374,7 @@ if not mvp.empty:
               [["season", "선수", "경기", "선발", "출전분", "골", "도움"]]
               .sort_values(["season", "골"], ascending=[True, False]))
         tb.columns = ["시즌", "선수", "경기", "선발", "출전분", "골", "도움"]
-        st.dataframe(tb, use_container_width=True, hide_index=True)
+        st.dataframe(tb, width="stretch", hide_index=True)
 
     # ---- 셋 사이의 삼각형
     _sb = pathlib.Path("data/statsbomb/shots.parquet")
@@ -432,7 +432,7 @@ if not mvp.empty:
                              legend=dict(orientation="h", y=1.14), **PLOT)
             fp.update_xaxes(gridcolor=GRID)
             fp.update_yaxes(gridcolor=GRID)
-            st.plotly_chart(fp, use_container_width=True)
+            st.plotly_chart(fp, width="stretch")
             st.caption("상황별 득점. 흐름 속에서 나온 골이 절반을 넘는다")
 
         with r2:
@@ -447,7 +447,7 @@ if not mvp.empty:
                              legend=dict(orientation="h", y=1.14), **PLOT)
             fb.update_xaxes(gridcolor=GRID)
             fb.update_yaxes(gridcolor=GRID)
-            st.plotly_chart(fb, use_container_width=True)
+            st.plotly_chart(fb, width="stretch")
             st.caption("왼발 득점이 오른발의 두 배가 넘는다 — 메시 몫이 크다")
 
         # Understat 의 lastAction 은 StatsBomb 에 없다. 대신 골로 이어진 패스
@@ -464,7 +464,7 @@ if not mvp.empty:
             fa.update_layout(height=320, xaxis_title="골", **PLOT)
             fa.update_xaxes(gridcolor=GRID, range=[0, int(act.max()) * 1.2])
             fa.update_yaxes(gridcolor=GRID, type="category")
-            st.plotly_chart(fa, use_container_width=True)
+            st.plotly_chart(fa, width="stretch")
             st.caption(
                 "'직접'은 도움 없이 혼자 만든 골이다(개인 돌파·직접 프리킥 등). "
                 "같은 원본으로 2기를 재면 **스루패스 19.1% · 크로스 13.4%** 인데 "
@@ -481,7 +481,7 @@ if not mvp.empty:
             ft.update_layout(height=280, xaxis_title="골", **PLOT)
             ft.update_xaxes(gridcolor=GRID, range=[0, int(tech.max()) * 1.2])
             ft.update_yaxes(gridcolor=GRID, type="category")
-            st.plotly_chart(ft, use_container_width=True)
+            st.plotly_chart(ft, width="stretch")
 
         feed = (mvp_rt[mvp_rt["도움"].notna() & ~mvp_rt["도움"].isin(MVP)]
                 ["도움"].value_counts().head(8).iloc[::-1])
@@ -495,7 +495,7 @@ if not mvp.empty:
             ff.update_layout(height=320, xaxis_title="셋에게 준 도움", **PLOT)
             ff.update_xaxes(gridcolor=GRID, range=[0, int(feed.max()) * 1.25])
             ff.update_yaxes(gridcolor=GRID, type="category")
-            st.plotly_chart(ff, use_container_width=True)
+            st.plotly_chart(ff, width="stretch")
             st.caption("셋 바깥에서 온 공. 오른쪽 풀백 알베스가 압도적으로 많다 — "
                        "1기가 셋끼리보다 측면과 중원에서 받았다는 뜻이다.")
 
@@ -606,7 +606,7 @@ with c1:
                      legend=dict(orientation="h", y=1.12), **PLOT)
     f1.update_xaxes(gridcolor=GRID)
     f1.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
     st.caption("전 대회 합산 — 라리가·챔피언스리그·코파 델 레이·수페르코파")
 
 with c2:
@@ -621,7 +621,7 @@ with c2:
     f2.update_layout(height=380, yaxis_title="팀 득점 중 MSN 비중(%)", **PLOT)
     f2.update_xaxes(gridcolor=GRID)
     f2.update_yaxes(gridcolor=GRID, range=[0, 100])
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption("나머지 스쿼드 전원이 나눠 넣은 몫이 3분의 1도 안 됐다")
 
 # ---------------------------------------------------------------- 삼각형
@@ -673,7 +673,7 @@ if not routes.empty:
                          legend=dict(orientation="h", y=1.14), **PLOT)
         fr.update_xaxes(gridcolor=GRID)
         fr.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(fr, use_container_width=True)
+        st.plotly_chart(fr, width="stretch")
         st.caption("상황별 득점. 셋 다 오픈 플레이 비중이 압도적이다")
 
     with c2:
@@ -686,7 +686,7 @@ if not routes.empty:
                          legend=dict(orientation="h", y=1.14), **PLOT)
         fb.update_xaxes(gridcolor=GRID)
         fb.update_yaxes(gridcolor=GRID)
-        st.plotly_chart(fb, use_container_width=True)
+        st.plotly_chart(fb, width="stretch")
         st.caption("메시는 왼발, 수아레스·네이마르는 오른발이 주무기였다")
 
     st.markdown('<div class="section">골 직전에 무슨 일이 있었나</div>',
@@ -703,7 +703,7 @@ if not routes.empty:
     fa.update_layout(height=340, xaxis_title="골", **PLOT)
     fa.update_xaxes(gridcolor=GRID, range=[0, int(act.max()) * 1.2])
     fa.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(fa, use_container_width=True)
+    st.plotly_chart(fa, width="stretch")
 
     feeders = (routes[routes["player_assisted"].notna()
                       & ~routes["player_assisted"].isin(TRIO)]
@@ -718,7 +718,7 @@ if not routes.empty:
         ff.update_layout(height=320, xaxis_title="MSN에게 준 도움", **PLOT)
         ff.update_xaxes(gridcolor=GRID, range=[0, int(feeders.max()) * 1.25])
         ff.update_yaxes(gridcolor=GRID, type="category")
-        st.plotly_chart(ff, use_container_width=True)
+        st.plotly_chart(ff, width="stretch")
         st.caption("셋을 뺀 나머지 선수들의 도움. 알바·알베스 같은 풀백이 위에 있다")
 
 # ---------------------------------------------------------------- 표
@@ -727,7 +727,7 @@ tb = trio[["Player", "season", "경기", "선발", "출전분", "골", "도움",
 tb["Player"] = tb["Player"].map(KOR)
 tb.columns = ["선수", "시즌", "경기", "선발", "출전분", "골", "도움", "골p90"]
 st.dataframe(tb.sort_values(["시즌", "골"], ascending=[True, False])
-             .set_index("시즌"), use_container_width=True, height=360)
+             .set_index("시즌"), width="stretch", height=360)
 
 st.markdown("""
 <div class="credits">
@@ -773,7 +773,7 @@ if not mvp.empty:
             fc.update_xaxes(gridcolor=GRID)
             fc.update_yaxes(gridcolor=GRID,
                             range=[0, float(comp[metric].max()) * 1.25])
-            st.plotly_chart(fc, use_container_width=True)
+            st.plotly_chart(fc, width="stretch")
 
     st.caption(
         f"MVP는 2시즌 {mvp_goals}골(팀의 "

@@ -79,7 +79,7 @@ for is_goal, color, name in [(False, BLAU, "무득점"), (True, GRANA, "골")]:
                       "%{customdata[4]}<extra></extra>"))
 fig.update_layout(**pitch_layout(height=490, showlegend=True,
                                  legend=dict(orientation="h", y=1.06)))
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 st.caption("점 크기 = xG. 공격 방향은 오른쪽, 골대는 오른쪽 끝. "
            "StatsBomb 좌표계(가로 120 × 세로 80).")
 
@@ -102,7 +102,7 @@ with c1:
                      legend=dict(orientation="h", y=1.14), **PLOT)
     f2.update_xaxes(gridcolor=GRID, title="거리 (야드)")
     f2.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
 
 with c2:
     st.markdown('<div class="section">슈팅 부위</div>', unsafe_allow_html=True)
@@ -118,7 +118,7 @@ with c2:
                      legend=dict(orientation="h", y=1.14), **PLOT)
     f3.update_xaxes(gridcolor=GRID)
     f3.update_yaxes(gridcolor=GRID, type="category")
-    st.plotly_chart(f3, use_container_width=True)
+    st.plotly_chart(f3, width="stretch")
 
 # ---------------------------------------------------------------- 선수 순위
 st.markdown('<div class="section">선수별 xG · 득점</div>', unsafe_allow_html=True)
@@ -140,12 +140,12 @@ f4.update_layout(height=380, yaxis_title="골 / xG",
                  legend=dict(orientation="h", y=1.1), **PLOT)
 f4.update_xaxes(gridcolor=GRID, tickangle=-40)
 f4.update_yaxes(gridcolor=GRID)
-st.plotly_chart(f4, use_container_width=True)
+st.plotly_chart(f4, width="stretch")
 st.caption("노란 점이 파란 막대보다 위면 기대치보다 많이 넣었다는 뜻이다.")
 
 with st.expander("선수별 수치 표"):
     st.dataframe(rank[["슛", "골", "xG", "xG 대비", "결정률"]],
-                 use_container_width=True, height=420)
+                 width="stretch", height=420)
 
 st.markdown("""
 <div class="credits">

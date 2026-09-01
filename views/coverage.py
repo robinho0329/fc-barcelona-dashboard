@@ -101,7 +101,7 @@ fig = go.Figure(go.Heatmap(
 fig.update_layout(height=60 + 42 * len(cov), **PLOT)
 fig.update_xaxes(gridcolor=GRID, tickangle=-60, side="bottom")
 fig.update_yaxes(gridcolor=GRID, autorange="reversed")
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 st.caption("그라나 = 그 시즌 데이터 있음 · 어두운 칸 = 없음")
 
 # ---------------------------------------------------------------- 소스 카드
@@ -136,7 +136,7 @@ f2.update_layout(height=340, barmode="overlay", yaxis_title="경기 수",
                  legend=dict(orientation="h", y=1.14), **PLOT)
 f2.update_xaxes(gridcolor=GRID, tickangle=-60)
 f2.update_yaxes(gridcolor=GRID)
-st.plotly_chart(f2, use_container_width=True)
+st.plotly_chart(f2, width="stretch")
 st.caption("2004/05는 원본 파일이 27경기에서 잘려 있고, "
            "슈팅·코너·파울·카드는 2005/06부터 제공된다.")
 
@@ -176,7 +176,7 @@ with st.expander("소스별 커버 시즌 목록"):
     tb = cov[["소스", "단위", "건수"]].copy()
     tb["시즌 수"] = cov["시즌"].map(len)
     tb["범위"] = cov["시즌"].map(lambda s: f"{s[0]} ~ {s[-1]}")
-    st.dataframe(tb.set_index("소스"), use_container_width=True)
+    st.dataframe(tb.set_index("소스"), width="stretch")
 
 st.markdown("""
 <div class="credits">

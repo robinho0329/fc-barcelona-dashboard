@@ -136,7 +136,7 @@ with c1:
     f1.update_layout(height=340, yaxis_title="경기당 득점", **PLOT)
     f1.update_xaxes(gridcolor=GRID, tickangle=-20)
     f1.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(f1, use_container_width=True)
+    st.plotly_chart(f1, width="stretch")
     st.caption("경기당 득점 = 총 득점 / 경기 수. 대회별 표본 수가 크게 달라"
                "(라리가 1,262경기 vs UEFA 슈퍼컵 1경기) 표본이 적은 대회는 참고만.")
 
@@ -150,13 +150,13 @@ with c2:
     f2.update_layout(height=340, yaxis_title="승률(%)", **PLOT)
     f2.update_xaxes(gridcolor=GRID, tickangle=-20)
     f2.update_yaxes(gridcolor=GRID, range=[0, 105])
-    st.plotly_chart(f2, use_container_width=True)
+    st.plotly_chart(f2, width="stretch")
     st.caption("UEFA 슈퍼컵은 통산 1경기(2015/16 세비야전 승)뿐이라 승률 100%가 표본 부족의 결과다.")
 
 with st.expander("대회별 전적 표"):
     tb = summ[["경기", "승", "무", "패", "승률", "경기당득점", "경기당실점", "평균점유율"]].copy()
     tb.columns = ["경기", "승", "무", "패", "승률(%)", "경기당 득점", "경기당 실점", "평균 점유율(%)"]
-    st.dataframe(tb.round(2), use_container_width=True)
+    st.dataframe(tb.round(2), width="stretch")
 
 # ---------------------------------------------------------------- 시즌별 비중
 st.markdown('<div class="section">시즌별 대회 비중</div>', unsafe_allow_html=True)
@@ -171,7 +171,7 @@ f3.update_layout(height=420, barmode="stack", yaxis_title="경기 수",
                  legend=dict(orientation="h", y=1.1), **PLOT)
 f3.update_xaxes(gridcolor=GRID, tickangle=-60)
 f3.update_yaxes(gridcolor=GRID)
-st.plotly_chart(f3, use_container_width=True)
+st.plotly_chart(f3, width="stretch")
 cl_seasons = club[club["comp"] == "챔피언스리그"].groupby("season").size()
 best_cl = cl_seasons.idxmax()
 st.caption(f"챔피언스리그 최다 경기 시즌 {best_cl}({int(cl_seasons.max())}경기) — "
@@ -198,7 +198,7 @@ with c3:
     fg.update_layout(height=380, xaxis_title="통산 골", **PLOT)
     fg.update_xaxes(gridcolor=GRID)
     fg.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(fg, use_container_width=True)
+    st.plotly_chart(fg, width="stretch")
     st.caption(f"{sel_comp} 통산 득점 TOP 10")
 
 with c4:
@@ -210,13 +210,13 @@ with c4:
     fa.update_layout(height=380, xaxis_title="통산 도움", **PLOT)
     fa.update_xaxes(gridcolor=GRID)
     fa.update_yaxes(gridcolor=GRID)
-    st.plotly_chart(fa, use_container_width=True)
+    st.plotly_chart(fa, width="stretch")
     st.caption(f"{sel_comp} 통산 도움 TOP 10 · 도움은 FBref가 기록을 남긴 경기만 반영한다")
 
 with st.expander("대회별 선수 기록 표"):
     tb2 = agg.copy()
     tb2.columns = ["선수", "골", "도움", "출전 분", "경기"]
-    st.dataframe(tb2.round(0).set_index("선수"), use_container_width=True, height=400)
+    st.dataframe(tb2.round(0).set_index("선수"), width="stretch", height=400)
 
 st.markdown(f"""
 <div class="credits">
