@@ -10,3 +10,7 @@ assets/_inbox/
 # 서버 실행 로그 (에이전트가 앱을 띄울 때 생긴다)
 _server.log
 *.log
+
+# Streamlit 비밀값 — API 키가 들어간다. 공개 저장소이므로 절대 커밋 금지.
+.streamlit/secrets.toml
+secrets.toml
