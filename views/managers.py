@@ -57,7 +57,7 @@ longest = mg.loc[mg["경기"].idxmax()]
 st.markdown(metric_cards([
     ("감독", f"{mg['tm_id'].nunique()}명", f"재임 {len(mg)}회 · 임시 {int((mg['role'] == '임시').sum())}회"),
     ("최장수", f"{int(longest['경기'])}경기", f"{longest['표시명']}"),
-    ("최고 승점률", f"{best['경기당승점']:.2f}", f"{best['표시명']} · 30경기 이상"),
+    ("최고 경기당 승점", f"{best['경기당승점']:.2f}점", f"{best['표시명']} · 30경기 이상"),
     ("최다 우승", f"{int(mg['우승'].max())}회", f"{mg.loc[mg['우승'].idxmax(), '표시명']}"),
 ]), unsafe_allow_html=True)
 

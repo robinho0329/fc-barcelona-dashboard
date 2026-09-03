@@ -271,7 +271,7 @@ st.markdown(metric_cards([
     ("리그 경기", f"{total_matches:,}", "라리가 정규시즌 기준"),
     ("리그 우승", f"{titles}회", f"{titles / len(seasons) * 100:.0f}% 시즌에서 1위"),
     ("총 득점", f"{total_goals:,}", f"경기당 {total_goals / total_matches:.2f}골"),
-    ("최고 승점률", f"{best_ppg['PPG']:.2f}", f"{best_ppg['Season']} · 승점 {int(best_ppg['Pts'])}"),
+    ("최고 경기당 승점", f"{best_ppg['PPG']:.2f}점", f"{best_ppg['Season']} · 승점 {int(best_ppg['Pts'])}"),
     ("최다 득점 시즌", f"{int(best_gf['GF'])}골", f"{best_gf['Season']}"),
     ("통산 승률", f"{seasons['W'].sum() / total_matches * 100:.1f}%",
      f"{int(seasons['W'].sum())}승 {int(seasons['D'].sum())}무 {int(seasons['L'].sum())}패"),

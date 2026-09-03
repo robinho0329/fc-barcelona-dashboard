@@ -443,8 +443,9 @@ div.legend-noimg.masia-photo{display:flex;align-items:center;justify-content:cen
 .dc-row:last-child{border-bottom:none;}
 .dc-rl{color:#c8d7ea;font-size:.82rem;display:flex;align-items:center;gap:.5rem;
       min-width:0;}
-.dc-rl b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;
-      white-space:nowrap;}
+/* 한 줄 고정이면 창이 좁을 때 팀명이 "Bar..." 로 잘린다. 두 줄까지 허용하고
+   최소 폭을 줘 이름이 살아 있게 한다. */
+.dc-rl b{color:var(--ink);font-weight:700;min-width:0;overflow-wrap:anywhere;}
 .dc-rr{color:var(--gold);font-size:.95rem;font-weight:800;white-space:nowrap;}
 .dc-pill{font-size:.66rem;font-weight:900;border-radius:5px;padding:.1rem .34rem;
       color:#04101f;}
