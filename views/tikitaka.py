@@ -50,15 +50,17 @@ def build_index(pass_stamp: float, poss_stamp: str) -> pd.DataFrame:
 
     ps = ps.copy()
     ps["short"] = ps["length"] < SHORT_PASS
+    ps["high"] = ps["height"] == "High Pass"
     g = ps.groupby("season").agg(
         경기=("match_id", "nunique"), 패스=("player", "size"),
         성공률=("complete", "mean"), 짧은패스=("short", "mean"),
-        평균길이=("length", "mean"))
+        롱볼=("high", "mean"), 평균길이=("length", "mean"))
     # 표본이 한두 경기뿐인 시즌은 지수가 흔들려 뺀다
     g = g[g["경기"] >= 5].copy()
     g["경기당패스"] = g["패스"] / g["경기"]
     g["성공률"] *= 100
     g["짧은패스"] *= 100
+    g["롱볼"] *= 100
 
     def stretch(s: pd.Series) -> pd.Series:
         lo, hi = s.min(), s.max()
@@ -227,22 +229,48 @@ with c2:
     st.plotly_chart(f3, width="stretch")
     st.caption(f"짧은 패스 = {SHORT_PASS}야드 미만")
 
+# ---------------------------------------------------------------- 롱볼 비중
+st.markdown('<div class="section">롱볼 비중 — 티키타카의 반대편</div>',
+            unsafe_allow_html=True)
+st.markdown("""
+<div class="lede">
+짧고 낮게 돌리는 팀일수록 <b>띄운 패스(High Pass)</b>를 적게 쓴다. StatsBomb은
+패스 궤적을 Ground(땅볼) · Low(낮게 뜬 패스) · High(높이 뜬 패스) 세 가지로
+분류해 두는데, 그중 <b>High Pass 비율</b>이 짧은 패스 비율과 정반대로 움직이는지
+확인해 본다.
+</div>
+""", unsafe_allow_html=True)
+corr = idx["짧은패스"].corr(idx["롱볼"])
+f_hp = go.Figure()
+f_hp.add_trace(go.Scatter(x=idx["season"], y=idx["짧은패스"], name="짧은 패스 비율",
+                          mode="lines+markers", line=dict(color=GOLD, width=2.6)))
+f_hp.add_trace(go.Scatter(x=idx["season"], y=idx["롱볼"], name="롱볼(High Pass) 비율",
+                          mode="lines+markers", line=dict(color=GRANA, width=2.6)))
+f_hp.update_layout(height=340, yaxis_title="%",
+                   legend=dict(orientation="h", y=1.14), **PLOT)
+f_hp.update_xaxes(gridcolor=GRID, tickangle=-60)
+f_hp.update_yaxes(gridcolor=GRID)
+st.plotly_chart(f_hp, width="stretch")
+st.caption(f"짧은 패스와 롱볼 비율의 상관계수는 {corr:.2f}다. 음수일수록 두 지표가 "
+           f"반대로 움직인다는(짧게 돌릴수록 덜 띄운다는) 뜻이다.")
+
 # ---------------------------------------------------------------- 시대별
 st.markdown('<div class="section">시대별 평균</div>', unsafe_allow_html=True)
 by_era = (idx.groupby("시대")
           .agg(시즌=("season", "size"), 지수=("지수", "mean"),
                경기당패스=("경기당패스", "mean"), 성공률=("성공률", "mean"),
-               짧은패스=("짧은패스", "mean"))
+               짧은패스=("짧은패스", "mean"), 롱볼=("롱볼", "mean"))
           .reindex([n for n, *_ in ERA_OF]).dropna(subset=["지수"]))
 colors = {n: c for n, _, _, c in ERA_OF}
 f4 = go.Figure(go.Bar(
     x=by_era.index, y=by_era["지수"], marker_color=[colors[i] for i in by_era.index],
     text=by_era["지수"].round(0), textposition="outside", textfont_color="#f2f6fc",
-    customdata=by_era[["시즌", "경기당패스", "성공률", "짧은패스"]].values,
+    customdata=by_era[["시즌", "경기당패스", "성공률", "짧은패스", "롱볼"]].values,
     hovertemplate="<b>%{x}</b><br>지수 %{y:.0f}<br>%{customdata[0]}시즌<br>"
                   "경기당 패스 %{customdata[1]:.0f}<br>"
                   "성공률 %{customdata[2]:.1f}%<br>"
-                  "짧은 패스 %{customdata[3]:.1f}%<extra></extra>"))
+                  "짧은 패스 %{customdata[3]:.1f}%<br>"
+                  "롱볼 %{customdata[4]:.1f}%<extra></extra>"))
 f4.update_layout(height=360, yaxis_title="평균 지수", **PLOT)
 f4.update_xaxes(gridcolor=GRID)
 f4.update_yaxes(gridcolor=GRID, range=[0, 110])
@@ -269,15 +297,23 @@ StatsBomb 패스 좌표가 {idx['season'].iloc[-1]}에서 끊겨 지수도 거�
     f5.update_yaxes(gridcolor=GRID, range=[50, 75])
     st.plotly_chart(f5, width="stretch")
     hi = poss.loc[poss["점유율"].idxmax()]
-    st.caption(f"전 대회 기준. 최고 {hi['점유율']:.1f}% ({hi['season']}) · "
-               f"최근 {poss.iloc[-1]['season']} {poss.iloc[-1]['점유율']:.1f}%")
+    st.caption(
+        f"전 대회 기준. 최고 {hi['점유율']:.1f}% ({hi['season']}) · "
+        f"최근 {poss.iloc[-1]['season']} {poss.iloc[-1]['점유율']:.1f}%. "
+        "**이 막대를 지수의 연장으로 읽으면 안 된다.** 두 값이 겹치는 7시즌에서 "
+        "점유율과 지수의 세 축은 사실상 상관이 없다(경기당 패스 +0.10, 성공률 "
+        "+0.07, 짧은 패스 -0.18). 공을 오래 쥐는 것과 짧게 많이 돌리는 것은 "
+        "다른 이야기다. 지수를 최근까지 잇는 것은 무료로 구할 수 있는 패스 "
+        "이벤트가 없어 현재로선 불가능하다 — StatsBomb 공개 데이터의 라리가는 "
+        "2020/21이 마지막이고, Wyscout 공개본(2017/18)이나 Impect(분데스리가)로도 "
+        "메울 수 없다.")
 
 # ---------------------------------------------------------------- 표
 with st.expander("시즌별 수치 표"):
     tb = idx[["season", "시대", "경기", "경기당패스", "성공률", "짧은패스",
-              "평균길이", "점유율", "지수"]].copy()
+              "롱볼", "평균길이", "점유율", "지수"]].copy()
     tb.columns = ["시즌", "시대", "집계 경기", "경기당 패스", "성공률(%)",
-                  "짧은 패스(%)", "평균 길이", "점유율(%)", "지수"]
+                  "짧은 패스(%)", "롱볼(%)", "평균 길이", "점유율(%)", "지수"]
     st.dataframe(tb.round(1).set_index("시즌"), width="stretch", height=430)
 
 st.markdown(f"""
@@ -289,6 +325,9 @@ st.markdown(f"""
 ({idx['season'].iloc[0]}~{idx['season'].iloc[-1]}), 점유율은 FBref 전 대회
 ({poss['season'].iloc[0] if not poss.empty else '-'}~
 {poss['season'].iloc[-1] if not poss.empty else '-'}).<br>
+<b>롱볼</b> StatsBomb이 패스 궤적을 Ground/Low/High로 분류해 둔 값 중
+High Pass 비율이다. 지수 계산에는 넣지 않았고, 짧은 패스 비율과 대조해
+보는 참고 지표다.<br>
 <b>주의</b> StatsBomb은 시즌마다 공개 경기 수가 다르다(집계 경기 열 참고).
 표본이 5경기 미만인 시즌은 지수가 흔들려 제외했다. 패스 지표는 라리가 위주라
 컵대회 성격이 반영되지 않는다.

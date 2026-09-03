@@ -170,6 +170,11 @@ with c2:
     f3.update_yaxes(gridcolor=GRID, type="category")
     st.plotly_chart(f3, width="stretch")
 
+    with st.expander("전진 패스 상위 선수 표"):
+        tb = top.iloc[::-1].reset_index()
+        tb.columns = ["선수", "전진 패스"]
+        st.dataframe(tb.set_index("선수"), width="stretch", height=420)
+
 st.markdown("""
 <div class="credits">
 <b>데이터</b> StatsBomb Open Data — 라리가 2004/05~2020/21 바르셀로나 경기의

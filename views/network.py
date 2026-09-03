@@ -120,8 +120,8 @@ st.markdown("""
 <div class="lede">
 동그라미 하나가 선수 하나, 두 선수를 잇는 선은 <b>그 둘 사이에서 나온 골</b>이다.
 한쪽이 건네고 다른 쪽이 넣었다는 뜻이며, 아래 세 가지로 읽으면 된다.<br><br>
-· <b>선이 굵을수록</b> 그 조합으로 골이 많이 나왔다. 오래 함께 뛰며 서로를
-  찾는 습관이 밴 짝일수록 굵어진다.<br>
+· <b>선이 굵고 진할수록</b> 그 조합으로 골이 많이 나왔다. 옅은 회청색은 몇 골뿐인
+  약한 연결, 진한 그라나는 오래 함께 뛰며 서로를 찾는 습관이 밴 짝이다.<br>
 · <b>원이 클수록</b> 도움과 득점을 합쳐 골에 많이 관여했다. 크기는 실력이
   아니라 <b>관여량</b>이라, 오래 뛴 선수가 자연히 커진다.<br>
 · <b>선이 몰리는 자리</b>가 그 시기 공격의 통로다. 한 명에게 선이 집중되면
@@ -199,16 +199,28 @@ else:
         band_labels.append((cx, SPAN + 0.72, f"{label} ({len(grouped[code])})",
                             BAND_COLOR[code]))
 
-    # 연결선 — 굵기는 골 수
-    for _, r in strong.iterrows():
+    # 연결선 — 굵기와 색 모두 골 수를 따라간다. 굵기만으로는 미드필더 쪽처럼
+    # 선이 촘촘히 겹치는 자리에서 약한 선과 강한 선이 구분되지 않아, 약한
+    # 선일수록 옅은 회청색(GRID 계열)으로, 강한 선일수록 진한 그라나로
+    # 옮겨가게 했다. 약한 선을 먼저 그려 강한 선이 위에 오도록 정렬한다.
+    def _mix(c1: str, c2: str, t: float) -> str:
+        a = tuple(int(c1[i:i + 2], 16) for i in (1, 3, 5))
+        b = tuple(int(c2[i:i + 2], 16) for i in (1, 3, 5))
+        m = tuple(round(a[k] + (b[k] - a[k]) * t) for k in range(3))
+        return f"rgb({m[0]},{m[1]},{m[2]})"
+
+    LINE_LO, LINE_HI = "#3d5a80", GRANA  # 약한 선(회청) → 강한 선(그라나)
+    g_max = strong["골"].max()
+    for _, r in strong.sort_values("골").iterrows():
         if r["도움"] not in pos or r["득점"] not in pos:
             continue
         x0, y0 = pos[r["도움"]]
         x1, y1 = pos[r["득점"]]
+        t = (r["골"] - 1) / max(g_max - 1, 1)  # 0(최소 연결) ~ 1(최다 연결)
         fig.add_trace(go.Scatter(
             x=[x0, x1], y=[y0, y1], mode="lines",
-            line=dict(color=GRANA, width=min(1 + r["골"] * 0.7, 10)),
-            opacity=min(.22 + r["골"] * 0.05, .8),
+            line=dict(color=_mix(LINE_LO, LINE_HI, t), width=min(1 + r["골"] * 0.8, 11)),
+            opacity=min(.28 + t * .62, .9),
             hovertemplate=f"<b>{r['도움']} → {r['득점']}</b><br>"
                           f"{int(r['골'])}골<extra></extra>",
             showlegend=False))
@@ -264,8 +276,9 @@ else:
     hub_share = involved.iloc[0] / involved.sum() * 100
     unknown = sum(1 for n in people if not positions.get(n))
     st.caption(
-        f"왼쪽부터 골키퍼 → 수비수 → 미드필더 → 공격수. 선 굵기 = 그 조합으로 "
-        f"나온 골 수, 사진 크기 = 도움+득점 관여 횟수. "
+        f"왼쪽부터 골키퍼 → 수비수 → 미드필더 → 공격수. 선 굵기와 색 진하기 = "
+        f"그 조합으로 나온 골 수(옅은 회청 → 진한 그라나), 사진 크기 = "
+        f"도움+득점 관여 횟수. "
         f"{min_link}골 이상 이어진 조합 {len(strong)}개만 그렸다. "
         f"이 범위에서는 {hub}에게 선이 가장 많이 몰린다(연결의 {hub_share:.0f}%)."
         + (f" 포지션을 못 찾은 {unknown}명은 미드필더 칸에 뒀다." if unknown else ""))
