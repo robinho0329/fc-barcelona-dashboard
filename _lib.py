@@ -4,12 +4,15 @@ app.py가 st.navigation으로 views/ 아래 페이지를 묶고, 각 페이지�
 여기서 CSS와 데이터를 가져다 쓴다.
 """
 import base64
+import copy
 import json
 import re
 import unicodedata
 from pathlib import Path
 
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.io as pio
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent
@@ -25,6 +28,49 @@ GRID = "#173355"
 # plotly 공통 레이아웃
 PLOT = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#94a8c4", size=12), margin=dict(l=10, r=10, t=30, b=10))
+
+# 차트 안 글씨는 CSS 가 닿지 않는다. Plotly 가 직접 그리기 때문에 레이아웃에
+# 글꼴을 넣어야 페이지와 같은 글꼴이 된다. 74개 차트 중 7개는 **PLOT 을 쓰지
+# 않아(피치 맵·삼각형 등) PLOT 만 고쳐서는 빠진다. 그래서 템플릿을 기본값으로
+# 등록해 전부 덮는다. 페이지에서 명시한 값은 템플릿보다 우선한다.
+PLOTLY_FONT = ("Pretendard, 'Noto Sans KR', 'Malgun Gothic', "
+               "'Apple SD Gothic Neo', sans-serif")
+
+
+def _register_template() -> None:
+    """'barca' 템플릿을 등록하고 기본값으로 세운다. 여러 번 불러도 안전하다."""
+    if "barca" in pio.templates:
+        return
+    # plotly_dark 를 바탕으로 시작해 우리 값만 덮는다. 통째로 새로 만들면
+    # 색 스케일 같은 기본값까지 잃는다.
+    tpl = copy.deepcopy(pio.templates["plotly_dark"])
+    tpl.layout.update(
+        font=dict(family=PLOTLY_FONT, color="#94a8c4", size=12),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        # 호버는 페이지마다 제각각이었다. 카드와 같은 톤으로 맞춘다.
+        hoverlabel=dict(bgcolor="rgba(4,16,31,.94)", bordercolor=GRID,
+                        font=dict(family=PLOTLY_FONT, color="#f2f6fc", size=12)),
+        title=dict(font=dict(family=PLOTLY_FONT, color="#f2f6fc", size=15)),
+        legend=dict(font=dict(family=PLOTLY_FONT, color="#c3d2e6", size=11)),
+        # 축 제목·주석은 layout.font 를 물려받지 않는다. 따로 지정해야 한다.
+        xaxis=dict(gridcolor=GRID, zerolinecolor="#2b4a72", linecolor=GRID,
+                   tickfont=dict(family=PLOTLY_FONT),
+                   title=dict(font=dict(family=PLOTLY_FONT))),
+        yaxis=dict(gridcolor=GRID, zerolinecolor="#2b4a72", linecolor=GRID,
+                   tickfont=dict(family=PLOTLY_FONT),
+                   title=dict(font=dict(family=PLOTLY_FONT))),
+        annotationdefaults=dict(font=dict(family=PLOTLY_FONT)),
+        colorway=[GRANA, BLAU, GOLD, "#4fb0a5", "#7ab8ff", "#e0748f", "#6b7d99"],
+    )
+    # 막대 위에 찍는 숫자(textfont)도 레이아웃 글꼴을 안 따라온다.
+    tpl.data.bar = [go.Bar(textfont=dict(family=PLOTLY_FONT))]
+    tpl.data.scatter = [go.Scatter(textfont=dict(family=PLOTLY_FONT))]
+    pio.templates["barca"] = tpl
+    pio.templates.default = "barca"
+
+
+_register_template()
 
 
 # ---------------------------------------------------------------- 데이터/자산
@@ -125,6 +171,13 @@ div[data-baseweb="select"], div[data-baseweb="input"], .stDataFrame,
    아이콘 폰트(Material Symbols)는 마크다운 밖에 있어 영향을 받지 않는다 —
    확인함. `*` 에 !important 를 걸 때는 이걸 반드시 확인할 것. */
 [data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] *{
+      font-family:var(--font) !important;}
+
+/* Plotly 는 축 제목·주석·막대 위 숫자에 글꼴을 **인라인 스타일로** 박는다.
+   Streamlit 이 차트에 자기 테마를 덮어쓰기 때문에 우리 템플릿 값이 거기까지
+   가지 못한다. 외부 규칙의 !important 는 !important 없는 인라인을 이기므로
+   이렇게 잡는다. 이걸 빼면 차트 안 글씨만 다른 글꼴로 남는다. */
+.js-plotly-plot text, .js-plotly-plot .legendtext, .js-plotly-plot .hovertext text{
       font-family:var(--font) !important;}
 
 /* 표·지표의 숫자는 자릿수가 흔들리면 세로 정렬이 깨진다.
