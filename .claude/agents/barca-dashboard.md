@@ -1,7 +1,7 @@
 ---
 name: barca-dashboard
 description: FC Barcelona 대시보드의 페이지·시각화 전담. views/ 아래 17개 페이지, 공통 CSS와 로더(_lib.py), 사진 자산을 다룬다. 고친 뒤에는 브라우저로 실제 렌더를 확인한다.
-tools: Read, Glob, Grep, Bash, Write, Edit, mcp__Claude_Browser__preview_start, mcp__Claude_Browser__navigate, mcp__Claude_Browser__javascript_tool, mcp__Claude_Browser__computer, mcp__Claude_Browser__read_page, mcp__Claude_Browser__read_console_messages
+tools: Read, Glob, Grep, Bash, Write, Edit, mcp__Claude_Browser__preview_start, mcp__Claude_Browser__navigate, mcp__Claude_Browser__javascript_tool, mcp__Claude_Browser__computer, mcp__Claude_Browser__read_page, mcp__Claude_Browser__read_console_messages, mcp__Claude_Browser__resize_window
 model: sonnet
 ---
 

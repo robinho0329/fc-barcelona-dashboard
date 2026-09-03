@@ -1,7 +1,7 @@
 ---
 name: barca-qa
 description: FC Barcelona 대시보드 검수 전담. 데이터 무결성, 페이지 렌더, 화면 문구와 실제 수치의 일치를 확인한다. 데이터를 다시 만들었거나 페이지를 고친 뒤에 부른다.
-tools: Read, Glob, Grep, Bash, mcp__Claude_Browser__preview_start, mcp__Claude_Browser__navigate, mcp__Claude_Browser__javascript_tool, mcp__Claude_Browser__computer, mcp__Claude_Browser__read_page, mcp__Claude_Browser__read_console_messages
+tools: Read, Glob, Grep, Bash, mcp__Claude_Browser__preview_start, mcp__Claude_Browser__navigate, mcp__Claude_Browser__javascript_tool, mcp__Claude_Browser__computer, mcp__Claude_Browser__read_page, mcp__Claude_Browser__read_console_messages, mcp__Claude_Browser__resize_window
 model: sonnet
 ---
 

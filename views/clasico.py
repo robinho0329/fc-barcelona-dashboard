@@ -134,7 +134,7 @@ if shots_html:
 st.markdown('<div class="section">통산 상대전적</div>', unsafe_allow_html=True)
 st.markdown(metric_cards([
     ("맞대결", f"{len(cl)}경기", f"{cl['Season'].nunique()}시즌 · 리그 한정"),
-    ("전적", f"{W}-{D}-{L}", f"승률 {W / len(cl) * 100:.0f}% · 무패율 {(W + D) / len(cl) * 100:.0f}%"),
+    ("전적", f"{W}-{D}-{L}", f"승률 {W / len(cl) * 100:.1f}% · 무패율 {(W + D) / len(cl) * 100:.1f}%"),
     ("득실", f"{int(cl['gf'].sum())}-{int(cl['ga'].sum())}",
      f"경기당 {cl['gf'].mean():.2f} : {cl['ga'].mean():.2f}"),
     ("홈 / 원정 승리", f"{int((home['result'] == '승').sum())} / {int((away['result'] == '승').sum())}",
