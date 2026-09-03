@@ -40,9 +40,17 @@ mt["장소"] = np.where(home, "홈", "원정")
 mt["결과"] = np.where(mt["득점"] > mt["실점"], "W",
                     np.where(mt["득점"] == mt["실점"], "D", "L"))
 
-last_season = mt[mt["Season"] == latest["Season"]].dropna(subset=["득점"])
-recent = last_season.tail(10)
-last_game = last_season.iloc[-1] if len(last_season) else None
+played = mt.dropna(subset=["득점"])
+last_season = played[played["Season"] == latest["Season"]]
+# 폼은 시즌 경계를 넘어서 본다. 시즌 초에는 최신 시즌 안에 경기가 몇 개
+# 없어서, 시즌 안에서만 뽑으면 점이 서너 개뿐이라 흐름이 안 보인다.
+recent = played.tail(10)
+last_game = played.iloc[-1] if len(played) else None
+
+# 최근 경기 묶음이 몇 시즌에 걸쳐 있는지. 시즌 초에는 지난 시즌이 섞인다.
+_spans = list(dict.fromkeys(recent["Season"]))
+recent_span = _spans[0] if len(_spans) == 1 else f"{_spans[0]}~{_spans[-1]}"
+recent_note = "" if len(_spans) == 1 else " (시즌 걸침)"
 
 hero_col, side_col = st.columns([1.95, 1], gap="medium")
 
@@ -95,7 +103,7 @@ with side_col:
     </div>
   </div>
   <div class="dc-head" style="margin:1.05rem 0 .5rem">
-    <div class="dc-title">최근 {len(recent)}경기</div>
+    <div class="dc-title">최근 {len(recent)}경기{recent_note}</div>
     <div class="dc-note">{int((recent['결과'] == 'W').sum())}승
       {int((recent['결과'] == 'D').sum())}무
       {int((recent['결과'] == 'L').sum())}패</div></div>
@@ -136,14 +144,16 @@ with k1:
     for r in recent.iloc[::-1].head(6).itertuples():
         rows += (f'<div class="dc-row"><div class="dc-rl">'
                  f'<span class="dc-idx">{r.장소[0]}</span>'
-                 f'<b>{r.상대}</b></div><div class="dc-rr">'
+                 f'<b>{r.상대}</b>'
+                 f'<span class="dc-note">{r.date:%y.%m.%d}</span></div>'
+                 f'<div class="dc-rr">'
                  f'{int(r.득점)} : {int(r.실점)} '
                  f'<span class="dc-pill" style="background:{RESULT_BG[r.결과]};'
                  f'color:{"#fff" if r.결과 == "L" else "#04101f"}">{r.결과}</span>'
                  f'</div></div>')
     st.markdown(f'<div class="dc-card"><div class="dc-head">'
                 f'<div class="dc-title">최근 6경기 결과</div>'
-                f'<div class="dc-note">{latest["Season"]}</div></div>{rows}</div>',
+                f'<div class="dc-note">{recent_span}</div></div>{rows}</div>',
                 unsafe_allow_html=True)
 
 with k2:
@@ -162,7 +172,9 @@ with k3:
                 f'<div class="dc-note">라리가</div></div>{body}</div>',
                 unsafe_allow_html=True)
 
-st.caption("모두 실제 경기 기록에서 집계한 값이다.")
+st.caption(f"모두 실제 경기 기록에서 집계한 값이다. 최근 폼은 시즌 경계를 "
+           f"넘어 마지막 {len(recent)}경기로 본다 — 시즌 초에 현재 시즌만 보면 "
+           f"경기가 몇 개 없어 흐름이 보이지 않는다.")
 
 # ---- 라리가 순위표
 # 원본(football-data SP1)에는 20개 팀 전 경기가 들어 있어 전체 순위표를
