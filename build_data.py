@@ -60,6 +60,12 @@ def league_table(df: pd.DataFrame) -> pd.DataFrame:
              .drop(columns=["H2H_Pts", "H2H_GD"]).reset_index(drop=True))
         t["rank"] = t.index + 1
         t["Season"] = season
+
+        # 진행 중 시즌 표시: 그 시즌 전 구단이 (팀수-1)*2 경기(풀 라운드로빈)를
+        # 다 치렀는지로 완료 여부를 판단한다. 팀 수는 시즌마다 다르므로
+        # 하드코딩(예: 38경기)하지 않는다.
+        expected_p = (len(t) - 1) * 2
+        t["complete"] = t["P"] >= expected_p
         recs.append(t)
     return pd.concat(recs, ignore_index=True)
 
@@ -118,7 +124,7 @@ def main() -> None:
     standings = table.rename(columns={"Season": "season"})
     int_cols = ["P", "W", "D", "L", "GF", "GA", "GD", "Pts", "rank"]
     standings[int_cols] = standings[int_cols].astype(int)
-    standings = standings[["season", "team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "rank"]]
+    standings = standings[["season", "team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "rank", "complete"]]
     standings.to_parquet(OUT / "standings.parquet", index=False)
 
     # 리그 전체 경기도 남긴다. 상대 팀의 그 시점 폼을 계산하려면 바르사

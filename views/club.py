@@ -17,8 +17,14 @@ titles = int((seasons["rank"] == 1).sum())
 total_goals = int(seasons["GF"].sum())
 total_matches = int(seasons["P"].sum())
 latest = seasons.iloc[-1]
-best_ppg = seasons.loc[seasons["PPG"].idxmax()]
-best_gf = seasons.loc[seasons["GF"].idxmax()]
+# 진행 중 시즌은 역대 기록 비교에서 뺀다. 3경기 만에 경기당 승점 3.00 이면
+# 38경기를 치른 2012/13(2.63)을 제치고 '역대 최고'로 올라와 버린다.
+# build_data.py 의 league_table() 이 complete 열을 채운다.
+done = seasons[seasons["complete"]] if "complete" in seasons.columns else seasons
+if done.empty:
+    done = seasons
+best_ppg = done.loc[done["PPG"].idxmax()]
+best_gf = done.loc[done["GF"].idxmax()]
 
 # ---------------------------------------------------------------- 데이터 센터
 # 첫 화면은 '지금 팀이 어떤 상태인가'가 먼저 보여야 한다. 클럽 소개와 연표는
@@ -41,6 +47,9 @@ last_game = last_season.iloc[-1] if len(last_season) else None
 hero_col, side_col = st.columns([1.95, 1], gap="medium")
 
 with hero_col:
+    # 시즌이 끝나야 최종전이다. 진행 중이면 그냥 가장 최근 경기다.
+    _fin = bool(latest["complete"]) if "complete" in latest.index else True
+    last_label = "시즌 최종전" if _fin else f"{int(latest['P'])}라운드 · 최근 경기"
     if last_game is not None:
         lg = last_game
         who_l, who_r = (("바르셀로나", lg["상대"]) if lg["장소"] == "홈"
@@ -54,7 +63,7 @@ with hero_col:
                  f'<div class="dc-num">{gr}</div>'
                  f'<div class="dc-team">{who_r}</div></div>'
                  f'<div class="dc-sub" style="margin:.75rem 0 0">'
-                 f'{lg["date"]:%Y.%m.%d} · {lg["장소"]} · 시즌 최종전</div>')
+                 f'{lg["date"]:%Y.%m.%d} · {lg["장소"]} · {last_label}</div>')
     else:
         block = ""
     st.markdown(f"""
@@ -161,8 +170,9 @@ st.caption("모두 실제 경기 기록에서 집계한 값이다.")
 # 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 순으로 세운다.
 standings = load_parquet(PROCESSED / "standings.parquet")
 if not standings.empty:
-    st.markdown(f'<div class="section">{latest["Season"]} 라리가 순위</div>',
-                unsafe_allow_html=True)
+    _done = bool(latest["complete"]) if "complete" in latest.index else True
+    st.markdown(f'<div class="section">{latest["Season"]} 라리가 순위'
+                f'{"" if _done else " (진행 중)"}</div>', unsafe_allow_html=True)
     tbl = (standings[standings["season"] == latest["Season"]]
            .sort_values("rank"))
     if not tbl.empty:
@@ -192,6 +202,9 @@ if not standings.empty:
         with s2:
             champ = tbl.iloc[0]
             gap = int(champ["Pts"]) - int(tbl[tbl["team"] == "Barcelona"]["Pts"].iloc[0])
+            # 시즌 도중이면 1위여도 '우승' 이 아니다. 아직 안 끝났다.
+            season_done = bool(tbl["complete"].iloc[0]) if "complete" in tbl.columns else True
+            gap_txt = ("우승" if season_done else "선두") if gap == 0 else f"{gap}점"
             rival = tbl[tbl["team"] == "Real Madrid"]
             rival_txt = (f'{int(rival["rank"].iloc[0])}위 · {int(rival["Pts"].iloc[0])}점'
                          if not rival.empty else "기록 없음")
@@ -199,10 +212,11 @@ if not standings.empty:
                 f'<div class="dc-card"><div class="dc-head">'
                 f'<div class="dc-title">이 시즌 한눈에</div>'
                 f'<div class="dc-note">라리가</div></div>'
-                f'<div class="dc-row"><div class="dc-rl"><b>우승</b></div>'
+                f'<div class="dc-row"><div class="dc-rl">'
+                f'<b>{"우승" if season_done else "현재 1위"}</b></div>'
                 f'<div class="dc-rr">{champ["team"]} {int(champ["Pts"])}점</div></div>'
                 f'<div class="dc-row"><div class="dc-rl"><b>1위와 승점 차</b></div>'
-                f'<div class="dc-rr">{"우승" if gap == 0 else f"{gap}점"}</div></div>'
+                f'<div class="dc-rr">{gap_txt}</div></div>'
                 f'<div class="dc-row"><div class="dc-rl"><b>레알 마드리드</b></div>'
                 f'<div class="dc-rr">{rival_txt}</div></div>'
                 f'<div class="dc-row"><div class="dc-rl"><b>최다 득점</b></div>'
@@ -218,9 +232,12 @@ if not standings.empty:
             show.columns = ["순위", "팀", "경기", "승", "무", "패",
                             "득점", "실점", "득실차", "승점"]
             st.dataframe(show, width="stretch", hide_index=True)
+    _note = ("" if _done else
+             f" **아직 {int(tbl['P'].max())}라운드까지만 치른 진행 중인 시즌**이라"
+             " 순위는 얼마든지 바뀐다.")
     st.caption("라리가 규정대로 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 "
                "순으로 세웠다. 원본에 20개 팀 전 경기가 들어 있어 전체 순위를 "
-               "그대로 계산할 수 있다.")
+               "그대로 계산할 수 있다." + _note)
 
 # ---------------------------------------------------------------- 클럽 정체성
 st.markdown('<div class="section">클럽 정체성</div>', unsafe_allow_html=True)
