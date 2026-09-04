@@ -118,8 +118,19 @@ with side_col:
 
 # ---- 3열 카드: 최근 경기 · 득점 리더 · 도움 리더
 pl = load_parquet(PROCESSED / "players.parquet")
-season_pl = pl[pl["season"] == latest["Season"]] if not pl.empty else pd.DataFrame()
+# 선수 기록(FBref)은 경기 기록(football-data)보다 늦게 채워진다. 최신 시즌으로
+# 그대로 거르면 시즌 초에 0행이 나와 카드가 '데이터 없음' 이 된다.
+# 있는 시즌 중 가장 최근으로 물러나되, 어느 시즌인지 화면에 밝힌다.
+if pl.empty:
+    season_pl, leader_season = pd.DataFrame(), None
+else:
+    leader_season = (latest["Season"] if (pl["season"] == latest["Season"]).any()
+                     else pl["season"].max())
+    season_pl = pl[pl["season"] == leader_season]
 faces = portrait_map(season_pl["Player"].tolist()) if not season_pl.empty else {}
+# 경기 기록과 선수 기록의 최신 시즌이 다르면 그 사실을 부제에 적는다
+leader_note = ("라리가" if leader_season == latest["Season"]
+               else f"라리가 · {leader_season}")
 
 RESULT_BG = {"W": "var(--gold)", "D": "#7d92ad", "L": "#8d2440"}
 
@@ -158,18 +169,18 @@ with k1:
 
 with k2:
     body = (leader_rows(season_pl, "골", "골") if not season_pl.empty
-            else '<div class="dc-note">데이터 없음</div>')
+            else '<div class="dc-note">선수 기록이 아직 없다</div>')
     st.markdown(f'<div class="dc-card"><div class="dc-head">'
                 f'<div class="dc-title">득점 리더</div>'
-                f'<div class="dc-note">라리가</div></div>{body}</div>',
+                f'<div class="dc-note">{leader_note}</div></div>{body}</div>',
                 unsafe_allow_html=True)
 
 with k3:
     body = (leader_rows(season_pl, "도움", "도움") if not season_pl.empty
-            else '<div class="dc-note">데이터 없음</div>')
+            else '<div class="dc-note">선수 기록이 아직 없다</div>')
     st.markdown(f'<div class="dc-card"><div class="dc-head">'
                 f'<div class="dc-title">도움 리더</div>'
-                f'<div class="dc-note">라리가</div></div>{body}</div>',
+                f'<div class="dc-note">{leader_note}</div></div>{body}</div>',
                 unsafe_allow_html=True)
 
 st.caption(f"모두 실제 경기 기록에서 집계한 값이다. 최근 폼은 시즌 경계를 "
