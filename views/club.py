@@ -5,7 +5,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PHOTOS, PLOT, PROCESSED, b64,
+from _lib import (title_count, ongoing_season, finished_seasons, BLAU, GOLD, GRANA, GRID, PHOTOS, PLOT, PROCESSED, b64,
                   credits_block, load_credits, load_parquet, load_seasons,
                   metric_cards, portrait_map, setup)
 
@@ -15,18 +15,11 @@ setup(seasons)
 
 latest = seasons.iloc[-1]
 
-# 역대 기록 비교에서 **진행 중인 시즌만** 뺀다.
-#
-# complete 로 거르면 안 된다. 2004/05 도 complete=False 인데(원본 27경기만
-# 파싱돼 들어왔다) 그해는 실제로 끝났고 바르사가 우승한 시즌이다. complete
-# 로 거르면 그 우승까지 지워져 17회가 15회가 된다.
-# 빼야 하는 것은 '아직 안 끝난 시즌', 즉 마지막 시즌이 미완주일 때 그 하나다.
-ongoing = (latest["Season"] if "complete" in seasons.columns
-           and not bool(latest["complete"]) else None)
-done = seasons[seasons["Season"] != ongoing] if ongoing else seasons
-
-# 3경기 치르고 1위인 것은 우승이 아니다. 끝난 시즌만 센다.
-titles = int((done["rank"] == 1).sum())
+# 진행 중인 시즌은 역대 기록 비교에서 뺀다. 판단은 _lib 에서 한 곳으로 모았다
+# — 사이드바와 여기가 각자 세다가 우승 횟수가 17회 / 16회로 갈린 적이 있다.
+ongoing = ongoing_season(seasons)
+done = finished_seasons(seasons)
+titles = title_count(seasons)
 total_goals = int(seasons["GF"].sum())
 total_matches = int(seasons["P"].sum())
 best_ppg = done.loc[done["PPG"].idxmax()]

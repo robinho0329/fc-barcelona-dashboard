@@ -66,7 +66,7 @@ views/                     페이지 17개
 | 산출물 | 규모 |
 |--------|------|
 | `data/processed/club_season.parquet` | 33시즌 |
-| `data/processed/club_matches.parquet` | 1,251경기 |
+| `data/processed/club_matches.parquet` | 1,265경기 |
 | `data/processed/all_matches.parquet` | 라리가 전 구단 12,592경기 |
 | `data/processed/players.parquet` | 886행 · 라리가 상세 |
 | `data/fbref_allcomps_players/` | 3,443행 · 367명 · 대회별 |
@@ -160,7 +160,7 @@ Squad Total" 같은 결과가 나온다. `crawl_allcomps.py`의 `TOTAL_ROWS`가
 
 ## 알려진 한계 (페이지에도 명시돼 있음)
 
-- **2004/05 원본 손실** — football-data 파일이 27경기에서 잘려 있다.
+- **2004/05 원본 보정 완료** — trailing odds 열 때문에 누락된 11경기를 복구해 38경기로 맞췄다.
   그 시즌 엘클라시코 두 경기도 없다.
 - **컵대회 미포함(일부 페이지)** — 홈·시대분석·엘클라시코·감독 성적은 라리가만
   집계한다. 클럽 공식 통산과 숫자가 다른 이유. 전 대회 데이터는 별도로 있다.
@@ -379,6 +379,18 @@ cp barcelona/.claude/agents/barca-*.md .claude/agents/
 Squad Total 혼입, 대회 목록 하드코딩, StatsBomb 전체 이름, 캐시 키, 사진 캡션).
 
 찾아서 보고만 하고 고치지는 않는다. 소스 수정·데이터 재생성·git 은 금지다.
+
+## 2026-09-04 후속 검수 및 수정
+
+- `2004/05` 원본의 `on_bad_lines="skip"` 때문에 버려지던 11경기를 복구했다.
+  전체 1,265경기, 2004/05 38경기로 재생성했고 `tools/audit.py`에서 32/32 통과했다.
+- 진행 중인 2026/27만 역대 우승 집계에서 제외하도록 `ongoing_season()`,
+  `finished_seasons()`, `title_count()`를 `_lib.py`에 통합했다. 홈과 사이드바가
+  같은 16회를 표시한다.
+- 홈 득점·도움 리더의 표시명 매칭, StatsBomb 공개 범위의 데이터 기반 문구,
+  패스 맵의 긴 선수명(`Xavier Hernández Creus` → `Xavi`)을 수정했다.
+- `tools/smoke.py --no-http`: 17개 페이지 예외 없음. 브라우저 정상 폭(1440px)에서
+  슛맵 피치 축 범위도 의도한 값으로 확인했다.
 
 ## 남은 작업
 

@@ -142,6 +142,18 @@ st.caption("2004/05는 원본 파일이 27경기에서 잘려 있고, "
 
 # ---------------------------------------------------------------- 알려진 한계
 st.markdown('<div class="section">알려진 한계</div>', unsafe_allow_html=True)
+# 공개 범위를 손으로 적으면 어긋난다. 실제 데이터에서 뽑는다.
+# 옛 시즌 몇 개는 경기 한두 개만 공개된 희소 표본이라 따로 구분해 말한다.
+_sb_cnt = load_sb("shots").groupby("season").size() if not load_sb("shots").empty else None
+if _sb_cnt is not None and len(_sb_cnt):
+    _thin = _sb_cnt[_sb_cnt < 50].index.tolist()
+    _dense = _sb_cnt[_sb_cnt >= 50].index.tolist()
+    _sb_span = f"{_sb_cnt.index.min()}~{_sb_cnt.index.max()}"
+    _sb_thin = ("·".join(_thin) if _thin else "없음")
+    _sb_dense = (f"{_dense[0]}~{_dense[-1]}" if _dense else "없음")
+else:
+    _sb_span = _sb_thin = _sb_dense = "확인 불가"
+
 LIMITS = [
     ("2004/05 원본 손실",
      "football-data의 2004/05 파일이 27경기에서 잘려 있다. 그 시즌 승점·순위와 "
@@ -158,8 +170,10 @@ LIMITS = [
      "내려준다. 재시도로 해결되지 않아 열을 제외했고, 해당 지표는 StatsBomb "
      "이벤트로 대체한다."),
     ("StatsBomb 공개 범위",
-     "라리가 오픈데이터는 2004/05~2020/21까지다. 시즌마다 공개 경기 수도 달라 "
-     "시즌 간 총량 비교는 조심해야 한다. 최근 시즌은 Understat으로 메웠다."),
+     f"라리가 오픈데이터는 {_sb_span}이다. 다만 {_sb_thin}은 경기 몇 개만 "
+     "공개된 희소 표본이라 시즌을 대표하지 못한다. 실질적인 연속 구간은 "
+     f"{_sb_dense}다. 시즌마다 공개 경기 수도 달라 시즌 간 총량 비교는 "
+     "조심해야 한다. 최근 시즌은 Understat으로 메웠다."),
     ("출전 시간 근사",
      "StatsBomb 원본에 교체 시각이 없어, 선수가 이벤트에 마지막으로 등장한 분을 "
      "출전 시간으로 썼다. 90분당 지표는 대략적인 비교용이다."),

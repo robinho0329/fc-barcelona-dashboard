@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
+from _lib import (sb_names, BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
                   metric_cards, pitch_layout, pitch_shapes, setup)
 
 seasons = load_seasons()
@@ -161,7 +161,10 @@ with c2:
     st.markdown('<div class="section">전진 패스 상위 선수</div>', unsafe_allow_html=True)
     scope = passes if season == "전체" else passes[passes["season"] == season]
     prog_all = scope[scope["end_x"] - scope["x"] >= 5]
-    top = prog_all.groupby("player").size().nlargest(12).iloc[::-1]
+    # StatsBomb 은 전체 이름을 준다(Lionel Andrés Messi Cuccittini).
+    # 다른 페이지는 짧은 이름을 쓰므로 여기서도 맞춘다.
+    top = (prog_all.assign(이름=sb_names(prog_all["player"]).values)
+           .groupby("이름").size().nlargest(12).iloc[::-1])
     f3 = go.Figure(go.Bar(y=top.index, x=top.values, orientation="h",
                           marker_color=GRANA,
                           hovertemplate="<b>%{y}</b><br>전진 패스 %{x:,}건<extra></extra>"))

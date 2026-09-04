@@ -459,10 +459,38 @@ div.legend-noimg.masia-photo{display:flex;align-items:center;justify-content:cen
 """
 
 
+def ongoing_season(seasons: pd.DataFrame) -> str | None:
+    """아직 안 끝난 시즌 이름. 없으면 None.
+
+    complete 로 거르면 안 된다 — 과거에도 결측 때문에 complete=False 가
+    되는 시즌이 생길 수 있고(2004/05 가 그랬다), 그 시즌은 실제로는 끝났다.
+    빼야 하는 것은 **마지막 시즌이 미완주일 때 그 하나**뿐이다.
+    """
+    if seasons.empty or "complete" not in seasons.columns:
+        return None
+    last = seasons.iloc[-1]
+    return None if bool(last["complete"]) else str(last["Season"])
+
+
+def finished_seasons(seasons: pd.DataFrame) -> pd.DataFrame:
+    """끝난 시즌만. 역대 기록·우승 집계는 전부 이걸 쓴다."""
+    ong = ongoing_season(seasons)
+    return seasons[seasons["Season"] != ong] if ong else seasons
+
+
+def title_count(seasons: pd.DataFrame) -> int:
+    """라리가 우승 횟수. 3경기 치르고 1위인 것은 우승이 아니다.
+
+    사이드바와 홈이 각자 세다가 17회 / 16회로 갈린 적이 있다.
+    세는 곳은 여기 하나뿐이어야 한다.
+    """
+    return int((finished_seasons(seasons)["rank"] == 1).sum())
+
+
 def setup(seasons: pd.DataFrame) -> None:
     """모든 페이지 공통 — CSS 주입 + 사이드바 클럽 정보."""
     st.markdown(CSS, unsafe_allow_html=True)
-    titles = int((seasons["rank"] == 1).sum())
+    titles = title_count(seasons)
     st.sidebar.markdown(f"""
 <div class="side-brand">
   <img src="{b64('crest.svg')}" alt="FC Barcelona">
