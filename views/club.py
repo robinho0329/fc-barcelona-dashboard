@@ -13,16 +13,22 @@ seasons = load_seasons()
 credits = load_credits()
 setup(seasons)
 
-titles = int((seasons["rank"] == 1).sum())
+latest = seasons.iloc[-1]
+
+# 역대 기록 비교에서 **진행 중인 시즌만** 뺀다.
+#
+# complete 로 거르면 안 된다. 2004/05 도 complete=False 인데(원본 27경기만
+# 파싱돼 들어왔다) 그해는 실제로 끝났고 바르사가 우승한 시즌이다. complete
+# 로 거르면 그 우승까지 지워져 17회가 15회가 된다.
+# 빼야 하는 것은 '아직 안 끝난 시즌', 즉 마지막 시즌이 미완주일 때 그 하나다.
+ongoing = (latest["Season"] if "complete" in seasons.columns
+           and not bool(latest["complete"]) else None)
+done = seasons[seasons["Season"] != ongoing] if ongoing else seasons
+
+# 3경기 치르고 1위인 것은 우승이 아니다. 끝난 시즌만 센다.
+titles = int((done["rank"] == 1).sum())
 total_goals = int(seasons["GF"].sum())
 total_matches = int(seasons["P"].sum())
-latest = seasons.iloc[-1]
-# 진행 중 시즌은 역대 기록 비교에서 뺀다. 3경기 만에 경기당 승점 3.00 이면
-# 38경기를 치른 2012/13(2.63)을 제치고 '역대 최고'로 올라와 버린다.
-# build_data.py 의 league_table() 이 complete 열을 채운다.
-done = seasons[seasons["complete"]] if "complete" in seasons.columns else seasons
-if done.empty:
-    done = seasons
 best_ppg = done.loc[done["PPG"].idxmax()]
 best_gf = done.loc[done["GF"].idxmax()]
 
@@ -309,7 +315,7 @@ st.markdown(f'<div class="section">데이터로 보는 {seasons["Season"].iloc[0
 st.markdown(metric_cards([
     ("분석 시즌", f"{len(seasons)}", f"{seasons['Season'].iloc[0]} ~ {latest['Season']}"),
     ("리그 경기", f"{total_matches:,}", "라리가 정규시즌 기준"),
-    ("리그 우승", f"{titles}회", f"{titles / len(seasons) * 100:.0f}% 시즌에서 1위"),
+    ("리그 우승", f"{titles}회", f"{titles / len(done) * 100:.0f}% 시즌에서 1위"),
     ("총 득점", f"{total_goals:,}", f"경기당 {total_goals / total_matches:.2f}골"),
     ("최고 경기당 승점", f"{best_ppg['PPG']:.2f}점", f"{best_ppg['Season']} · 승점 {int(best_ppg['Pts'])}"),
     ("최다 득점 시즌", f"{int(best_gf['GF'])}골", f"{best_gf['Season']}"),
@@ -322,7 +328,10 @@ st.markdown(metric_cards([
 st.markdown('<div class="section">시즌별 경기당 승점</div>', unsafe_allow_html=True)
 fig = go.Figure(go.Bar(
     x=seasons["Season"], y=seasons["PPG"],
-    marker_color=[GOLD if r == 1 else GRANA for r in seasons["rank"]],
+    # 진행 중 시즌은 1위여도 금색(우승)으로 칠하지 않는다. 캡션이
+    # '금색 = 라리가 우승' 이라 그대로 두면 올해 우승했다고 말하는 셈이다.
+    marker_color=[GOLD if (r == 1 and s != ongoing) else GRANA
+                  for r, s in zip(seasons["rank"], seasons["Season"])],
     hovertemplate="<b>%{x}</b><br>경기당 승점 %{y:.2f}<extra></extra>"))
 fig.add_hline(y=seasons["PPG"].mean(), line_dash="dot", line_color=BLAU,
               annotation_text=f"평균 {seasons['PPG'].mean():.2f}",
@@ -331,12 +340,14 @@ fig.update_layout(height=340, yaxis_title="경기당 승점", **PLOT)
 fig.update_xaxes(gridcolor=GRID, tickangle=-60)
 fig.update_yaxes(gridcolor=GRID)
 st.plotly_chart(fig, width="stretch")
-st.caption("금색 = 해당 시즌 라리가 우승")
+st.caption("금색 = 해당 시즌 라리가 우승"
+           + (f" · {ongoing}는 아직 진행 중이라 우승색을 칠하지 않았다"
+              if ongoing else ""))
 
 c1, c2 = st.columns(2)
 with c1:
     st.markdown('<div class="section">10년 단위 리그 우승</div>', unsafe_allow_html=True)
-    dec = (seasons[seasons["rank"] == 1].groupby("decade").size()
+    dec = (done[done["rank"] == 1].groupby("decade").size()
            .reindex(["1990s", "2000s", "2010s", "2020s"], fill_value=0))
     f2 = go.Figure(go.Bar(x=dec.index, y=dec.values, marker_color=BLAU, text=dec.values,
                           textposition="outside", textfont_color="#f2f6fc",
