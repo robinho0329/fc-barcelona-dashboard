@@ -3,7 +3,9 @@
 수집한 CSV를 시즌 단위로 합쳐 승점·득실·순위를 계산한다.
 football-data는 순위를 주지 않으므로 리그 전체 경기에서 직접 집계한다.
 """
+import csv
 import glob
+import io
 import re
 from pathlib import Path
 
@@ -16,13 +18,45 @@ OUT.mkdir(parents=True, exist_ok=True)
 CLUB = "Barcelona"
 
 
+def _read_csv_ragged(f: Path) -> pd.DataFrame:
+    """football-data.co.uk SP1 CSV를 줄마다 필드 수가 달라도 읽는다.
+
+    일부 시즌(예: 2004/05)은 뒤쪽 배당률 열의 트레일링 콤마 수가 행마다
+    들쭉날쭉하다(헤더 49개인데 44~51개까지 섞임). 우리가 쓰는 건 앞쪽
+    핵심 열(Div~FTR 등)뿐이라, 각 행을 헤더 길이에 맞춰 자르거나
+    빈 문자열로 채운 뒤 pandas에 넘긴다. pandas의 on_bad_lines="skip"은
+    이런 행을 통째로 버려 경기를 잃게 만들므로 쓰지 않는다.
+    """
+    with open(f, encoding="latin-1", newline="") as fh:
+        rows = list(csv.reader(fh))
+    if not rows:
+        return pd.DataFrame()
+    header = rows[0]
+    n = len(header)
+    fixed = []
+    for row in rows[1:]:
+        if not row or all(c == "" for c in row):
+            continue
+        if len(row) < n:
+            row = row + [""] * (n - len(row))
+        elif len(row) > n:
+            row = row[:n]
+        fixed.append(row)
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(header)
+    w.writerows(fixed)
+    buf.seek(0)
+    return pd.read_csv(buf)
+
+
 def load_all() -> pd.DataFrame:
     frames = []
     for f in sorted(RAW.glob("SP1_*.csv")):
         code = re.search(r"SP1_(\d{4})", f.name).group(1)
         yy = int(code[:2])
         season = f"{1900 + yy if yy >= 90 else 2000 + yy}/{code[2:]}"
-        d = pd.read_csv(f, on_bad_lines="skip", engine="python", encoding="latin-1")
+        d = _read_csv_ragged(f)
         d = d.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"])
         d["Season"] = season
         frames.append(d)
