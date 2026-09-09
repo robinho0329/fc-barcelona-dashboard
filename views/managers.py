@@ -345,6 +345,7 @@ def _stamp(*paths) -> str:
 
 style = style_table(_stamp(
     PROCESSED / "managers.parquet", PROCESSED / "club_matches.parquet",
+    PROCESSED.parent / "statsbomb" / "matches.parquet",
     PROCESSED.parent / "statsbomb" / "passes.parquet",
     PROCESSED.parent / "understat" / "shots.parquet",
     PROCESSED.parent / "fbref_allcomps"))

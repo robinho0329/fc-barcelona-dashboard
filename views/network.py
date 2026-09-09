@@ -65,7 +65,11 @@ def _stamp() -> str:
     out = []
     for rel in ("data/understat/shots.parquet", "data/statsbomb/shots.parquet"):
         f = pathlib.Path(rel)
-        out.append(f"{rel}:{f.stat().st_mtime if f.exists() else 0}")
+        out.append(f"{rel}:{f.stat().st_mtime_ns}:{f.stat().st_size}" if f.exists() else f"{rel}:0")
+    players = pathlib.Path("data/fbref_allcomps_players")
+    if players.exists():
+        out += [f"{f.name}:{f.stat().st_mtime_ns}:{f.stat().st_size}"
+                for f in sorted(players.glob("*.parquet"))]
     return "|".join(out)
 
 

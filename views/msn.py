@@ -133,7 +133,7 @@ def trio_links(stamp: float) -> pd.DataFrame:
 
 
 _d = pathlib.Path("data/fbref_allcomps_players")
-_stamp = "|".join(sorted(f"{f.name}:{f.stat().st_mtime}" for f in _d.glob("*.parquet"))) \
+_stamp = "|".join(sorted(f"{f.name}:{f.stat().st_mtime_ns}:{f.stat().st_size}" for f in _d.glob("*.parquet"))) \
     if _d.exists() else ""
 _u = pathlib.Path("data/understat/shots.parquet")
 
@@ -202,7 +202,7 @@ def mvp_links(stamp: float) -> pd.DataFrame:
 
 
 @st.cache_data
-def mvp_routes(stamp: float) -> pd.DataFrame:
+def mvp_routes(stamp: str) -> pd.DataFrame:
     """1기 셋이 넣은 골의 상황·부위·마무리, 그리고 도움 준 사람.
 
     2기는 Understat을 쓰지만 이 시기는 없어서 StatsBomb을 쓴다. 두 원본은
@@ -403,7 +403,9 @@ if not mvp.empty:
                    "`python fetch_statsbomb.py` 를 먼저 실행하면 채워진다.")
 
     # ---- 주 공격 루트
-    mvp_rt = mvp_routes(_sb.stat().st_mtime if _sb.exists() else 0.0)
+    _routes_stamp = (f"{_sb.stat().st_mtime_ns}:{_sb.stat().st_size}|{_stamp}"
+                     if _sb.exists() else f"0|{_stamp}")
+    mvp_rt = mvp_routes(_routes_stamp)
     if not mvp_rt.empty:
         st.markdown('<div class="section">1기 · 주 공격 루트</div>',
                     unsafe_allow_html=True)

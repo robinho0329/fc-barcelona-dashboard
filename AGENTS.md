@@ -1,5 +1,11 @@
 # 대시보드 개발 에이전트 운영
 
+도구를 사용하는 작업 세션에서는 첫 도구 호출 전에 task-observer 스킬을 불러
+Session Start Protocol을 실행한다. 관찰 저장소는
+`C:\Users\xcv54\.codex\skill-observations`로 고정한다. 작업 종료 보고에는
+관찰 기록 여부를 확인한다. 스킬이 로드되지 않으면 이 규칙의 축약본으로 대신
+진행하지 말고 해당 사실을 보고한다.
+
 작업 시작 시 docs/CURRENT.md와 최신 Git 상태를 읽는다.
 README.md와 HANDOFF.md는 필요한 절을 검색해 읽고, 매번 전체를 다시 읽지 않는다.
 사용자는 독립 작업의 서브 에이전트 병렬 수행을 승인했다.

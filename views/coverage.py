@@ -1,10 +1,14 @@
 """데이터 제공 범위 — 어떤 소스가 어디까지 덮는지, 무엇이 비는지."""
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, ROOT, WHITE, b64,
-                  load_clasico, load_sb, load_seasons, metric_cards, setup)
+                  load_dir, load_parquet, load_sb, load_seasons,
+                  load_understat, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -12,50 +16,78 @@ setup(seasons)
 SEASON_ORDER = seasons["Season"].tolist()
 
 
-@st.cache_data
 def source_coverage() -> pd.DataFrame:
-    """소스별로 어느 시즌을 덮는지와 규모를 모은다. 파일이 없으면 그대로 비운다."""
+    """소스별 실제 데이터 범위·규모·파일 갱신 시각을 모은다."""
     rows = []
 
-    m = pd.read_parquet(PROCESSED / "club_matches.parquet")
+    def updated_at(paths) -> str:
+        existing = [path for path in paths if path.exists()]
+        if not existing:
+            return "확인 불가"
+        stamp = max(path.stat().st_mtime for path in existing)
+        return datetime.fromtimestamp(stamp, ZoneInfo("Asia/Seoul")).strftime(
+            "%Y-%m-%d %H:%M"
+        )
+
+    def latest_date(frame: pd.DataFrame, column: str, **kwargs) -> str:
+        dates = pd.to_datetime(frame[column], errors="coerce", **kwargs)
+        return dates.max().strftime("%Y-%m-%d") if dates.notna().any() else "확인 불가"
+
+    match_path = PROCESSED / "club_matches.parquet"
+    m = load_parquet(match_path)
     rows.append({"소스": "football-data.co.uk", "단위": "경기 결과",
                  "시즌": sorted(m["Season"].unique()), "건수": len(m),
+                 "최신 관측": latest_date(m, "Date", format="mixed", dayfirst=True),
+                 "파일 갱신": updated_at([match_path]),
                  "설명": "라리가 전 경기 스코어. 2005/06부터 슛·코너·파울·카드 추가"})
 
     p = PROCESSED / "players.parquet"
     if p.exists():
-        pl = pd.read_parquet(p)
+        pl = load_parquet(p)
         rows.append({"소스": "FBref", "단위": "선수 시즌 스탯",
                      "시즌": sorted(pl["season"].unique()), "건수": len(pl),
+                     "최신 관측": sorted(pl["season"].unique())[-1],
+                     "파일 갱신": updated_at([p]),
                      "설명": f"바르사 선수 {pl['Player'].nunique()}명의 시즌 기록"})
 
     ac = ROOT / "data" / "fbref_allcomps"
-    if ac.exists() and list(ac.glob("*.parquet")):
-        alls = pd.concat([pd.read_parquet(f) for f in sorted(ac.glob("*.parquet"))],
-                         ignore_index=True)
+    ac_files = sorted(ac.glob("*.parquet")) if ac.exists() else []
+    if ac_files:
+        alls = load_dir("fbref_allcomps")
         rows.append({"소스": "FBref (전 대회)", "단위": "경기 결과",
                      "시즌": sorted(alls["season"].unique()), "건수": len(alls),
+                     "최신 관측": latest_date(alls, "Date"),
+                     "파일 갱신": updated_at(ac_files),
                      "설명": "챔피언스리그·코파 델 레이 포함. 점유율·포메이션 제공"})
 
     sb = load_sb("shots")
     if not sb.empty:
         pa = load_sb("passes")
+        sb_paths = [ROOT / "data" / "statsbomb" / f"{name}.parquet"
+                    for name in ("shots", "passes")]
         rows.append({"소스": "StatsBomb", "단위": "이벤트(슛·패스)",
                      "시즌": sorted(sb["season"].unique()),
                      "건수": len(sb) + len(pa),
+                     "최신 관측": sorted(sb["season"].unique())[-1],
+                     "파일 갱신": updated_at(sb_paths),
                      "설명": f"슛 {len(sb):,} · 패스 {len(pa):,}. 좌표와 xG 포함"})
 
     up = ROOT / "data" / "understat" / "shots.parquet"
     if up.exists():
-        us = pd.read_parquet(up)
+        us = load_understat()
         rows.append({"소스": "Understat", "단위": "이벤트(슛)",
                      "시즌": sorted(us["season"].unique()), "건수": len(us),
+                     "최신 관측": latest_date(us, "date"),
+                     "파일 갱신": updated_at([up]),
                      "설명": "슛 좌표와 xG. StatsBomb이 끊긴 최근 시즌을 잇는다"})
 
     pt = ROOT / "assets" / "portraits"
     if pt.exists():
+        portraits = list(pt.glob("*.jpg"))
         rows.append({"소스": "Transfermarkt", "단위": "선수 사진",
-                     "시즌": SEASON_ORDER, "건수": len(list(pt.glob("*.jpg"))),
+                     "시즌": SEASON_ORDER, "건수": len(portraits),
+                     "최신 관측": "시즌 비귀속",
+                     "파일 갱신": updated_at(portraits),
                      "설명": "시즌 스쿼드에서 받은 선수 증명사진"})
 
     return pd.DataFrame(rows)
@@ -83,6 +115,13 @@ st.markdown(metric_cards([
     ("가장 넓은 소스", f"{cov.loc[cov['시즌'].map(len).idxmax(), '소스']}",
      f"{cov['시즌'].map(len).max()}시즌"),
 ]), unsafe_allow_html=True)
+
+freshness = cov.assign(
+    범위=cov["시즌"].map(lambda ss: f"{ss[0]} ~ {ss[-1]} · {len(ss)}시즌")
+)[["소스", "범위", "최신 관측", "파일 갱신"]]
+st.dataframe(freshness, hide_index=True, width="stretch")
+st.caption("최신 관측은 데이터 안의 경기일 또는 시즌, 파일 갱신은 현재 배포 파일의 "
+           "수정 시각(KST)이다. 수집기관의 게시 시각과는 다를 수 있다.")
 
 # ---------------------------------------------------------------- 커버리지 지도
 st.markdown('<div class="section">소스별 시즌 커버리지</div>', unsafe_allow_html=True)
@@ -120,7 +159,7 @@ st.markdown(f'<div class="timeline-grid">{cards}</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 항목별 결측
 st.markdown('<div class="section">시즌별 제공 항목</div>', unsafe_allow_html=True)
-m = pd.read_parquet(PROCESSED / "club_matches.parquet")
+m = load_parquet(PROCESSED / "club_matches.parquet")
 per_season = m.groupby("Season").agg(
     경기=("Season", "size"),
     슛기록=("HS", lambda s: int(s.notna().sum())) if "HS" in m.columns else ("Season", "size"),

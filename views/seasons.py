@@ -4,15 +4,14 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, WHITE, b64,
-                  load_seasons, metric_cards, setup)
+                  load_parquet, load_seasons, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
 
 
-@st.cache_data
 def load_matches() -> pd.DataFrame:
-    m = pd.read_parquet(PROCESSED / "club_matches.parquet").copy()
+    m = load_parquet(PROCESSED / "club_matches.parquet").copy()
     m["date"] = pd.to_datetime(m["Date"], format="mixed", dayfirst=True)
     home = m["HomeTeam"] == "Barcelona"
     m["gf"] = m["FTHG"].where(home, m["FTAG"]).astype(int)

@@ -616,7 +616,7 @@ def _name_key(name: str) -> str:
 
 
 @st.cache_data
-def _portrait_index(stamp: float) -> dict:
+def _portrait_index(stamp: str) -> dict:
     """선수 이름 → 썸네일 data URI.
 
     Transfermarkt와 FBref의 표기가 달라(Ion/Jon Goikoetxea, Eusebio Sacristán/
@@ -648,7 +648,11 @@ def _portrait_index(stamp: float) -> dict:
 def portrait_map(names) -> dict:
     """주어진 이름들에 대한 사진 URI. 없으면 빈 문자열."""
     p = PROCESSED / "portraits.json"
-    stamp = p.stat().st_mtime if p.exists() else 0.0
+    thumbs = ASSETS / "portraits_thumb"
+    files = sorted(thumbs.glob("*.jpg")) if thumbs.exists() else []
+    parts = [f"index:{p.stat().st_mtime_ns}:{p.stat().st_size}" if p.exists() else "index:0"]
+    parts += [f"{f.name}:{f.stat().st_mtime_ns}:{f.stat().st_size}" for f in files]
+    stamp = "|".join(parts)
     idx = _portrait_index(stamp)
     out = {}
     for n in names:
@@ -819,5 +823,9 @@ def _sb_name_index(stamp: str) -> dict:
 def sb_names(series) -> pd.Series:
     """StatsBomb 이름 열을 통용 이름으로 바꾼다."""
     d = PROCESSED.parent / "statsbomb" / "shots.parquet"
-    stamp = f"{d.stat().st_mtime}" if d.exists() else "0"
+    players = PROCESSED.parent / "fbref_allcomps_players"
+    files = sorted(players.glob("*.parquet")) if players.exists() else []
+    parts = [f"shots:{d.stat().st_mtime_ns}:{d.stat().st_size}" if d.exists() else "shots:0"]
+    parts += [f"{f.name}:{f.stat().st_mtime_ns}:{f.stat().st_size}" for f in files]
+    stamp = "|".join(parts)
     return pd.Series(series).map(_sb_name_index(stamp)).fillna(pd.Series(series))

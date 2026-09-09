@@ -395,6 +395,17 @@ Squad Total 혼입, 대회 목록 하드코딩, StatsBomb 전체 이름, 캐시 
 
 ## 남은 작업
 
+### 2026-09-09 로드맵 2 — 데이터 갱신·캐시 안정화
+
+- Sol 에이전트 세 명을 최소 문맥으로 실행해 캐시 감사, coverage UI, 회귀검사를 분담했다.
+- coverage와 시즌 검색의 인자 없는 파일 캐시를 제거하고 공통 로더를 사용한다.
+- 선수 사진 썸네일, FBref 이름 원본, 감독 전술의 StatsBomb 경기, 네트워크와 MVP
+  이름 매칭 등 캐시가 간접 의존하던 파일·폴더도 키에 포함했다.
+- 데이터 제공 범위 표에 실제 시즌 범위, 최신 관측값, 파일 갱신 시각(KST)을 표시한다.
+- `tools/test_cache_invalidation.py`에서 Parquet·JSON·디렉터리 캐시 갱신 3건 통과.
+  `tools/audit.py` 46건과 `tools/smoke.py --no-http` 17페이지도 모두 통과했다.
+- 다음 단계는 로드맵 3: 정상 데스크톱 폭과 모바일 폭에서 17페이지 시각 검수.
+
 ### Headroom·Task Observer 설치 검증
 
 - 두 도구 로컬 설치 완료. 상세 경로·버전·재현 방법은 docs/TOKEN_BENCHMARK.md.
