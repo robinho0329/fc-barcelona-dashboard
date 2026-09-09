@@ -5,6 +5,7 @@
 - 로드맵 2 완료: 파일·폴더 변경을 반영하는 캐시 키 보강 및 데이터 갱신 정보 표시.
 - 검증: cache regression 3개, audit 46개, smoke 17페이지 통과.
 - 로드맵 3 완료: 17페이지를 1440×900과 390×844에서 검수하고 모바일 선택기·네트워크 길이를 개선.
+- 연계 네트워크 수정: StatsBomb `Ronaldo de Assis Moreira`를 `Ronaldinho`로 보정. audit 48건 통과.
 - 다음: 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
 - Python: D:\workspace\EPL project\.venv\Scripts\python.exe
 - 작업 규칙: AGENTS.md. 역할별 지시문: docs/AGENT_PROMPTS.md.

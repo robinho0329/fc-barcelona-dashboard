@@ -759,6 +759,9 @@ SB_ALIAS = {
     "Moriba Kourouma Kourouma": "Ilaix Moriba",
     "Rafael Alcântara do Nascimento": "Rafinha",
     "Ricard Puig Martí": "Riqui Puig",
+    # StatsBomb의 법적 이름. 자동 토큰 매칭에 맡기면 1996/97의
+    # Ronaldo Nazário와 충돌하므로 반드시 명시적으로 구분한다.
+    "Ronaldo de Assis Moreira": "Ronaldinho",
     "Sylvio Mendes Campos Junior": "Sylvinho",
     "Víctor Muñoz Manrique": "Víctor Muñoz",
     "Xavier Hernández Creus": "Xavi",

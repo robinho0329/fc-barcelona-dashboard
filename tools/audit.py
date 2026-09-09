@@ -15,6 +15,7 @@ import pandas as pd
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 P = ROOT / "data" / "processed"
 issues = []
+sys.path.insert(0, str(ROOT))
 
 
 def check(name, cond_count, detail=""):
@@ -165,6 +166,22 @@ check("슛 좌표 결측", int(sh[["x", "y"]].isna().any(axis=1).sum()))
 check("xG 범위 밖(0~1)", int(((sh.xg < 0) | (sh.xg > 1)).sum()))
 check("좌표 범위 밖", int(((sh.x < 0) | (sh.x > 120) | (sh.y < 0) | (sh.y > 80)).sum()))
 check("패스 좌표 결측", int(ps[["x", "y", "end_x", "end_y"]].isna().any(axis=1).sum()))
+
+# StatsBomb은 호나우지뉴를 법적 이름 `Ronaldo de Assis Moreira`로 준다.
+# 전 시즌 FBref 명단에서 토큰만 맞추면 호나우두와 합쳐지므로 회귀 검사한다.
+from _lib import sb_names
+
+linked = sh[sh["is_barca"] & sh["goal"] & sh["assisted_by"].notna()].copy()
+linked["mapped_player"] = sb_names(linked["player"]).values
+linked["mapped_assist"] = sb_names(linked["assisted_by"]).values
+modern_ronaldo = ((linked["season"].str[:4].astype(int) >= 2004)
+                  & (linked[["mapped_player", "mapped_assist"]] == "Ronaldo").any(axis=1))
+check("호나우지뉴→Ronaldo 오매칭", int(modern_ronaldo.sum()))
+r06 = linked[linked["season"] == "2006/07"]
+r06_goals = int((r06["mapped_player"] == "Ronaldinho").sum())
+r06_assists = int((r06["mapped_assist"] == "Ronaldinho").sum())
+check("호나우지뉴 06/07 연계 회귀", int((r06_goals, r06_assists) != (5, 7)),
+      f"(득점 {r06_goals} / 도움 {r06_assists})")
 
 print("\n=== 8. Understat ===")
 us = pd.read_parquet(ROOT / "data" / "understat" / "shots.parquet")
