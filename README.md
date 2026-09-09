@@ -88,6 +88,7 @@ Cloud에서는 수집이 돌지 않으므로 배포에는 `requirements.txt`만 
 매일 KST 09:15에 Codex의 기존 채팅방 예약 작업으로 작은 개선과 검수를 수행한다.
 에이전트 역할과 운영 기준은 `AGENTS.md`, 실행별 기록과 재개 지점은 `HANDOFF.md`를 따른다.
 재사용할 에이전트 지시문은 `docs/AGENT_PROMPTS.md`에 기록한다.
+짧은 재개 요약은 `docs/CURRENT.md`를 사용하며 전체 대화 복제와 반복 로그 출력을 줄인다.
 검증한 변경은 GitHub에 반영하고 Streamlit Cloud 배포 확인 결과를 같은 채팅방에 보고한다.
 
 ## 이미지 안내
