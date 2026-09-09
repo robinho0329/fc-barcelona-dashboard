@@ -6,6 +6,7 @@
 - 검증: cache regression 3개, audit 46개, smoke 17페이지 통과.
 - 로드맵 3 완료: 17페이지를 1440×900과 390×844에서 검수하고 모바일 선택기·네트워크 길이를 개선.
 - 연계 네트워크 수정: StatsBomb `Ronaldo de Assis Moreira`를 `Ronaldinho`로 보정. audit 48건 통과.
+- 17페이지 의미 검수 완료: 확정 결함 14건. 우선순위는 advanced 분모·대회 범위 → passes의 박스 투입·필터 → 통산/\uACB0¹점유율 범위 표기.
 - 다음: 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
 - Python: D:\workspace\EPL project\.venv\Scripts\python.exe
 - 작업 규칙: AGENTS.md. 역할별 지시문: docs/AGENT_PROMPTS.md.
