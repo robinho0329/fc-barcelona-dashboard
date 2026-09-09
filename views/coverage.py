@@ -35,11 +35,11 @@ def source_coverage() -> pd.DataFrame:
 
     match_path = PROCESSED / "club_matches.parquet"
     m = load_parquet(match_path)
-    rows.append({"소스": "football-data.co.uk", "단위": "경기 결과",
+    rows.append({"소스": "football-data.co.uk", "단위": "바르사 경기 결과",
                  "시즌": sorted(m["Season"].unique()), "건수": len(m),
                  "최신 관측": latest_date(m, "Date", format="mixed", dayfirst=True),
                  "파일 갱신": updated_at([match_path]),
-                 "설명": "라리가 전 경기 스코어. 2005/06부터 슛·코너·파울·카드 추가"})
+                 "설명": "바르셀로나의 라리가 경기 스코어. 2005/06부터 슛·코너·파울·카드 추가"})
 
     p = PROCESSED / "players.parquet"
     if p.exists():
@@ -94,6 +94,7 @@ def source_coverage() -> pd.DataFrame:
 
 
 cov = source_coverage()
+COVERAGE_SEASON_ORDER = sorted({s for ss in cov["시즌"] for s in ss})
 
 st.markdown(f"""
 <div class="hero">
@@ -128,13 +129,13 @@ st.markdown('<div class="section">소스별 시즌 커버리지</div>', unsafe_a
 z, ytick, hover = [], [], []
 for _, r in cov.iterrows():
     have = set(r["시즌"])
-    z.append([1 if s in have else 0 for s in SEASON_ORDER])
+    z.append([1 if s in have else 0 for s in COVERAGE_SEASON_ORDER])
     ytick.append(r["소스"])
     hover.append([f"{r['소스']}<br>{s}<br>{'제공' if s in have else '없음'}"
-                  for s in SEASON_ORDER])
+                  for s in COVERAGE_SEASON_ORDER])
 
 fig = go.Figure(go.Heatmap(
-    z=z, x=SEASON_ORDER, y=ytick, text=hover, hoverinfo="text",
+    z=z, x=COVERAGE_SEASON_ORDER, y=ytick, text=hover, hoverinfo="text",
     colorscale=[[0, "rgba(23,51,85,.35)"], [1, GRANA]],
     showscale=False, xgap=1.5, ygap=4))
 fig.update_layout(height=60 + 42 * len(cov), **PLOT)

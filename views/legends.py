@@ -241,7 +241,7 @@ st.markdown(f'<div class="timeline-grid">{cards}</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 통산 기록
 # FBref 전 대회 합산. 라리가만 담은 수치를 통산이라 부르면 실제와 크게 어긋난다.
-st.markdown('<div class="section">통산 기록 (전 대회)</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">FBref 수록 기록 (전 대회)</div>', unsafe_allow_html=True)
 ALL = load_dir("fbref_allcomps_players")
 career = pd.DataFrame()
 if not ALL.empty and lg.get("fbref_name"):
@@ -273,6 +273,8 @@ else:
         f0.update_yaxes(gridcolor=GRID)
         st.plotly_chart(f0, width="stretch")
         st.caption("대회별 골·도움. FBref 클럽 페이지의 대회별 표를 그대로 합산했다.")
+    st.caption("FBref에 실제로 수록된 시즌·대회 합계다. 일부 옛 시즌과 대회가 "
+               "빠져 있어 구단 공식 통산 출전·득점과 다를 수 있다.")
 
 # ---------------------------------------------------------------- 이벤트 스탯
 st.markdown('<div class="section">플레이 지표 (StatsBomb 이벤트)</div>',

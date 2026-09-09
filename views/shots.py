@@ -32,7 +32,7 @@ if shots.empty:
 barca = shots[shots["is_barca"]].copy()
 
 # ---------------------------------------------------------------- 필터
-c1, c2, c3 = st.columns([1.1, 1.4, 1])
+c1, c2 = st.columns([1.1, 1.4])
 season_opts = ["전체"] + sorted(barca["season"].unique())
 season = c1.selectbox("시즌", season_opts)
 view = barca if season == "전체" else barca[barca["season"] == season]
@@ -43,9 +43,6 @@ player_opts = ["전체"] + [p for p in top_players.index if isinstance(p, str)]
 player = c2.selectbox("선수", player_opts)
 if player != "전체":
     view = view[view["player"] == player]
-
-only_goals = c3.checkbox("골만 보기", value=False)
-plot_df = view[view["goal"]] if only_goals else view
 
 # ---------------------------------------------------------------- 요약
 if view.empty:
@@ -64,6 +61,8 @@ st.markdown(metric_cards([
 
 # ---------------------------------------------------------------- 슈팅 맵
 st.markdown('<div class="section">슈팅 위치</div>', unsafe_allow_html=True)
+only_goals = st.checkbox("슈팅 맵에서 골만 보기", value=False)
+plot_df = view[view["goal"]] if only_goals else view
 fig = go.Figure()
 for is_goal, color, name in [(False, BLAU, "무득점"), (True, GRANA, "골")]:
     part = plot_df[plot_df["goal"] == is_goal]

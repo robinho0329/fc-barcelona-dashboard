@@ -159,16 +159,23 @@ NOTES = {
                      "이 시대 클럽 상황을 그대로 보여주는 숫자다. 코파 우승이 위안.",
     "Sergi Barjuan": "쿠만 경질과 차비 부임 사이 열흘. 2경기 모두 무승부로 "
                      "자리를 지키고 넘겼다.",
-    "Xavi": "재정난 속에서 경기당 2.23점으로 팀을 다시 세우고 2022/23 리그를 "
+    "Xavi": "재정난 속에서 경기당 {ppg}점으로 팀을 다시 세우고 2022/23 리그를 "
             "되찾았다. 선수 시절의 상징성이 감독으로서는 부담으로도 작용했다.",
-    "Hansi Flick": "부임과 함께 수비 라인을 끌어올리며 경기당 2.40점. 첫 두 시즌 "
+    "Hansi Flick": "부임과 함께 수비 라인을 끌어올리며 경기당 {ppg}점. 첫 두 시즌 "
                    "연속 리그 우승으로 과르디올라 이후 가장 빠른 출발을 했다.",
 }
 # 두 번 부임한 감독은 표시명에 "(1기)"가 붙는다. 표시명 → 이름 순으로 찾는다.
 note = NOTES.get(r["표시명"]) or NOTES.get(r["name"])
 if note:
+    note = note.format(ppg=f"{r['경기당승점']:.2f}")
     st.markdown(f'<div class="mg-note">{note}</div>', unsafe_allow_html=True)
 
+home_part = part[part["venue"] == "홈"]
+away_part = part[part["venue"] == "원정"]
+home_rate = (f"{(home_part['result'] == '승').mean() * 100:.1f}%"
+             if len(home_part) else "기록 없음")
+away_rate = (f"{(away_part['result'] == '승').mean() * 100:.1f}%"
+             if len(away_part) else "기록 없음")
 st.markdown(metric_cards([
     ("경기", f"{int(r['경기'])}", f"{r['시즌수']}시즌"),
     ("승률", f"{r['승률']:.1f}%", f"{int(r['승'])}승 {int(r['무'])}무 {int(r['패'])}패"),
@@ -176,10 +183,8 @@ st.markdown(metric_cards([
     ("리그 우승", f"{int(r['우승'])}회", "재임 중 종료 시즌 기준"),
     ("득실", f"{int(r['득점'])}-{int(r['실점'])}",
      f"경기당 {r['득점'] / r['경기']:.2f} : {r['실점'] / r['경기']:.2f}"),
-    ("홈 승률", f"{(part[part['venue'] == '홈']['result'] == '승').mean() * 100:.1f}%",
-     f"{len(part[part['venue'] == '홈'])}경기"),
-    ("원정 승률", f"{(part[part['venue'] == '원정']['result'] == '승').mean() * 100:.1f}%",
-     f"{len(part[part['venue'] == '원정'])}경기"),
+    ("홈 승률", home_rate, f"{len(home_part)}경기"),
+    ("원정 승률", away_rate, f"{len(away_part)}경기"),
     ("무실점", f"{int((part['ga'] == 0).sum())}경기",
      f"전체의 {(part['ga'] == 0).mean() * 100:.0f}%"),
 ]), unsafe_allow_html=True)

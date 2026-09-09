@@ -59,7 +59,7 @@ CURRENT_GEN = [
     ("Lamine Yamal", "우측 윙어", "16세에 주전이 된 다음 세대의 얼굴", "masia/yamal.jpg"),
     ("Pau Cubarsí", "센터백", "17세에 수비 라인을 맡은 계보의 증거", "masia/cubarsi.jpg"),
     ("Gavi", "미드필더", "차비·이니에스타의 자리를 물려받은 투지", "masia/gavi.jpg"),
-    ("Pedri", "미드필더", "경기 속도를 조절하는 지금의 설계자", "masia/pedri.jpg"),
+    ("Alejandro Balde", "레프트백", "유스에서 1군 주전으로 오른 측면의 계보", ""),
     ("Fermín López", "공격형 미드필더", "결정적인 순간에 나타나는 침투", "masia/fermin.jpg"),
 ]
 portrait_index = load_json(PROCESSED / "portraits.json")
@@ -124,7 +124,7 @@ st.caption("계보는 끊기지 않았다. 아래 수치는 명성이나 수상 
 # 설명이 사실과 어긋나게 된다.
 masia_credits = load_json(ASSETS / "masia" / "credits.json")
 KOR_NAME = {"yamal": "라민 야말", "cubarsi": "파우 쿠바르시", "gavi": "가비",
-            "pedri": "페드리", "fermin": "페르민 로페스",
+            "fermin": "페르민 로페스",
             "busquets": "세르히오 부스케츠"}
 src_lines = []
 for key, name in KOR_NAME.items():

@@ -110,7 +110,7 @@ summ = club.groupby("comp").agg(
     무=("Result", lambda s: (s == "D").sum()),
     패=("Result", lambda s: (s == "L").sum()),
     경기당득점=("GF", "mean"), 경기당실점=("GA", "mean"),
-    평균점유율=("Poss", "mean"), 경기당승점=("pts", "mean"),
+    평균점유율=("Poss", "mean"), 점유율표본=("Poss", "count"), 경기당승점=("pts", "mean"),
 ).reindex(COMP_ORDER).dropna(subset=["경기"])
 summ["승률"] = summ["승"] / summ["경기"] * 100
 
@@ -130,15 +130,18 @@ with c1:
     f1 = go.Figure(go.Bar(
         x=summ.index, y=summ["경기당득점"], marker_color=[COMP_COLOR[c] for c in summ.index],
         text=summ["경기당득점"].round(2), textposition="outside", textfont_color="#f2f6fc",
-        customdata=summ[["경기", "경기당실점", "평균점유율"]].values,
+        customdata=summ[["경기", "경기당실점", "평균점유율", "점유율표본"]].values,
         hovertemplate="<b>%{x}</b><br>경기당 득점 %{y:.2f}<br>경기당 실점 %{customdata[1]:.2f}<br>"
-                      "평균 점유율 %{customdata[2]:.1f}%<br>%{customdata[0]}경기<extra></extra>"))
+                      "평균 점유율 %{customdata[2]:.1f}% (%{customdata[3]:.0f}경기 표본)<br>"
+                      "%{customdata[0]}경기<extra></extra>"))
     f1.update_layout(height=340, yaxis_title="경기당 득점", **PLOT)
     f1.update_xaxes(gridcolor=GRID, tickangle=-20)
     f1.update_yaxes(gridcolor=GRID)
     st.plotly_chart(f1, width="stretch")
     st.caption("경기당 득점 = 총 득점 / 경기 수. 대회별 표본 수가 크게 달라"
                "(라리가 1,262경기 vs UEFA 슈퍼컵 1경기) 표본이 적은 대회는 참고만.")
+    st.caption("점유율은 FBref에 값이 있는 경기만의 평균이며, 마우스를 올리면 "
+               "대회별 점유율 표본 경기 수를 확인할 수 있다.")
 
 with c2:
     f2 = go.Figure(go.Bar(
@@ -154,8 +157,10 @@ with c2:
     st.caption("UEFA 슈퍼컵은 통산 1경기(2015/16 세비야전 승)뿐이라 승률 100%가 표본 부족의 결과다.")
 
 with st.expander("대회별 전적 표"):
-    tb = summ[["경기", "승", "무", "패", "승률", "경기당득점", "경기당실점", "평균점유율"]].copy()
-    tb.columns = ["경기", "승", "무", "패", "승률(%)", "경기당 득점", "경기당 실점", "평균 점유율(%)"]
+    tb = summ[["경기", "승", "무", "패", "승률", "경기당득점", "경기당실점", "평균점유율",
+               "점유율표본"]].copy()
+    tb.columns = ["경기", "승", "무", "패", "승률(%)", "경기당 득점", "경기당 실점", "평균 점유율(%)",
+                  "점유율 표본(경기)"]
     st.dataframe(tb.round(2), width="stretch")
 
 # ---------------------------------------------------------------- 시즌별 비중
@@ -185,7 +190,7 @@ comp_opts = sorted(comp_opts, key=lambda c: (c not in COMP_ORDER, COMP_ORDER.ind
 sel_comp = st.selectbox("대회", comp_opts, index=0)
 psub = players[players["대회"] == sel_comp]
 agg = psub.groupby("Player").agg(골=("골", "sum"), 도움=("도움", "sum"),
-                                  출전분=("90분수", "sum"), 경기=("경기", "sum")).reset_index()
+                                  환산90분=("90분수", "sum"), 경기=("경기", "sum")).reset_index()
 agg = agg[agg["골"] + agg["도움"] > 0].sort_values("골", ascending=False)
 
 c3, c4 = st.columns(2)
@@ -215,7 +220,7 @@ with c4:
 
 with st.expander("대회별 선수 기록 표"):
     tb2 = agg.copy()
-    tb2.columns = ["선수", "골", "도움", "출전 분", "경기"]
+    tb2.columns = ["선수", "골", "도움", "90분 환산 출전", "경기"]
     st.dataframe(tb2.round(0).set_index("선수"), width="stretch", height=400)
 
 st.markdown(f"""

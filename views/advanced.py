@@ -27,11 +27,16 @@ if pm.empty:
     st.warning("StatsBomb 이벤트 데이터가 없습니다. `python fetch_statsbomb.py`를 먼저 실행하세요.")
     st.stop()
 
-barca = pm[pm["team"] == "Barcelona"].copy()
+barca = pm[(pm["team"] == "Barcelona") & (pm["competition"] == "라리가")].copy()
 
-# minutes_seen은 그 선수가 마지막으로 등장한 분이라 출전 시간의 근사치다.
-# 90분을 넘길 수 없도록 자르고, 경기당 최소 15분 이상 뛴 기록만 쓴다.
-barca["minutes"] = barca["minutes_seen"].clip(upper=95)
+# minutes_seen은 그 선수가 마지막으로 이벤트에 등장한 분이지 실제
+# 출전 시간이 아니다. 그대로 더하면 교체 선수마다 경기 시각이 중복되므로,
+# 최소 15분의 활동 신호를 주고 경기별 합계가 11명×경기 길이가 되도록
+# 비례 보정한 추정치를 쓴다. 교체 시각을 모르므로 개인별 값은 여전히 근사치다.
+barca["minute_signal"] = barca["minutes_seen"].clip(lower=15, upper=95)
+match_length = barca.groupby("match_id")["minutes_seen"].transform("max").clip(90, 95)
+signal_total = barca.groupby("match_id")["minute_signal"].transform("sum")
+barca["minutes"] = barca["minute_signal"] * (11 * match_length) / signal_total
 
 METRICS = {
     "패스": "passes", "드리블 성공": "dribbles", "전진 운반": "carries",
@@ -62,7 +67,10 @@ c1, c2 = st.columns([1.2, 1.6])
 season_opts = ["전체"] + sorted(barca["season"].unique())
 season = c1.selectbox("시즌", season_opts)
 scope = barca if season == "전체" else barca[barca["season"] == season]
-min_min = c2.slider("최소 출전 시간(분)", 200, 4000, 900, step=100)
+minute_cap = max(1, int(scope.groupby("player")["minutes"].sum().max()))
+minute_step = 50 if minute_cap >= 200 else 10
+min_min = c2.slider("최소 추정 출전 시간(분)", 0, minute_cap,
+                    min(900, minute_cap), step=minute_step)
 
 table = per90(scope, min_min)
 if table.empty:
@@ -240,9 +248,9 @@ st.markdown(f"""
 <b>데이터</b> StatsBomb Open Data 라리가 {pm['season'].min()}~{pm['season'].max()} 바르셀로나 경기의
 이벤트를 선수-경기 단위로 집계한 뒤 90분당으로 환산했다.<br>
 옛 시즌은 일부 경기만 있는 희소 표본이며 시즌 전체를 대표하지 않는다.<br>
-<b>출전 시간</b> 원본에 교체 시각이 없어, 그 선수가 이벤트에 마지막으로 등장한
-분을 출전 시간의 근사치로 썼다(95분 상한). 실제 출전 시간과 다를 수 있어
-90분당 값은 대략적인 비교용으로만 봐야 한다.<br>
+<b>출전 시간</b> 원본에 교체 시각이 없어, 각 선수의 마지막 이벤트 시각을
+기초로 한 뒤 경기별 합계가 11명×경기 길이가 되도록 보정한 추정치다.
+실제 교체 시각과 다를 수 있어 90분당 값은 대략적인 비교용으로만 봐야 한다.<br>
 <b>압박·전진 운반</b> StatsBomb이 2015/16 무렵부터 기록하기 시작한 이벤트라,
 그 이전 시즌 선수는 값이 낮게 잡힌다. 시즌을 좁혀 비교하는 편이 안전하다.
 </div>

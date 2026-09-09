@@ -158,14 +158,14 @@ with c2:
 
 # ---------------------------------------------------------------- 선수 궤적
 st.markdown('<div class="section">선수 시즌별 궤적</div>', unsafe_allow_html=True)
-pool = career.nlargest(60, "출전분").index.tolist()
+pool = rank.nlargest(60, "출전분").index.tolist()
 picked = st.multiselect("선수 선택 (최대 5명)", pool,
                         default=pool[:2], max_selections=5)
 if picked:
     f3 = go.Figure()
     palette = [GRANA, BLAU, GOLD, "#7ab8ff", "#e0748f"]
     for color, name in zip(palette, picked):
-        one = df[df["Player"] == name].sort_values("season")
+        one = view[view["Player"] == name].sort_values("season")
         f3.add_trace(go.Scatter(x=one["season"], y=one["골"], name=name,
                                 mode="lines+markers", line=dict(color=color, width=2.4),
                                 hovertemplate="<b>" + name + "</b><br>%{x} · %{y}골<extra></extra>"))

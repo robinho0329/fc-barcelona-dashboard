@@ -54,7 +54,9 @@ if view.empty:
 # 전진 패스: 시작보다 골대 쪽으로 5단위 이상 나아간 패스
 progressive = view["end_x"] - view["x"] >= 5
 final_third = (view["end_x"] >= 80) & (view["x"] < 80)
-box = (view["end_x"] >= 102) & (view["end_y"].between(18, 62))
+end_in_box = (view["end_x"] >= 102) & view["end_y"].between(18, 62)
+start_in_box = (view["x"] >= 102) & view["y"].between(18, 62)
+box = end_in_box & ~start_in_box
 
 st.markdown('<div class="section">요약</div>', unsafe_allow_html=True)
 st.markdown(metric_cards([
