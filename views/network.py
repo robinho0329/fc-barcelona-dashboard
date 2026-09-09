@@ -93,10 +93,14 @@ if raw.empty:
 
 # ---------------------------------------------------------------- 필터
 c1, c2 = st.columns([1.3, 1])
-season_opts = ["전체"] + sorted(raw["season"].unique(), reverse=True)
-season = c1.selectbox("시즌", season_opts)
+available_seasons = sorted(raw["season"].unique(), reverse=True)
+season_opts = ["전체"] + available_seasons
+# 처음부터 21시즌을 한 장에 그리면 네트워크가 지나치게 크고 복잡하다.
+# 최신 시즌을 기본으로 보여 주되, "전체"는 명시적으로 고를 수 있게 남긴다.
+season = c1.selectbox("시즌", season_opts,
+                      index=1 if available_seasons else 0)
 view = raw if season == "전체" else raw[raw["season"] == season]
-min_link = c2.slider("최소 연결 횟수", 1, 10, 3 if season == "전체" else 1)
+min_link = c2.slider("최소 연결 횟수", 1, 10, 3 if season == "전체" else 2)
 
 if view.empty:
     st.info("조건에 맞는 골이 없습니다.")
@@ -176,7 +180,7 @@ else:
     # 한 칸에 선수가 많을수록 세로를 늘려 사진과 이름이 겹치지 않게 한다.
     SPAN = max(tallest, 6)
     ROW_PX = 78                      # 노드 하나에 줄 세로 픽셀
-    HEIGHT = int(140 + SPAN * ROW_PX)
+    HEIGHT = min(760, int(140 + SPAN * ROW_PX))
     pos = {}
     for code, _, cx in BANDS:
         col = grouped[code]

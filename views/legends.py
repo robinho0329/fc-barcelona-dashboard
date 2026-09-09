@@ -1,4 +1,4 @@
-"""레전드 TOP 10 — 카드를 고르면 경력·연혁·스탯이 아래에 펼쳐진다."""
+"""레전드 TOP 10 — 이름을 고르면 경력·연혁·스탯이 아래에 펼쳐진다."""
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -186,7 +186,7 @@ st.markdown(f"""
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
   <div class="hero-kicker">Llegendes del Barça</div>
   <h1>레전드 TOP 10</h1>
-  <div class="hero-motto">쿠발라부터 메시까지. 카드를 고르면 경력 연혁과
+  <div class="hero-motto">쿠발라부터 메시까지. 이름을 고르면 경력 연혁과
   이벤트 데이터 기반 스탯이 아래에 펼쳐진다.</div>
   <div class="accent-rule"></div>
 </div>
@@ -195,26 +195,20 @@ st.markdown(f"""
 if "legend" not in st.session_state:
     st.session_state.legend = LEGENDS[0]["key"]
 
-# ---------------------------------------------------------------- 카드 그리드
+# ---------------------------------------------------------------- 인물 선택
 st.markdown('<div class="section">인물을 고르세요</div>', unsafe_allow_html=True)
-for row in (LEGENDS[:5], LEGENDS[5:]):
-    cols = st.columns(5, gap="small")
-    for col, lg in zip(cols, row):
-        with col:
-            src = b64(lg["photo"])
-            selected = "legend-card-on" if st.session_state.legend == lg["key"] else ""
-            img = (f'<img src="{src}" alt="{lg["name"]}">' if src
-                   else '<div class="legend-noimg">사진 없음</div>')
-            st.markdown(f"""
-<div class="legend-card {selected}">{img}
-  <div class="legend-cap"><b>{lg["name"]}</b><span>{lg["years"].split(" ")[0]}</span></div>
-</div>""", unsafe_allow_html=True)
-            # 라벨에 이름을 또 넣으면 카드와 중복돼 지저분하다. 위치로 대상이 분명하다.
-            label = "선택됨" if st.session_state.legend == lg["key"] else "자세히"
-            if st.button(label, key=f"btn_{lg['key']}", width="stretch",
-                         disabled=st.session_state.legend == lg["key"]):
-                st.session_state.legend = lg["key"]
-                st.rerun()
+legend_options = {
+    f'{item["name"]} · {item["years"]}': item["key"] for item in LEGENDS
+}
+current_label = next(
+    label for label, key in legend_options.items() if key == st.session_state.legend
+)
+selected_label = st.selectbox(
+    "레전드 선택",
+    list(legend_options),
+    index=list(legend_options).index(current_label),
+)
+st.session_state.legend = legend_options[selected_label]
 
 # ---------------------------------------------------------------- 상세
 lg = BY_KEY[st.session_state.legend]

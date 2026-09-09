@@ -1,4 +1,4 @@
-"""역대 감독 — 카드를 고르면 재임 기간의 라리가 성적이 펼쳐진다."""
+"""역대 감독 — 이름을 고르면 재임 기간의 라리가 성적이 펼쳐진다."""
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -35,7 +35,7 @@ st.markdown(f"""
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
   <div class="hero-kicker">Entrenadors · 1993/94 – {seasons['Season'].iloc[-1]}</div>
   <h1>역대 감독</h1>
-  <div class="hero-motto">{len(seasons)}시즌을 이끈 감독들. 카드를 고르면 그가 지휘한
+  <div class="hero-motto">{len(seasons)}시즌을 이끈 감독들. 이름을 고르면 그가 지휘한
   라리가 경기만 따로 집계해 보여준다.</div>
   <div class="accent-rule"></div>
 </div>
@@ -62,7 +62,7 @@ st.markdown(metric_cards([
     ("최다 우승", f"{int(mg['우승'].max())}회", f"{mg.loc[mg['우승'].idxmax(), '표시명']}"),
 ]), unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- 카드
+# ---------------------------------------------------------------- 감독 선택
 if "manager" not in st.session_state:
     st.session_state.manager = int(mg["경기"].idxmax())
 
@@ -73,27 +73,19 @@ def initials(name: str) -> str:
 
 
 st.markdown('<div class="section">감독을 고르세요</div>', unsafe_allow_html=True)
-PER_ROW = 6
-for start in range(0, len(mg), PER_ROW):
-    chunk = mg.iloc[start:start + PER_ROW]
-    cols = st.columns(PER_ROW, gap="small")
-    for col, (idx, r) in zip(cols, chunk.iterrows()):
-        with col:
-            src = b64(f"managers/{r['file']}") if r["file"] else ""
-            sel = "legend-card-on" if st.session_state.manager == idx else ""
-            img = (f'<img src="{src}" alt="{r["name"]}">' if src
-                   else f'<div class="legend-noimg mg-initial">{initials(r["name"])}</div>')
-            tag = ' · 임시' if r["role"] == "임시" else ""
-            st.markdown(f"""
-<div class="legend-card mg-card {sel}">{img}
-  <div class="legend-cap"><b>{r['name']}</b>
-  <span>{r['첫시즌'][:4]}~{r['끝시즌'][:4]}{tag}</span></div>
-</div>""", unsafe_allow_html=True)
-            label = "선택됨" if st.session_state.manager == idx else "자세히"
-            if st.button(label, key=f"mg_{idx}", width="stretch",
-                         disabled=st.session_state.manager == idx):
-                st.session_state.manager = idx
-                st.rerun()
+manager_options = {
+    f'{r["표시명"]} · {r["첫시즌"]}~{r["끝시즌"]} · {r["role"]} 감독': int(idx)
+    for idx, r in mg.iterrows()
+}
+current_label = next(
+    label for label, idx in manager_options.items() if idx == st.session_state.manager
+)
+selected_label = st.selectbox(
+    "감독 선택",
+    list(manager_options),
+    index=list(manager_options).index(current_label),
+)
+st.session_state.manager = manager_options[selected_label]
 
 # ---------------------------------------------------------------- 상세
 r = mg.loc[st.session_state.manager]
