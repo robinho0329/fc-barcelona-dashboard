@@ -5,12 +5,14 @@
 모순이 하나라도 있으면 종료 코드 1을 낸다. 데이터를 다시 만든 뒤
 (크롤링·파싱) 반드시 한 번 돌릴 것.
 """
+import csv
+from collections import Counter
 import pathlib
 import sys
 
 import pandas as pd
 
-ROOT = pathlib.Path(r"D:\workspace\barcelona")
+ROOT = pathlib.Path(__file__).resolve().parent.parent
 P = ROOT / "data" / "processed"
 issues = []
 
@@ -45,6 +47,71 @@ check("스코어 문자열 불일치",
       int((cl.score != cl.gf.astype(str) + "-" + cl.ga.astype(str)).sum()))
 check("날짜 역순", int((cl.date.diff().dt.days.dropna() < 0).sum()))
 
+print("\n=== 3a. 원본 → 산출물 정합성 ===")
+# 가공 코드와 독립적으로 핵심 열만 읽는다. 2004/05처럼 뒤쪽 배당률 열의
+# 길이가 달라도 경기를 버리지 않으며, 원본과 산출물이 함께 빠진 경우를 잡는다.
+raw_rows = []
+for path in sorted((ROOT / "data" / "raw").glob("SP1_*.csv")):
+    code = path.stem.split("_")[-1]
+    yy = int(code[:2])
+    season = f"{1900 + yy if yy >= 90 else 2000 + yy}/{code[2:]}"
+    with path.open(encoding="latin-1", newline="") as stream:
+        for row in csv.DictReader(stream):
+            fields = [row.get(k) for k in ("Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG")]
+            if all(value is not None and str(value).strip() for value in fields):
+                raw_rows.append([season, *fields])
+raw = pd.DataFrame(raw_rows, columns=["Season", "Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"])
+check("원본 CSV 경기 없음", int(raw.empty))
+
+
+def match_records(frame):
+    """행 순서와 숫자 타입에 무관하되 중복 횟수까지 비교한다."""
+    frame = frame[["Season", "Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"]].copy()
+    frame["Date"] = pd.to_datetime(frame["Date"], format="mixed", dayfirst=True)
+    frame[["FTHG", "FTAG"]] = frame[["FTHG", "FTAG"]].astype(float)
+    return Counter(frame.itertuples(index=False, name=None))
+
+
+def record_gap(left, right):
+    return sum((left - right).values()) + sum((right - left).values())
+
+
+all_matches = pd.read_parquet(P / "all_matches.parquet")
+raw_club = raw[(raw.HomeTeam == "Barcelona") | (raw.AwayTeam == "Barcelona")].copy()
+check("원본 vs 전체 경기 누락·변경", record_gap(match_records(raw), match_records(all_matches)))
+check("원본 vs 바르사 경기 누락·변경", record_gap(match_records(raw_club), match_records(m)))
+check("바르사 경기 중복", int(m.duplicated(["Season", "HomeTeam", "AwayTeam"]).sum()))
+home = raw_club.HomeTeam == "Barcelona"
+raw_club["GF"] = raw_club.FTHG.where(home, raw_club.FTAG).astype(float)
+raw_club["GA"] = raw_club.FTAG.where(home, raw_club.FTHG).astype(float)
+raw_club["W"] = (raw_club.GF > raw_club.GA).astype(int)
+raw_club["D"] = (raw_club.GF == raw_club.GA).astype(int)
+raw_club["L"] = (raw_club.GF < raw_club.GA).astype(int)
+metrics = ["W", "D", "L", "GF", "GA"]
+expected = raw_club.groupby("Season")[metrics].sum()
+actual = s.set_index("Season")[metrics]
+expected, actual = expected.align(actual)
+check("원본 vs 시즌 전적·득실", int((expected != actual).any(axis=1).sum()))
+
+standings = pd.read_parquet(P / "standings.parquet")
+standing_club = standings[standings.team == "Barcelona"].set_index("season")
+columns = ["P", *metrics, "GD", "Pts", "rank", "complete"]
+expected, actual = standing_club[columns].align(s.set_index("Season")[columns])
+check("순위표 vs 시즌표 불일치", int((expected != actual).any(axis=1).sum()))
+# 상대전적 우선순위가 잘못 바뀌면 우승 횟수가 늘어나는 실제 회귀 사례.
+tie_season = standings[(standings.season == "2006/07") & standings.team.isin(["Barcelona", "Real Madrid"])]
+check("2006/07 상대전적 순위 회귀",
+      int(tie_season.set_index("team")["rank"].to_dict() != {"Real Madrid": 1, "Barcelona": 2}))
+
+rival = raw_club[(raw_club.HomeTeam == "Real Madrid") | (raw_club.AwayTeam == "Real Madrid")].copy()
+rival["date"] = pd.to_datetime(rival.Date, format="mixed", dayfirst=True)
+rival["venue"] = (rival.HomeTeam == "Barcelona").map({True: "홈", False: "원정"})
+rival = rival.rename(columns={"GF": "gf", "GA": "ga"})
+cl_columns = ["Season", "date", "venue", "gf", "ga"]
+check("원본 vs 클라시코 누락·변경", record_gap(
+    Counter(rival[cl_columns].itertuples(index=False, name=None)),
+    Counter(cl[cl_columns].itertuples(index=False, name=None))))
+
 print("\n=== 4. 감독 (managers) ===")
 g = pd.read_parquet(P / "managers.parquet")
 check("승+무+패 != 경기", int(((g.승 + g.무 + g.패) != g.경기).sum()))
@@ -52,6 +119,15 @@ check("승점 != 승*3+무", int((g.승점 != g.승 * 3 + g.무).sum()))
 check("재임 종료 < 시작", int((g.end < g.start).sum()))
 check("경기 합계 != 전체 경기",
       abs(int(g.경기.sum()) - len(m)), f"(감독 {int(g.경기.sum())} / 전체 {len(m)})")
+manager_metrics = {"승": "W", "무": "D", "패": "L", "득점": "GF", "실점": "GA"}
+for manager_column, season_column in manager_metrics.items():
+    check(f"감독 {manager_column} 합계 != 원본",
+          abs(int(g[manager_column].sum()) - int(raw_club[season_column].sum())))
+# 완료 시즌의 우승보다 감독 귀속 우승이 많을 수 없다. 감독 교체 시즌에는
+# 귀속 기준(2/3 이상 지휘) 때문에 합계가 작을 수 있으므로 동등성은 강제하지 않는다.
+completed_titles = int(((s["rank"] == 1) & s["complete"]).sum())
+check("감독 우승 > 완료 시즌 우승", max(0, int(g["우승"].sum()) - completed_titles),
+      f"(감독 {int(g['우승'].sum())} / 완료 시즌 {completed_titles})")
 ov = 0
 gs = g.sort_values("start").reset_index(drop=True)
 for i in range(len(gs) - 1):

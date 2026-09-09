@@ -137,7 +137,7 @@ f2.update_layout(height=340, barmode="overlay", yaxis_title="경기 수",
 f2.update_xaxes(gridcolor=GRID, tickangle=-60)
 f2.update_yaxes(gridcolor=GRID)
 st.plotly_chart(f2, width="stretch")
-st.caption("2004/05는 원본 파일이 27경기에서 잘려 있고, "
+st.caption("2004/05는 파싱 과정에서 누락됐던 경기를 복구해 38경기를 제공한다. "
            "슈팅·코너·파울·카드는 2005/06부터 제공된다.")
 
 # ---------------------------------------------------------------- 알려진 한계
@@ -155,9 +155,6 @@ else:
     _sb_span = _sb_thin = _sb_dense = "확인 불가"
 
 LIMITS = [
-    ("2004/05 원본 손실",
-     "football-data의 2004/05 파일이 27경기에서 잘려 있다. 그 시즌 승점·순위와 "
-     "엘클라시코 두 경기가 빠져 있다."),
     ("컵대회 미포함 (일부 페이지)",
      "홈·시대분석·엘클라시코·감독 성적은 라리가 경기만 집계한다. 클럽 공식 "
      "통산 기록과 숫자가 다른 이유다. 챔피언스리그·코파는 FBref 전 대회 "

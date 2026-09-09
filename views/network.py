@@ -24,7 +24,7 @@ def links(stamp: str) -> pd.DataFrame:
     """어시스트 → 득점 조합. 두 원본을 시즌으로 나눠 붙인다.
 
     Understat은 골마다 득점자와 도움자를 함께 주지만 2014/15부터다.
-    StatsBomb은 2004/05까지 거슬러 가는데 도움자가 바로 들어 있지 않다.
+    StatsBomb에는 더 오래된 경기도 있지만 도움자가 바로 들어 있지 않다.
     대신 슛의 shot.key_pass_id 가 그 슛을 만든 패스 이벤트를 가리키므로,
     그 패스를 던진 선수가 도움자다(fetch_statsbomb.py 에서 assisted_by 로 넣어 둠).
 
@@ -77,7 +77,7 @@ st.markdown(f"""
   <div class="hero-kicker">Assist Network · StatsBomb + Understat</div>
   <h1>연계 네트워크</h1>
   <div class="hero-motto">골은 혼자 만들지 않는다. 누가 누구에게 건네 골이 됐는지,
-  바르사를 굴린 조합을 찾아본다. 두 원본을 붙여 <b>2004/05</b>까지 거슬러 본다.</div>
+  바르사를 굴린 조합을 찾아본다. 두 원본을 붙여 <b>{raw['season'].min() if not raw.empty else '자료 없음'}</b>까지 거슬러 본다.</div>
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)

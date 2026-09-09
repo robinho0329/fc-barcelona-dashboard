@@ -4,10 +4,12 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_seasons,
-                  metric_cards, setup)
+                  finished_seasons, ongoing_season, metric_cards, setup, title_count)
 
 seasons = load_seasons().copy()
 setup(seasons)
+ongoing = ongoing_season(seasons)
+seasons = finished_seasons(seasons).copy()
 
 # 시대 구분은 감독 재임을 기준으로 한 편집 판단이다. 시즌 중 교체가 있던 해는
 # 그 시즌을 더 오래 이끈 쪽에 넣었다.
@@ -55,7 +57,7 @@ st.markdown(f"""
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
   <div class="hero-kicker">1993/94 – {seasons['Season'].iloc[-1]}</div>
   <h1>역사 · 시대 분석</h1>
-  <div class="hero-motto">감독이 바뀌면 팀도 바뀐다. 33시즌을 일곱 시대로 끊어
+  <div class="hero-motto">감독이 바뀌면 팀도 바뀐다. 완료된 {len(seasons)}시즌을 일곱 시대로 끊어
   성적이 어떻게 달라졌는지 본다.</div>
   <div class="accent-rule"></div>
 </div>
@@ -66,7 +68,7 @@ st.markdown('<div class="section">일곱 시대</div>', unsafe_allow_html=True)
 cards = ""
 for name, a, b, color, photo, caption, desc in ERAS:
     part = seasons[seasons["시대"] == name]
-    titles = int((part["rank"] == 1).sum())
+    titles = title_count(part)
     src = b64(photo)
     img = (f'<img class="era-photo" src="{src}" alt="{caption}">' if src else "")
     cards += (
@@ -75,18 +77,21 @@ for name, a, b, color, photo, caption, desc in ERAS:
         f'<div class="timeline-year">{a} ~ {b}</div>'
         f'<div class="timeline-title">{name}</div>'
         f'<div class="timeline-score" style="font-size:1.02rem">'
-        f'{len(part)}시즌 · 우승 {titles}회 · 경기당 {part["PPG"].mean():.2f}점</div>'
+        f'{len(part)}시즌 · 우승 {titles}회 · 경기당 {part["Pts"].sum() / part["P"].sum():.2f}점</div>'
         f'<div class="timeline-body">{desc}</div>'
         f'<div class="era-caption">{caption}</div>'
         f'</div></div>')
 st.markdown(f'<div class="era-grid">{cards}</div>', unsafe_allow_html=True)
 st.caption("시대 구분은 감독 재임 기준의 편집 판단이며, 수치는 라리가 경기 원본 집계다.")
+if ongoing:
+    st.caption(f"{ongoing}는 진행 중이므로 시대 비교·우승·최종 순위 집계에서 제외한다.")
 
 # ---------------------------------------------------------------- 시대별 비교
 st.markdown('<div class="section">시대별 성적</div>', unsafe_allow_html=True)
 agg = (seasons.groupby("시대")
        .agg(시즌=("Season", "size"), 우승=("rank", lambda s: int((s == 1).sum())),
-            평균순위=("rank", "mean"), 경기당승점=("PPG", "mean"),
+            평균순위=("rank", "mean"),
+            경기당승점=("Pts", lambda s: s.sum() / seasons.loc[s.index, "P"].sum()),
             경기당득점=("GF", lambda s: s.sum() / seasons.loc[s.index, "P"].sum()),
             경기당실점=("GA", lambda s: s.sum() / seasons.loc[s.index, "P"].sum()))
        .reindex([n for n, *_ in ERAS]))
@@ -113,8 +118,9 @@ with c1:
         customdata=agg[["시즌", "우승"]].values,
         hovertemplate="<b>%{x}</b><br>경기당 %{y:.2f}점<br>"
                       "%{customdata[0]}시즌 · 우승 %{customdata[1]}회<extra></extra>"))
-    f1.add_hline(y=seasons["PPG"].mean(), line_dash="dot", line_color="#94a8c4",
-                 annotation_text=f"33시즌 평균 {seasons['PPG'].mean():.2f}",
+    overall_ppg = seasons["Pts"].sum() / seasons["P"].sum()
+    f1.add_hline(y=overall_ppg, line_dash="dot", line_color="#94a8c4",
+                 annotation_text=f"완료 {len(seasons)}시즌 경기당 {overall_ppg:.2f}",
                  annotation_font_color="#94a8c4")
     f1.update_layout(height=380, yaxis_title="경기당 승점", **PLOT)
     f1.update_xaxes(gridcolor=GRID, tickangle=-30)
@@ -136,7 +142,7 @@ with c2:
     st.caption("시대별 경기당 득점 · 실점")
 
 # ---------------------------------------------------------------- 시즌 흐름
-st.markdown('<div class="section">33시즌 흐름</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section">완료 {len(seasons)}시즌 흐름</div>', unsafe_allow_html=True)
 f3 = go.Figure()
 for name, *_ in [(n, ) for n, *_ in ERAS]:
     part = seasons[seasons["시대"] == name]
@@ -178,10 +184,10 @@ with st.expander("시대별 시즌 목록"):
     tb.columns = ["시즌", "시대", "경기", "승", "무", "패", "득점", "실점", "승점", "순위", "경기당승점"]
     st.dataframe(tb.set_index("시즌"), width="stretch", height=430)
 
-st.markdown("""
+st.markdown(f"""
 <div class="credits">
-<b>데이터</b> football-data.co.uk 라리가(SP1) 1993/94~2025/26 전 경기 결과에서
-직접 집계. 순위는 승점 → 골득실 → 다득점 순으로 산출한 값이다.<br>
+<b>데이터</b> football-data.co.uk 라리가(SP1) {seasons['Season'].iloc[0]}~{seasons['Season'].iloc[-1]} 완료 시즌 경기 결과에서
+직접 집계. 순위는 승점 → 동률 팀 간 상대전적 → 골득실 → 다득점 순으로 산출한다.<br>
 <b>시대 구분</b> 감독 재임을 기준으로 나눈 편집 판단이며 공식 구분이 아니다.
 시즌 중 감독이 바뀐 해는 더 오래 지휘한 쪽에 넣었다.<br>
 <b>범위</b> 리그 경기만 담아 컵대회·챔피언스리그 성적은 반영되지 않는다.

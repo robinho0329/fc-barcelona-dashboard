@@ -179,7 +179,8 @@ def main() -> None:
     matches.to_parquet(OUT / "club_matches.parquet", index=False)
 
     print(f"시즌 {len(club)}개 · 경기 {len(matches)}건")
-    print(f"리그 우승 {int((club['rank'] == 1).sum())}회 · 총 득점 {int(club['GF'].sum())}")
+    finished = club if bool(club.iloc[-1]["complete"]) else club.iloc[:-1]
+    print(f"리그 우승 {int((finished['rank'] == 1).sum())}회 (완료 시즌) · 총 득점 {int(club['GF'].sum())}")
     print(club.tail(3)[["Season", "P", "W", "D", "L", "GF", "GA", "Pts", "rank"]].to_string(index=False))
 
 

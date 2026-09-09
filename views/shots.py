@@ -1,6 +1,6 @@
 """xG · 슈팅 맵 — StatsBomb 이벤트 기반.
 
-라리가 2004/05~2020/21 바르사 524경기의 모든 슛을 좌표·xG와 함께 표시한다.
+수집된 라리가 바르사 경기의 슛을 좌표·xG와 함께 표시한다.
 """
 import pandas as pd
 import plotly.graph_objects as go
@@ -147,11 +147,11 @@ with st.expander("선수별 수치 표"):
     st.dataframe(rank[["슛", "골", "xG", "xG 대비", "결정률"]],
                  width="stretch", height=420)
 
-st.markdown("""
+st.markdown(f"""
 <div class="credits">
-<b>데이터</b> StatsBomb Open Data — 라리가 2004/05~2020/21 바르셀로나 경기의
+<b>데이터</b> StatsBomb Open Data — 라리가 {shots['season'].min()}~{shots['season'].max()} 바르셀로나 경기의
 이벤트 기록. xG는 StatsBomb 모델 값(<code>statsbomb_xg</code>)을 그대로 쓴다.
-공개 범위가 시즌마다 달라 한 시즌 38경기가 모두 들어 있지 않은 시즌이 있다.<br>
+공개 범위가 시즌마다 다르며 옛 시즌은 일부 경기만 있는 희소 표본이다.<br>
 <b>라이선스</b> StatsBomb Open Data (비상업적 이용 허용).
 </div>
 """, unsafe_allow_html=True)

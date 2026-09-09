@@ -235,10 +235,11 @@ st.caption(
 with st.expander("전체 수치 표"):
     st.dataframe(table.round(2), width="stretch", height=430)
 
-st.markdown("""
+st.markdown(f"""
 <div class="credits">
-<b>데이터</b> StatsBomb Open Data 라리가 2004/05~2020/21 바르셀로나 경기의
+<b>데이터</b> StatsBomb Open Data 라리가 {pm['season'].min()}~{pm['season'].max()} 바르셀로나 경기의
 이벤트를 선수-경기 단위로 집계한 뒤 90분당으로 환산했다.<br>
+옛 시즌은 일부 경기만 있는 희소 표본이며 시즌 전체를 대표하지 않는다.<br>
 <b>출전 시간</b> 원본에 교체 시각이 없어, 그 선수가 이벤트에 마지막으로 등장한
 분을 출전 시간의 근사치로 썼다(95분 상한). 실제 출전 시간과 다를 수 있어
 90분당 값은 대략적인 비교용으로만 봐야 한다.<br>

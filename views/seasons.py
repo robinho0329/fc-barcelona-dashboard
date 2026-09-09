@@ -1,4 +1,4 @@
-"""시즌별 기록 검색 — 라리가 1,251경기를 조건으로 찾아본다."""
+"""시즌별 기록 검색 — 수집된 라리가 경기를 조건으로 찾아본다."""
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -172,12 +172,12 @@ st.dataframe(tb.sort_values("날짜", ascending=False).set_index("날짜"),
 st.caption("슛·유효슛·코너·경고는 2005/06 시즌부터 원본에 들어 있어, "
            "그 이전 경기는 빈칸이다.")
 
-st.markdown("""
+st.markdown(f"""
 <div class="credits">
-<b>데이터</b> football-data.co.uk 라리가(SP1) 1993/94~2025/26 전 경기.
+<b>데이터</b> football-data.co.uk 라리가(SP1) {seasons['Season'].iloc[0]}~{seasons['Season'].iloc[-1]} 수집 경기.
 바르셀로나가 치른 리그 경기만 담았다.<br>
 <b>결측</b> 슈팅·코너·파울·카드는 2005/06 시즌부터만 제공된다.
-2004/05는 원본 파일이 27경기에서 잘려 있어 그 시즌 경기 수가 적다.<br>
+2004/05는 파싱 누락을 복구해 38경기를 포함한다. 진행 중 시즌은 수집된 경기까지만 집계한다.<br>
 <b>범위</b> 컵대회·챔피언스리그 경기는 원본에 없어 빠져 있다.
 </div>
 """, unsafe_allow_html=True)

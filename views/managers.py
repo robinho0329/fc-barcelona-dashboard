@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from pathlib import Path
+from build_managers import manager_matches
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_dir,
                   load_parquet, load_sb, load_seasons, load_understat,
@@ -34,7 +35,7 @@ st.markdown(f"""
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
   <div class="hero-kicker">Entrenadors · 1993/94 – {seasons['Season'].iloc[-1]}</div>
   <h1>역대 감독</h1>
-  <div class="hero-motto">33시즌을 이끈 감독들. 카드를 고르면 그가 지휘한
+  <div class="hero-motto">{len(seasons)}시즌을 이끈 감독들. 카드를 고르면 그가 지휘한
   라리가 경기만 따로 집계해 보여준다.</div>
   <div class="accent-rule"></div>
 </div>
@@ -49,7 +50,7 @@ matches = load_matches()
 mg = mg.sort_values("start").reset_index(drop=True)
 
 # ---------------------------------------------------------------- 총괄
-st.markdown('<div class="section">33시즌 요약</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section">{len(seasons)}시즌 요약 · 진행 중 시즌 포함</div>', unsafe_allow_html=True)
 regular = mg[mg["role"] == "정식"]
 enough = regular[regular["경기"] >= 30]
 best = enough.loc[enough["경기당승점"].idxmax()]
@@ -96,7 +97,7 @@ for start in range(0, len(mg), PER_ROW):
 
 # ---------------------------------------------------------------- 상세
 r = mg.loc[st.session_state.manager]
-part = matches[(matches["date"] >= r["start"]) & (matches["date"] <= r["end"])]
+part = manager_matches(matches, r["start"], r["end"], r["tm_id"])
 
 st.markdown(f'<div class="section">{r["표시명"]} · {r["첫시즌"]} ~ {r["끝시즌"]}</div>',
             unsafe_allow_html=True)
@@ -137,19 +138,19 @@ NOTES = {
                            "입혔지만 언론·여론과 계속 부딪혔고, 세 번째 시즌 "
                            "성적이 꺾이며 물러났다.",
     "Lorenzo Serra Ferrer": "시즌을 끝내지 못하고 4월에 경질됐다. 경기당 1.65점은 "
-                           "이 33시즌에서 최하위권이다. 클럽이 방향을 잃은 시기의 "
+                           "수집 기간에서 최하위권이다. 클럽이 방향을 잃은 시기의 "
                            "한복판에 있었다.",
     "Carles Rexach": "세라 페레르 뒤를 급히 이어받아 4위로 챔피언스리그 진출권을 "
                      "지켰다. 크루이프의 수석코치 출신이지만 지휘봉을 잡은 성적은 "
                      "평범했다. 메시를 냅킨에 계약한 인물로 더 유명하다.",
     "Louis van Gaal (2기)": "두 번째 부임은 반 시즌 만에 끝났다. 경기당 1.21점은 "
-                           "33시즌 통틀어 최저다. 클럽 역사상 가장 낮은 지점.",
+                           "수집 기간의 정식 감독 중 최하위권이다.",
     "Radomir Antić": "무너진 시즌을 넘겨받아 경기당 1.83점으로 수습했다. "
                      "임시 지휘봉치고는 반등 폭이 컸지만 시즌 종료와 함께 떠났다.",
     "Frank Rijkaard": "부임 첫해는 흔들렸으나 호나우지뉴를 축으로 팀을 다시 세웠다. "
                       "리그 2연패와 2006년 유럽 정상. 마지막 두 시즌은 기강이 풀리며 "
                       "무관으로 끝났고, 그 자리를 B팀 감독이 물려받았다.",
-    "Pep Guardiola": "경기당 2.45점, 이 33시즌 최고 수치다. 부임 첫해 6관왕은 "
+    "Pep Guardiola": "경기당 2.45점으로 높은 승점 페이스를 유지했다. 부임 첫해 6관왕은 "
                      "축구사에서 전례가 없다. 크루이프가 심은 것을 가장 완성된 형태로 "
                      "꺼내 보인 4년이었다.",
     "Tito Vilanova": "단 한 시즌, 경기당 2.63점으로 승점 100을 찍었다. 이 표에서 "
@@ -287,7 +288,7 @@ def style_table(stamp: str) -> pd.DataFrame:
         rec = {"감독": r.표시명, "구분": r.role}
 
         if "슛" in m.columns:
-            part = m[(m["date"] >= lo) & (m["date"] <= hi)].dropna(subset=["슛"])
+            part = manager_matches(m, lo, hi, r.tm_id).dropna(subset=["슛"])
             if len(part) >= 20:
                 rec.update({
                     "경기당 슛": part["슛"].mean(),
@@ -299,7 +300,7 @@ def style_table(stamp: str) -> pd.DataFrame:
                 })
 
         if not ps.empty:
-            pp = ps[(ps["date"] >= lo) & (ps["date"] <= hi)]
+            pp = manager_matches(ps, lo, hi, r.tm_id)
             n_games = pp["match_id"].nunique()
             if n_games >= 10:
                 rec.update({
@@ -309,12 +310,12 @@ def style_table(stamp: str) -> pd.DataFrame:
                 })
 
         if not ac.empty:
-            aa = ac[(ac["date"] >= lo) & (ac["date"] <= hi)]
+            aa = manager_matches(ac, lo, hi, r.tm_id)
             if len(aa) >= 15:
                 rec["점유율"] = aa["Poss"].mean()
 
         if not us_b.empty:
-            uu = us_b[(us_b["date"] >= lo) & (us_b["date"] <= hi)]
+            uu = manager_matches(us_b, lo, hi, r.tm_id)
             if len(uu) >= 100:
                 goals = uu[uu["goal"]]
                 rec["슛당 xG"] = uu["xg"].mean()

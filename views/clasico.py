@@ -22,8 +22,8 @@ worst = cl.loc[cl["gd"].idxmin()]
 RES_COLOR = {"승": GRANA, "무": "#6b7d99", "패": WHITE}
 CLS = {"승": "fc-w", "무": "fc-d", "패": "fc-l"}
 
-CLASICO_NOTE = (" 엘클라시코는 리그 맞대결만 집계하며, 컵대회·챔피언스리그 맞대결과 "
-                "원본 파일이 잘려 있는 2004/05 두 경기는 빠져 있음.")
+CLASICO_NOTE = (" 엘클라시코는 리그 맞대결만 집계하며, 컵대회·챔피언스리그 맞대결은 "
+                "제외한다. 2004/05 두 경기는 복구되어 집계에 포함돼 있다.")
 
 
 def longest_run(mask: pd.Series) -> tuple[int, int, int]:

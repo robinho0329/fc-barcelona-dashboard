@@ -286,8 +286,8 @@ st.markdown('<div class="section">플레이 지표 (StatsBomb 이벤트)</div>',
 pm = load_sb("player_match")
 
 if not lg["stats_name"]:
-    st.info(f"{lg['name']}은 StatsBomb 공개 범위(2004/05~2020/21) 밖에서 뛰었습니다. "
-            "이 선수의 수치는 원본에 없어 표시하지 않습니다.")
+    st.info(f"{lg['name']}의 이벤트 기록은 현재 선수 연결표에 등록돼 있지 않아 "
+            "수치를 표시하지 않습니다.")
 elif pm.empty:
     st.warning("StatsBomb 데이터가 아직 없습니다. `python fetch_statsbomb.py`를 먼저 실행하세요.")
 else:
@@ -336,8 +336,8 @@ st.markdown(f"""
 <b>선정 기준</b> 클럽 기여도·상징성·수상 이력을 함께 본 편집 판단이며, 데이터로
 산출한 순위가 아니다.<br>
 <b>연혁</b> 위키백과 각 선수 문서를 확인해 정리했다.<br>
-<b>스탯</b> StatsBomb Open Data 2004/05~2020/21 공개 경기 한정.
-그 이전 선수는 원본이 없어 수치를 붙이지 않았다.<br>
+<b>스탯</b> StatsBomb Open Data 공개 경기 중 선수와 연결된 기록만 집계한다.
+옛 시즌은 일부 경기만 있는 희소 표본이며 통산 기록이 아니다.<br>
 <b>이미지</b> 사진 출처:<br>{lines}
 </div>
 """, unsafe_allow_html=True)
