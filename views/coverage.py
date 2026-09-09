@@ -16,6 +16,12 @@ setup(seasons)
 SEASON_ORDER = seasons["Season"].tolist()
 
 
+def season_span(values) -> str:
+    """시즌 귀속 자료만 범위로 표시하고 비귀속 자료는 명시한다."""
+    return (f"{values[0]} ~ {values[-1]} · {len(values)}시즌"
+            if values else "시즌 비귀속")
+
+
 def source_coverage() -> pd.DataFrame:
     """소스별 실제 데이터 범위·규모·파일 갱신 시각을 모은다."""
     rows = []
@@ -85,7 +91,7 @@ def source_coverage() -> pd.DataFrame:
     if pt.exists():
         portraits = list(pt.glob("*.jpg"))
         rows.append({"소스": "Transfermarkt", "단위": "선수 사진",
-                     "시즌": SEASON_ORDER, "건수": len(portraits),
+                     "시즌": [], "건수": len(portraits),
                      "최신 관측": "시즌 비귀속",
                      "파일 갱신": updated_at(portraits),
                      "설명": "시즌 스쿼드에서 받은 선수 증명사진"})
@@ -95,6 +101,7 @@ def source_coverage() -> pd.DataFrame:
 
 cov = source_coverage()
 COVERAGE_SEASON_ORDER = sorted({s for ss in cov["시즌"] for s in ss})
+seasonal_cov = cov[cov["시즌"].map(bool)]
 
 st.markdown(f"""
 <div class="hero">
@@ -113,12 +120,15 @@ st.markdown(metric_cards([
     ("소스", f"{len(cov)}곳", "모두 공개 데이터"),
     ("분석 시즌", f"{len(SEASON_ORDER)}", f"{SEASON_ORDER[0]} ~ {SEASON_ORDER[-1]}"),
     ("총 레코드", f"{int(cov['건수'].sum()):,}", "경기·선수·이벤트 합계"),
-    ("가장 넓은 소스", f"{cov.loc[cov['시즌'].map(len).idxmax(), '소스']}",
-     f"{cov['시즌'].map(len).max()}시즌"),
+    ("가장 넓은 소스",
+     f"{seasonal_cov.loc[seasonal_cov['시즌'].map(len).idxmax(), '소스']}"
+     if not seasonal_cov.empty else "확인 불가",
+     f"{seasonal_cov['시즌'].map(len).max()}시즌"
+     if not seasonal_cov.empty else "시즌 자료 없음"),
 ]), unsafe_allow_html=True)
 
 freshness = cov.assign(
-    범위=cov["시즌"].map(lambda ss: f"{ss[0]} ~ {ss[-1]} · {len(ss)}시즌")
+    범위=cov["시즌"].map(season_span)
 )[["소스", "범위", "최신 관측", "파일 갱신"]]
 st.dataframe(freshness, hide_index=True, width="stretch")
 st.caption("최신 관측은 데이터 안의 경기일 또는 시즌, 파일 갱신은 현재 배포 파일의 "
@@ -142,7 +152,7 @@ fig.update_layout(height=60 + 42 * len(cov), **PLOT)
 fig.update_xaxes(gridcolor=GRID, tickangle=-60, side="bottom")
 fig.update_yaxes(gridcolor=GRID, autorange="reversed")
 st.plotly_chart(fig, width="stretch")
-st.caption("그라나 = 그 시즌 데이터 있음 · 어두운 칸 = 없음")
+st.caption("그라나 = 그 시즌 데이터 있음 · 어두운 칸 = 없음. 선수 사진은 시즌 비귀속 자료로, 시즌별 제공 여부를 판단하지 않는다.")
 
 # ---------------------------------------------------------------- 소스 카드
 st.markdown('<div class="section">소스별 상세</div>', unsafe_allow_html=True)
@@ -151,7 +161,7 @@ for _, r in cov.iterrows():
     ss = r["시즌"]
     cards += (
         f'<div class="timeline-card">'
-        f'<div class="timeline-year">{ss[0]} ~ {ss[-1]} · {len(ss)}시즌</div>'
+        f'<div class="timeline-year">{season_span(ss)}</div>'
         f'<div class="timeline-title">{r["소스"]}</div>'
         f'<div class="timeline-score" style="font-size:1.05rem">'
         f'{r["단위"]} · {r["건수"]:,}건</div>'
@@ -226,7 +236,7 @@ st.markdown(f'<div class="timeline-grid">{cards}</div>', unsafe_allow_html=True)
 with st.expander("소스별 커버 시즌 목록"):
     tb = cov[["소스", "단위", "건수"]].copy()
     tb["시즌 수"] = cov["시즌"].map(len)
-    tb["범위"] = cov["시즌"].map(lambda s: f"{s[0]} ~ {s[-1]}")
+    tb["범위"] = cov["시즌"].map(season_span)
     st.dataframe(tb.set_index("소스"), width="stretch")
 
 st.markdown("""

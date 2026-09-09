@@ -17,6 +17,24 @@ setup(seasons)
 
 passes = load_sb("passes")
 
+
+def pass_length_distribution(frame: pd.DataFrame):
+    """길이 구간 집계와 제외 사유별 건수를 함께 반환한다."""
+    bins = [0, 10, 20, 30, 45, 200]
+    labels = ["~10", "10~20", "20~30", "30~45", "45+"]
+    lengths = pd.to_numeric(frame["length"], errors="coerce")
+    missing = int(lengths.isna().sum())
+    outside = int((lengths.notna() & ~lengths.between(bins[0], bins[-1])).sum())
+    cut = pd.cut(lengths, bins, labels=labels, include_lowest=True)
+    aggregate = (frame.assign(_length_bin=cut)
+                 .groupby("_length_bin", observed=False)["complete"]
+                 .agg(["size", "mean"])
+                 .reindex(labels))
+    binned = int(aggregate["size"].sum())
+    if binned != len(frame) - missing - outside:
+        raise RuntimeError("패스 길이 구간 집계 건수가 원본 유효 건수와 다릅니다.")
+    return aggregate, missing, outside
+
 st.markdown(f"""
 <div class="hero">
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
@@ -142,10 +160,8 @@ else:  # 패스 화살표
 c1, c2 = st.columns(2)
 with c1:
     st.markdown('<div class="section">패스 길이 분포</div>', unsafe_allow_html=True)
-    bins = [0, 10, 20, 30, 45, 200]
-    labels = ["~10", "10~20", "20~30", "30~45", "45+"]
-    cut = pd.cut(view["length"], bins, labels=labels)
-    agg = view.groupby(cut, observed=True)["complete"].agg(["size", "mean"])
+    agg, missing_lengths, out_of_range = pass_length_distribution(view)
+    binned_count = int(agg["size"].sum())
     f2 = go.Figure()
     f2.add_trace(go.Bar(x=agg.index.astype(str), y=agg["size"], name="패스 수",
                         marker_color=BLAU, yaxis="y"))
@@ -158,6 +174,8 @@ with c1:
                      legend=dict(orientation="h", y=1.14), **PLOT)
     f2.update_xaxes(gridcolor=GRID, title="길이(야드)")
     st.plotly_chart(f2, width="stretch")
+    st.caption(f"구간 집계 {binned_count:,}건 · 길이 결측 {missing_lengths:,}건 · "
+               f"범위 밖 {out_of_range:,}건 (0과 200 포함)")
 
 with c2:
     st.markdown('<div class="section">전진 패스 상위 선수</div>', unsafe_allow_html=True)

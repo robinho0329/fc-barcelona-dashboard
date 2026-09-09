@@ -6,7 +6,9 @@
 - 검증: cache regression 3개, audit 46개, smoke 17페이지 통과.
 - 로드맵 3 완료: 17페이지를 1440×900과 390×844에서 검수하고 모바일 선택기·네트워크 길이를 개선.
 - 연계 네트워크 수정: StatsBomb `Ronaldo de Assis Moreira`를 `Ronaldinho`로 보정. audit 48건 통과.
-- 17페이지 의미 검수의 확정 결함 14건 모두 수정 완료. audit 48건, cache 3건, smoke 17페이지 통과.
+- 이전 '14건 모두 수정' 판정 정정: 출전시간 분모·사진 시즌 범위·0길이 패스 누락이 남아 있었다.
+- 후속 6개 페이지 수정 및 audit48/cache3/smoke17 통과. 커밋·push·실배포 확인 대기.
+- 최신 마감 항목은 docs/RELEASE_CHECKLIST.md. 사진은 사용자 요청으로 유지하며 사용 근거는 사용자가 확인한다.
 - 시대 라벨 수정: 2012/13~2013/14 티토·마르티노, 2014/15~2016/17 MSN으로 분리.
 - 다음: 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
 - Python: D:\workspace\EPL project\.venv\Scripts\python.exe

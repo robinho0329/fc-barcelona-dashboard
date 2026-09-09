@@ -135,10 +135,9 @@ st.markdown("""
 · <b>선이 몰리는 자리</b>가 그 시기 공격의 통로다. 한 명에게 선이 집중되면
   팀이 그 선수에게 의존했다는 신호이고, 여러 명에게 고르게 퍼져 있으면
   득점 경로가 분산돼 있었다는 뜻이다.<br>
-· <b>가로 방향</b>은 포지션이다. 왼쪽부터 골키퍼 · 수비수 · 미드필더 · 공격수로
-  실제 라인업과 같은 순서다. 선이 왼쪽에서 오른쪽으로 길게 뻗으면 수비에서
-  공격으로 한 번에 이어졌다는 뜻이고, 오른쪽 칸 안에서만 짧게 오가면
-  공격진끼리 주고받아 골을 만들었다는 뜻이다.<br><br>
+· <b>가로 방향</b>은 FBref 전 대회 기록에서 출전 시간이 가장 많았던 주 포지션의
+  거친 분류다. 실제 경기의 위치나 역할을 재현하지 않으며, 분류하지 못한 선수는
+  별도 칸에 둔다.<br><br>
 위쪽 <b>시즌</b>을 바꾸면 그 해의 조합만, <b>최소 연결 횟수</b>를 올리면 굵은
 관계만 남는다. 특정 시즌을 골라 숫자를 1로 낮추면 그 해 골이 어떤 경로로
 나왔는지 전부 볼 수 있다.
@@ -152,15 +151,19 @@ else:
     photos = portrait_map(people)
     positions = position_map(people)
 
-    # 포지션 띠로 세로 배치. 왼쪽이 골문, 오른쪽이 골대 — 실제 라인업과 같은 방향.
+    # FBref의 주 포지션 띠로 배치한다. 실제 경기 위치를 뜻하지 않으며,
+    # 이름을 연결하지 못한 선수를 미드필더로 임의 분류하지 않는다.
     ORDER_BANDS = [("GK", "골키퍼"), ("DF", "수비수"),
-                   ("MF", "미드필더"), ("FW", "공격수")]
-    BAND_COLOR = {"GK": "#4fb0a5", "DF": BLAU, "MF": GOLD, "FW": GRANA}
+                   ("MF", "미드필더"), ("FW", "공격수"),
+                   ("UNK", "미분류")]
+    BAND_COLOR = {"GK": "#4fb0a5", "DF": BLAU, "MF": GOLD, "FW": GRANA,
+                  "UNK": "#6b7d99"}
     BAND_W = 1.55
 
     grouped = {code: [] for code, _ in ORDER_BANDS}
     for name in people:
-        grouped.get(positions.get(name) or "MF", grouped["MF"]).append(name)
+        code = positions.get(name) or "UNK"
+        grouped[code if code in grouped else "UNK"].append(name)
     # 관여가 많은 선수를 가운데로 모아 선이 덜 엉키게 한다
     for code in grouped:
         ranked = sorted(grouped[code], key=lambda n: -involved.get(n, 0))
@@ -284,12 +287,12 @@ else:
     hub_share = involved.iloc[0] / involved.sum() * 100
     unknown = sum(1 for n in people if not positions.get(n))
     st.caption(
-        f"왼쪽부터 골키퍼 → 수비수 → 미드필더 → 공격수. 선 굵기와 색 진하기 = "
+        f"FBref 누적 주 포지션 분류: 골키퍼 → 수비수 → 미드필더 → 공격수 → 미분류. 실제 경기 위치는 아니다. 선 굵기와 색 진하기 = "
         f"그 조합으로 나온 골 수(옅은 회청 → 진한 그라나), 사진 크기 = "
         f"도움+득점 관여 횟수. "
         f"{min_link}골 이상 이어진 조합 {len(strong)}개만 그렸다. "
         f"이 범위에서는 {hub}에게 선이 가장 많이 몰린다(연결의 {hub_share:.0f}%)."
-        + (f" 포지션을 못 찾은 {unknown}명은 미드필더 칸에 뒀다." if unknown else ""))
+        + (f" 포지션을 못 찾은 {unknown}명은 미분류 칸에 뒀다." if unknown else ""))
 
 # ---------------------------------------------------------------- 시즌별 구조
 st.markdown('<div class="section">시즌마다 연계가 어떻게 달랐나</div>',

@@ -80,7 +80,6 @@ def build_index(pass_stamp: float, poss_stamp: str) -> pd.DataFrame:
         g["점유율"] = np.nan
 
     g = g.reset_index()
-    g[["시대", "색"]] = g["season"].apply(lambda s: pd.Series(era_of(s)))
     return g.sort_values("season").reset_index(drop=True)
 
 
@@ -92,7 +91,6 @@ def possession_series(stamp: str) -> pd.DataFrame:
         return pd.DataFrame()
     d = ac.assign(Poss=pd.to_numeric(ac["Poss"], errors="coerce")).dropna(subset=["Poss"])
     out = d.groupby("season").agg(경기=("Poss", "size"), 점유율=("Poss", "mean")).reset_index()
-    out[["시대", "색"]] = out["season"].apply(lambda s: pd.Series(era_of(s)))
     return out
 
 
@@ -105,6 +103,10 @@ _poss_stamp = "|".join(sorted(f"{f.name}:{f.stat().st_mtime}" for f in _ac_dir.g
 
 idx = build_index(_pass_stamp, _poss_stamp)
 poss = possession_series(_poss_stamp)
+# 편집 라벨은 데이터 캐시 밖에서 적용한다. 시대 정의만 수정해도 즉시 반영된다.
+for frame in (idx, poss):
+    if not frame.empty:
+        frame[["시대", "색"]] = frame["season"].apply(lambda s: pd.Series(era_of(s)))
 
 st.markdown(f"""
 <div class="hero">

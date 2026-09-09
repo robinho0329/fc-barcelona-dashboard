@@ -1,4 +1,4 @@
-"""선수 고급 기록 — StatsBomb 이벤트로 만든 90분당 지표와 선수 비교."""
+"""선수 고급 기록 — StatsBomb 이벤트로 만든 경기당 지표와 선수 비교."""
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -6,6 +6,7 @@ import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
                   metric_cards, portrait_map, position_map, setup)
+from views._advanced_metrics import per_appearance, rate_label
 
 seasons = load_seasons()
 setup(seasons)
@@ -15,10 +16,10 @@ pm = load_sb("player_match")
 st.markdown(f"""
 <div class="hero">
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
-  <div class="hero-kicker">StatsBomb Open Data · Per 90</div>
+  <div class="hero-kicker">StatsBomb Open Data · Per Appearance</div>
   <h1>선수 고급 기록</h1>
   <div class="hero-motto">골과 도움만으로는 보이지 않는 것들.
-  패스·드리블·압박·수비 관여를 90분 기준으로 맞춰 비교한다.</div>
+  패스·드리블·압박·수비 관여를 경기당 기준으로 맞춰 비교한다.</div>
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
@@ -29,15 +30,6 @@ if pm.empty:
 
 barca = pm[(pm["team"] == "Barcelona") & (pm["competition"] == "라리가")].copy()
 
-# minutes_seen은 그 선수가 마지막으로 이벤트에 등장한 분이지 실제
-# 출전 시간이 아니다. 그대로 더하면 교체 선수마다 경기 시각이 중복되므로,
-# 최소 15분의 활동 신호를 주고 경기별 합계가 11명×경기 길이가 되도록
-# 비례 보정한 추정치를 쓴다. 교체 시각을 모르므로 개인별 값은 여전히 근사치다.
-barca["minute_signal"] = barca["minutes_seen"].clip(lower=15, upper=95)
-match_length = barca.groupby("match_id")["minutes_seen"].transform("max").clip(90, 95)
-signal_total = barca.groupby("match_id")["minute_signal"].transform("sum")
-barca["minutes"] = barca["minute_signal"] * (11 * match_length) / signal_total
-
 METRICS = {
     "패스": "passes", "드리블 성공": "dribbles", "전진 운반": "carries",
     "압박": "pressures", "슛": "shots", "태클": "tackles",
@@ -45,58 +37,44 @@ METRICS = {
 }
 
 
-@st.cache_data
-def per90(df: pd.DataFrame, min_minutes: int) -> pd.DataFrame:
-    """선수별 90분당 지표. 출전 시간이 짧은 선수는 표본이 흔들려 제외한다."""
-    g = df.groupby("player").agg(
-        경기=("match_id", "nunique"), 분=("minutes", "sum"),
-        시즌=("season", "nunique"),
-        **{k: (v, "sum") for k, v in METRICS.items()},
-        패스성공=("passes_completed", "sum"))
-    g = g[g["분"] >= min_minutes]
-    nineties = g["분"] / 90
-    out = g[["경기", "분", "시즌"]].copy()
-    for k in METRICS:
-        out[k] = (g[k] / nineties).round(2)
-    out["패스 성공률"] = (g["패스성공"] / g["패스"].replace(0, np.nan) * 100).round(1)
-    return out.sort_values("분", ascending=False)
-
-
 # ---------------------------------------------------------------- 필터
 c1, c2 = st.columns([1.2, 1.6])
 season_opts = ["전체"] + sorted(barca["season"].unique())
 season = c1.selectbox("시즌", season_opts)
 scope = barca if season == "전체" else barca[barca["season"] == season]
-minute_cap = max(1, int(scope.groupby("player")["minutes"].sum().max()))
-minute_step = 50 if minute_cap >= 200 else 10
-min_min = c2.slider("최소 추정 출전 시간(분)", 0, minute_cap,
-                    min(900, minute_cap), step=minute_step)
+appearance_cap = max(1, int(scope.groupby("player")["match_id"].nunique().max()))
+if appearance_cap == 1:
+    c2.metric("최소 이벤트 기록 경기", "1경기")
+    min_apps = 1
+else:
+    min_apps = c2.slider("최소 이벤트 기록 경기", 1, appearance_cap,
+                         min(10, appearance_cap))
 
-table = per90(scope, min_min)
+table = per_appearance(scope, METRICS, min_apps)
 if table.empty:
-    st.info("조건을 만족하는 선수가 없습니다. 최소 출전 시간을 낮춰 보세요.")
+    st.info("조건을 만족하는 선수가 없습니다. 최소 경기 수를 낮춰 보세요.")
     st.stop()
 
 st.markdown('<div class="section">범위</div>', unsafe_allow_html=True)
 st.markdown(metric_cards([
-    ("대상 선수", f"{len(table)}명", f"최소 {min_min:,}분 이상"),
+    ("대상 선수", f"{len(table)}명", f"최소 {min_apps:,}경기 이상"),
     ("합계 경기", f"{int(scope['match_id'].nunique()):,}", f"{scope['season'].nunique()}시즌"),
-    ("최다 출전", f"{int(table['분'].max()):,}분", f"{table['분'].idxmax()}"),
+    ("최다 기록", f"{int(table['경기'].max()):,}경기", f"{table['경기'].idxmax()}"),
     ("최고 패스 성공률", f"{table['패스 성공률'].max():.1f}%",
      f"{table['패스 성공률'].idxmax()}"),
 ]), unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- 90분당 순위
-st.markdown('<div class="section">90분당 지표 순위</div>', unsafe_allow_html=True)
+# ---------------------------------------------------------------- 경기당 순위
+st.markdown('<div class="section">경기당 지표 순위</div>', unsafe_allow_html=True)
 metric = st.selectbox("지표", list(METRICS) + ["패스 성공률"], index=0)
 top = table.nlargest(15, metric).iloc[::-1]
 f1 = go.Figure(go.Bar(
     y=top.index, x=top[metric], orientation="h", marker_color=GRANA,
     text=top[metric], textposition="outside", textfont_color="#f2f6fc",
-    customdata=top[["경기", "분"]].values,
+    customdata=top[["경기"]].values,
     hovertemplate="<b>%{y}</b><br>" + metric + " %{x}<br>"
-                  "%{customdata[0]}경기 · %{customdata[1]:,.0f}분<extra></extra>"))
-f1.update_layout(height=460, xaxis_title=f"90분당 {metric}", **PLOT)
+                  "%{customdata[0]}경기<extra></extra>"))
+f1.update_layout(height=460, xaxis_title=rate_label(metric), **PLOT)
 f1.update_xaxes(gridcolor=GRID, range=[0, float(top[metric].max()) * 1.18])
 f1.update_yaxes(gridcolor=GRID, type="category")
 st.plotly_chart(f1, width="stretch")
@@ -134,7 +112,7 @@ else:
         margin=dict(l=40, r=40, t=50, b=20))
     st.plotly_chart(f2, width="stretch")
     st.caption("각 축은 이 필터 안 최댓값을 100으로 놓은 상대값이다. "
-               "숫자에 마우스를 올리면 실제 90분당 값이 나온다.")
+               "숫자에 마우스를 올리면 실제 경기당 값이 나온다.")
 
 # ---------------------------------------------------------------- 관계
 st.markdown('<div class="section">지표 사이 관계</div>', unsafe_allow_html=True)
@@ -159,7 +137,7 @@ use_photo = st.checkbox(
     f"선수 사진으로 보기 (대상 {len(table)}명 · {PHOTO_LIMIT}명 이하일 때만)",
     value=len(table) <= PHOTO_LIMIT, disabled=len(table) > PHOTO_LIMIT,
     help="사진은 점보다 크기 때문에 인원이 많으면 서로 가려 읽기 어려워진다. "
-         "위의 최소 출전 시간을 올려 인원을 줄이면 켤 수 있다.")
+         "위의 최소 경기 수를 올려 인원을 줄이면 켤 수 있다.")
 photos = portrait_map(table.index) if use_photo else {}
 
 x_mid, y_mid = table[xm].mean(), table[ym].mean()
@@ -180,14 +158,14 @@ for pos_name in POS_ORDER:
         name=pos_name,
         text=[n.split()[-1] if n in top else "" for n in part.index] if show_text else None,
         textposition="top center", textfont=dict(size=9, color="#c3d2e6"),
-        marker=dict(size=np.clip(part["분"] / 260, 8, 26),
+        marker=dict(size=np.clip(part["경기"] / 8, 8, 26),
                     color=POS_COLOR[pos_name],
                     opacity=.25 if use_photo else .78,
                     line=dict(width=.9, color="#0b1b2f")),
-        customdata=np.stack([part.index, part["경기"], part["분"]], axis=-1),
+        customdata=np.stack([part.index, part["경기"]], axis=-1),
         hovertemplate="<b>%{customdata[0]}</b> · " + pos_name + "<br>"
                       + xm + " %{x}<br>" + ym + " %{y}<br>"
-                      "%{customdata[1]}경기 · %{customdata[2]:,.0f}분<extra></extra>"))
+                      "%{customdata[1]}경기<extra></extra>"))
 
 # 사진 모드 — 마커 위에 얼굴을 얹고 이름을 아래에 단다
 imgs = []
@@ -225,7 +203,7 @@ for qx, qy, ax, ay, label in [
                       font=dict(size=10, color="#6f849f"))
 
 f3.update_layout(height=560 if use_photo else 500,
-                 xaxis_title=f"90분당 {xm}", yaxis_title=f"90분당 {ym}",
+                 xaxis_title=rate_label(xm), yaxis_title=rate_label(ym),
                  images=imgs, legend=dict(orientation="h", y=1.1), **PLOT)
 f3.update_xaxes(gridcolor=GRID, range=[x_lo - pad_x, x_hi + pad_x])
 f3.update_yaxes(gridcolor=GRID, range=[y_lo - pad_y * 1.4, y_hi + pad_y])
@@ -234,7 +212,7 @@ st.plotly_chart(f3, width="stretch")
 n_unknown = int((table_pos == "미상").sum())
 n_photo = sum(1 for n in table.index if photos.get(n)) if use_photo else 0
 st.caption(
-    "색 = 포지션 · 점 크기 = 출전 시간 · 점선 = 각 축의 평균. "
+    "색 = 포지션 · 점 크기 = 이벤트가 기록된 경기 수 · 점선 = 각 축의 평균. "
     "네 모서리 글씨가 그 사분면의 성격이다 — 오른쪽 위로 갈수록 두 지표가 모두 높다."
     + (f" 사진 {n_photo}/{len(table)}명 (없는 선수는 점으로)." if use_photo
        else " 이름은 각 포지션에서 두 축 상위 3명에게만 달았다.")
@@ -245,12 +223,11 @@ with st.expander("전체 수치 표"):
 
 st.markdown(f"""
 <div class="credits">
-<b>데이터</b> StatsBomb Open Data 라리가 {pm['season'].min()}~{pm['season'].max()} 바르셀로나 경기의
-이벤트를 선수-경기 단위로 집계한 뒤 90분당으로 환산했다.<br>
+<b>데이터</b> StatsBomb Open Data 라리가 {barca['season'].min()}~{barca['season'].max()} 바르셀로나 경기의
+이벤트를 선수-경기 단위로 집계한 뒤 이벤트가 기록된 경기당으로 환산했다.<br>
 옛 시즌은 일부 경기만 있는 희소 표본이며 시즌 전체를 대표하지 않는다.<br>
-<b>출전 시간</b> 원본에 교체 시각이 없어, 각 선수의 마지막 이벤트 시각을
-기초로 한 뒤 경기별 합계가 11명×경기 길이가 되도록 보정한 추정치다.
-실제 교체 시각과 다를 수 있어 90분당 값은 대략적인 비교용으로만 봐야 한다.<br>
+<b>출전 범위</b> 저장된 집계 데이터에는 선발·교체 정보가 없어 실제 출전 시간을 알 수 없다.
+따라서 이 화면은 임의로 분을 추정하지 않고, 해당 선수의 이벤트가 하나라도 기록된 경기를 출전 1회로 계산한다.<br>
 <b>압박·전진 운반</b> StatsBomb이 2015/16 무렵부터 기록하기 시작한 이벤트라,
 그 이전 시즌 선수는 값이 낮게 잡힌다. 시즌을 좁혀 비교하는 편이 안전하다.
 </div>
