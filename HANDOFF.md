@@ -395,6 +395,13 @@ Squad Total 혼입, 대회 목록 하드코딩, StatsBomb 전체 이름, 캐시 
 
 ## 남은 작업
 
+### Headroom·Task Observer 설치 검증
+
+- 두 도구 로컬 설치 완료. 상세 경로·버전·재현 방법은 docs/TOKEN_BENCHMARK.md.
+- Headroom 실제 인계/소스 0%, 합성 반복 로그 98.7% 절감. 오류 sentinel 보존.
+- 데스크톱 채팅 프록시 연결/계정 한도 절감/Observer 자동 활성화는 미검증.
+- 앱 소스 변경 없음. 도구 검증 완료 후 로드맵 2로 복귀한다.
+
 ### 토큰 절약 운영 반영
 
 - 사용자 제공 글의 Headroom·Task Observer 저장소를 확인했다. 외부 도구 설치나
