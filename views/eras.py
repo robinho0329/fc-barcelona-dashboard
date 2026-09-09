@@ -27,9 +27,12 @@ ERAS = [
     ("과르디올라", "2008/09", "2011/12", GRANA, "eras/era_pep.jpg",
      "과르디올라 전성기",
      "부임 첫해 6관왕. 리그 3연패, 클럽 역사상 가장 압도적인 4년."),
-    ("MSN", "2012/13", "2016/17", "#e0748f", "eras/era_msn.jpg",
+    ("포스트 펩", "2012/13", "2013/14", "#9b7bb8", "managers/manual-vilanova.jpg",
+     "티토 빌라노바",
+     "티토의 100점 우승 후 마르티노가 이은, 과르디올라 이후의 전환기."),
+    ("MSN", "2014/15", "2016/17", "#e0748f", "eras/era_msn.jpg",
      "MSN 삼각편대",
-     "티토·마르티노를 거쳐 루이스 엔리케 체제. 2015년 두 번째 트레블."),
+     "루이스 엔리케 체제. 수아레스 합류 후 2015년 두 번째 트레블."),
     ("포스트 과르디올라", "2017/18", "2020/21", "#7ab8ff", "eras/era_post.jpg",
      "포스트 과르디올라",
      "발베르데·세티엔·쿠만. 리그는 지켰지만 유럽에서 무너졌다."),
@@ -57,14 +60,14 @@ st.markdown(f"""
   <img class="hero-crest" src="{b64('crest.svg')}" alt="">
   <div class="hero-kicker">1993/94 – {seasons['Season'].iloc[-1]}</div>
   <h1>역사 · 시대 분석</h1>
-  <div class="hero-motto">감독이 바뀌면 팀도 바뀐다. 완료된 {len(seasons)}시즌을 일곱 시대로 끊어
+  <div class="hero-motto">감독이 바뀌면 팀도 바뀐다. 완료된 {len(seasons)}시즌을 여덟 시대로 끊어
   성적이 어떻게 달라졌는지 본다.</div>
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 시대 카드
-st.markdown('<div class="section">일곱 시대</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">여덟 시대</div>', unsafe_allow_html=True)
 cards = ""
 for name, a, b, color, photo, caption, desc in ERAS:
     part = seasons[seasons["시대"] == name]
