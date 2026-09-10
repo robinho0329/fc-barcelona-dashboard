@@ -13,7 +13,9 @@
 - 시대 라벨 수정: 2012/13~2013/14 티토·마르티노, 2014/15~2016/17 MSN으로 분리.
 - 매일 KST 09:00 자동 갱신을 구성했다. 503인 football-data 대신 OpenFootball 결과를
   기존 스키마로 합쳐 바르사 4경기(Valencia 원정 5-0 포함)로 갱신했다. 홈 득점·도움은 FotMob으로 갱신한다.
-- 다음: 자동 갱신 최초 실행 확인 후 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
+- 자동 작업 수동 실행 `34423215583`이 성공했고, Streamlit Cloud 홈에서도 최신 경기와
+  득점·도움 리더 반영을 확인했다.
+- 다음: 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
 - Python: D:\workspace\EPL project\.venv\Scripts\python.exe
 - 작업 규칙: AGENTS.md. 역할별 지시문: docs/AGENT_PROMPTS.md.
 - GitHub master push → Streamlit 자동 배포. HTTP 200만으로 새 코드 반영 단정 금지.
