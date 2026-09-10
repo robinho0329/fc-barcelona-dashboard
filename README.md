@@ -36,7 +36,7 @@
 | FBref | 선수 스탯, 전 대회 경기 | 33시즌 · 대회별 3,443행 |
 | StatsBomb Open Data | 이벤트(슛·패스 좌표) | 531경기 · 패스 367,738 |
 | Understat | 슛 좌표·xG | 2014/15~2025/26 · 11,508건 |
-| Transfermarkt | 선수·감독 사진, 감독 이력 | 사진 341장 |
+| Transfermarkt | 선수·감독 사진, 감독 이력 | 사진 348장 |
 | FotMob | 진행 중 시즌 라리가 득점·도움 리더 | 매일 자동 갱신 |
 
 StatsBomb의 법적 이름은 FBref·Understat의 통용 선수명으로 맞춘다. 호나우지뉴와

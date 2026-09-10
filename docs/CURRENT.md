@@ -15,6 +15,8 @@
   기존 스키마로 합쳐 바르사 4경기(Valencia 원정 5-0 포함)로 갱신했다. 홈 득점·도움은 FotMob으로 갱신한다.
 - 자동 작업 수동 실행 `34423215583`이 성공했고, Streamlit Cloud 홈에서도 최신 경기와
   득점·도움 리더 반영을 확인했다.
+- 2026/27 Transfermarkt 스쿼드를 다시 수집해 현재 명단 27명의 사진·썸네일을 모두
+  반영했다. 신규 이적생 7명의 사진을 추가했고, 다음 수집부터는 썸네일도 자동 생성된다.
 - 다음: 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
 - Python: D:\workspace\EPL project\.venv\Scripts\python.exe
 - 작업 규칙: AGENTS.md. 역할별 지시문: docs/AGENT_PROMPTS.md.

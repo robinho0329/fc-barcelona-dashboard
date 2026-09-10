@@ -17,6 +17,7 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
+from PIL import Image
 
 EPL = Path(r"D:\workspace\EPL project")
 sys.path.insert(0, str(EPL))
@@ -24,8 +25,10 @@ from crawlers.base_agent import BaseCrawlerAgent  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "assets" / "portraits"
+THUMBS = ROOT / "assets" / "portraits_thumb"
 INDEX = ROOT / "data" / "processed" / "portraits.json"
 OUT.mkdir(parents=True, exist_ok=True)
+THUMBS.mkdir(parents=True, exist_ok=True)
 
 TM = "https://www.transfermarkt.com"
 BARCA_ID = 131
@@ -98,6 +101,19 @@ def download(url: str, dest: Path) -> bool:
     return False
 
 
+def make_thumbnail(source: Path) -> None:
+    """표·차트용 72px 폭 JPEG를 원본과 함께 유지한다."""
+    target = THUMBS / source.name
+    if target.exists() and target.stat().st_mtime_ns >= source.stat().st_mtime_ns:
+        return
+    with Image.open(source) as image:
+        image = image.convert("RGB")
+        height = max(1, round(image.height * 72 / image.width))
+        image.resize((72, height), Image.Resampling.LANCZOS).save(
+            target, "JPEG", quality=82, optimize=True
+        )
+
+
 def main() -> None:
     years = range(1993, 2026)
     if len(sys.argv) == 3:
@@ -130,6 +146,7 @@ def main() -> None:
                 got += 1
                 time.sleep(0.35)  # CDN도 예의는 지킨다
             if dest.exists():
+                make_thumbnail(dest)
                 entry = index.setdefault(key, {"name": p["name"], "tm_id": p["tm_id"],
                                                "file": dest.name, "seasons": []})
                 season = f"{year}/{str(year + 1)[-2:]}"

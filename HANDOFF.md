@@ -54,7 +54,7 @@ views/                     페이지 17개
 | `crawl_allcomps.py` | FBref 클럽 전 대회 경기 + **대회별 선수 스탯** | ~7분 |
 | `fetch_statsbomb.py` | StatsBomb 이벤트 531경기 | ~14분 |
 | `fetch_understat.py` | Understat 슛 2014/15~2025/26 | ~15분 |
-| `crawl_portraits.py` | TM 선수 증명사진 316장 | ~22분 |
+| `crawl_portraits.py` | TM 선수 증명사진 323장 | ~22분 |
 | `crawl_managers.py` | TM 감독 이력 + 사진 | ~2분 |
 | `build_managers.py` | 재임 기간 × 라리가 경기로 감독 성적 집계 | 즉시 |
 | `crawl_masia.py` | 바르사 B팀 명단 (라 마시아 판별용) | ~4분 |
@@ -75,7 +75,7 @@ views/                     페이지 17개
 | `data/statsbomb/` | 531경기 · 슛 13,140 · 패스 367,738 |
 | `data/understat/shots.parquet` | 슛 11,508 |
 | `data/processed/masia.json` | B팀 출신 339명 |
-| `assets/portraits/` + `_thumb/` | 316장 |
+| `assets/portraits/` + `_thumb/` | 323장 |
 | `assets/managers/` | 25장 |
 
 라 마시아 페이지는 역사 연표·대표 선수 5명·AI 계승 이미지를 포함한다. 계승 이미지는
@@ -413,6 +413,14 @@ Squad Total 혼입, 대회 목록 하드코딩, StatsBomb 전체 이름, 캐시 
 - 자동 작업은 결과가 바뀌면 감독 집계도 함께 재생성한다. 수동 실행 `34423215583`이 전체 검증을 통과했다.
 - Streamlit Cloud 홈에서 2026/27 4경기·17득점·2실점, 최근 Valencia 원정 5-0,
   득점 1위 Raphinha 6골과 도움 1위 Anthony Gordon 4도움까지 실제 반영을 확인했다.
+
+### 2026-09-10 2026/27 이적생 사진
+
+- Transfermarkt 2026/27 스쿼드를 다시 수집해 현재 명단 27명의 사진·72px 썸네일을 모두
+  갖췄다. 신규 7명(Dominik Livakovic, Brian Fariñas, Anthony Gordon, Jesse Bisiwu,
+  Karim Adeyemi, Gabriel Jesus, Hamza Abdelkarim)의 사진을 추가했다.
+- `crawl_portraits.py`가 앞으로 새 원본 사진을 받으면 썸네일까지 함께 생성하도록 보강했다.
+- 사진 사용 근거의 최종 확인은 사용자 담당이며, 에이전트가 허가 완료로 표시하지 않는다.
 
 ### 2026-09-09 출시 전 후속 수정
 
