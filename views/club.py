@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from _lib import (title_count, ongoing_season, finished_seasons, BLAU, GOLD, GRANA, GRID, PHOTOS, PLOT, PROCESSED, b64,
-                  credits_block, load_credits, load_parquet, load_seasons,
+                  credits_block, load_credits, load_json, load_parquet, load_seasons,
                   metric_cards, portrait_map, setup)
 
 seasons = load_seasons()
@@ -117,6 +117,8 @@ with side_col:
 
 # ---- 3열 카드: 최근 경기 · 득점 리더 · 도움 리더
 pl = load_parquet(PROCESSED / "players.parquet")
+live_path = PROCESSED / "current_leaders.json"
+live = load_json(live_path) if live_path.exists() else {}
 # 선수 기록(FBref)은 경기 기록(football-data)보다 늦게 채워진다. 최신 시즌으로
 # 그대로 거르면 시즌 초에 0행이 나와 카드가 '데이터 없음' 이 된다.
 # 있는 시즌 중 가장 최근으로 물러나되, 어느 시즌인지 화면에 밝힌다.
@@ -147,6 +149,21 @@ def leader_rows(df: pd.DataFrame, col: str, unit: str) -> str:
     return out
 
 
+def live_leader_rows(rows: list[dict], unit: str) -> str:
+    """Current-season leader rows saved by the daily updater."""
+    out = ""
+    live_faces = portrait_map([row["Player"] for row in rows])
+    for i, row in enumerate(rows, 1):
+        name, value = row["Player"], int(row["value"])
+        uri = live_faces.get(name, "")
+        face = (f'<img class="dc-face" src="{uri}" alt="">' if uri
+                else '<span class="dc-face"></span>')
+        out += (f'<div class="dc-row"><div class="dc-rl">'
+                f'<span class="dc-idx">{i}</span>{face}<b>{name}</b></div>'
+                f'<div class="dc-rr">{value}{unit}</div></div>')
+    return out
+
+
 k1, k2, k3 = st.columns(3, gap="medium")
 
 with k1:
@@ -167,19 +184,23 @@ with k1:
                 unsafe_allow_html=True)
 
 with k2:
-    body = (leader_rows(season_pl, "골", "골") if not season_pl.empty
+    use_live = live.get("season") == latest["Season"] and live.get("goals")
+    body = (live_leader_rows(live["goals"], "골") if use_live
+            else leader_rows(season_pl, "골", "골") if not season_pl.empty
             else '<div class="dc-note">선수 기록이 아직 없다</div>')
     st.markdown(f'<div class="dc-card"><div class="dc-head">'
                 f'<div class="dc-title">득점 리더</div>'
-                f'<div class="dc-note">{leader_note}</div></div>{body}</div>',
+                f'<div class="dc-note">{"라리가 · 일일 갱신" if use_live else leader_note}</div></div>{body}</div>',
                 unsafe_allow_html=True)
 
 with k3:
-    body = (leader_rows(season_pl, "도움", "도움") if not season_pl.empty
+    use_live = live.get("season") == latest["Season"] and live.get("assists")
+    body = (live_leader_rows(live["assists"], "도움") if use_live
+            else leader_rows(season_pl, "도움", "도움") if not season_pl.empty
             else '<div class="dc-note">선수 기록이 아직 없다</div>')
     st.markdown(f'<div class="dc-card"><div class="dc-head">'
                 f'<div class="dc-title">도움 리더</div>'
-                f'<div class="dc-note">{leader_note}</div></div>{body}</div>',
+                f'<div class="dc-note">{"라리가 · 일일 갱신" if use_live else leader_note}</div></div>{body}</div>',
                 unsafe_allow_html=True)
 
 st.caption(f"모두 실제 경기 기록에서 집계한 값이다. 최근 폼은 시즌 경계를 "

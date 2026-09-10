@@ -1,0 +1,48 @@
+{
+  "season": "2026/27",
+  "source": "FotMob",
+  "goals": [
+    {
+      "Player": "Raphinha",
+      "value": 6
+    },
+    {
+      "Player": "Fermín López",
+      "value": 4
+    },
+    {
+      "Player": "Lamine Yamal",
+      "value": 4
+    },
+    {
+      "Player": "Karim Adeyemi",
+      "value": 1
+    },
+    {
+      "Player": "Pedri",
+      "value": 1
+    }
+  ],
+  "assists": [
+    {
+      "Player": "Anthony Gordon",
+      "value": 4
+    },
+    {
+      "Player": "Dani Olmo",
+      "value": 2
+    },
+    {
+      "Player": "Fermín López",
+      "value": 2
+    },
+    {
+      "Player": "Xavi Espart",
+      "value": 2
+    },
+    {
+      "Player": "Karim Adeyemi",
+      "value": 1
+    }
+  ]
+}
