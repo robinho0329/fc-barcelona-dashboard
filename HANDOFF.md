@@ -404,7 +404,8 @@ Squad Total 혼입, 대회 목록 하드코딩, StatsBomb 전체 이름, 캐시 
 - coverage 사진을 시즌 비귀속으로 정정, passes의 0길이38건을 포함해367,738건 합계 일치.
 - tikitaka 시대 라벨을 캐시 밖에서 적용. network는 누적 FBref 주 포지션의 거친 분류이며
   실제 경기 위치가 아님을 명시하고 미분류를 별도 배치. model은 단일 홀드아웃 결과로 한정.
-- audit48/cache3/smoke17 및 변경별 회귀검사 통과. 커밋·Cloud 확인은 아직 대기.
+- audit48/cache3/smoke17 및 변경별 회귀검사 통과. 코드 `fb683da`를 push했고,
+  Cloud의 advanced/network/coverage/passes에서 새 문구와 집계를 확인했다.
 - 사진 유지 및 사용 근거 사용자 확인 결정. 남은 검수는 docs/RELEASE_CHECKLIST.md 참조.
 - 토큰 절감률 미측정. Sol 독립 작업과 요약 전달을 사용하며 동일 검사 반복을 제한한다.
 
