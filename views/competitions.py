@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, WHITE, b64, load_dir,
-                  load_seasons, metric_cards, setup)
+                  load_current_snapshot, load_seasons, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -91,6 +91,15 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+live = load_current_snapshot()
+if live:
+    completed = pd.DataFrame(live.get("fixtures", []))
+    st.markdown('<div class="section">2026/27 진행 중 · 일일 갱신</div>', unsafe_allow_html=True)
+    if not completed.empty:
+        completed["결과"] = completed.apply(lambda r: f"{r['home']} {r['home_score']} - {r['away_score']} {r['away']}", axis=1)
+        st.dataframe(completed[["competition", "date", "결과"]].rename(columns={"competition": "대회", "date": "일시"}), hide_index=True, width="stretch")
+    st.caption("FotMob 무료 경기 결과 집계 · 컵대회 포함 여부는 해당 대회 일정 공개 범위에 따른다.")
 
 if club.empty or players.empty:
     st.warning("FBref 전 대회 데이터가 없습니다.")

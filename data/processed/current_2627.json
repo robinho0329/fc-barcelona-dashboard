@@ -1,0 +1,391 @@
+{
+  "season": "2026/27",
+  "source": "FotMob",
+  "updated_at": "2026-09-10T01:34:08.103942+00:00",
+  "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
+  "players": [
+    {
+      "Player": "Raphinha",
+      "goals": 6.0,
+      "minutes": 319,
+      "matches": 4,
+      "goal_assist": 1.0,
+      "rating": 8.73,
+      "mins_played": 319.0,
+      "expected_goals": 5.4,
+      "accurate_pass": 26.8
+    },
+    {
+      "Player": "Fermín López",
+      "goals": 4.0,
+      "minutes": 281,
+      "matches": 4,
+      "goal_assist": 2.0,
+      "rating": 8.21,
+      "mins_played": 281.0,
+      "expected_goals": 2.7,
+      "accurate_pass": 36.8
+    },
+    {
+      "Player": "Lamine Yamal",
+      "goals": 4.0,
+      "minutes": 335,
+      "matches": 4,
+      "rating": 8.48,
+      "mins_played": 335.0,
+      "expected_goals": 2.5,
+      "accurate_pass": 43.8
+    },
+    {
+      "Player": "Karim Adeyemi",
+      "goals": 1.0,
+      "minutes": 116,
+      "matches": 4,
+      "goal_assist": 1.0,
+      "rating": 6.9,
+      "mins_played": 116.0,
+      "expected_goals": 1.4,
+      "accurate_pass": 21.7
+    },
+    {
+      "Player": "Pedri",
+      "goals": 1.0,
+      "minutes": 289,
+      "matches": 4,
+      "goal_assist": 1.0,
+      "rating": 7.68,
+      "mins_played": 289.0,
+      "expected_goals": 0.4,
+      "accurate_pass": 71.6
+    },
+    {
+      "Player": "Andreas Christensen",
+      "rating": 7.01,
+      "minutes": 208,
+      "matches": 3,
+      "mins_played": 208.0,
+      "expected_goals": 0.2,
+      "accurate_pass": 82.2
+    },
+    {
+      "Player": "Anthony Gordon",
+      "goal_assist": 4.0,
+      "minutes": 244,
+      "matches": 4,
+      "rating": 7.79,
+      "mins_played": 244.0,
+      "expected_goals": 1.2,
+      "accurate_pass": 27.7
+    },
+    {
+      "Player": "Dani Olmo",
+      "goal_assist": 2.0,
+      "minutes": 131,
+      "matches": 4,
+      "rating": 7.19,
+      "mins_played": 131.0,
+      "expected_goals": 0.4,
+      "accurate_pass": 54.3
+    },
+    {
+      "Player": "Eric García",
+      "rating": 7.25,
+      "minutes": 199,
+      "matches": 3,
+      "mins_played": 199.0,
+      "expected_goals": 0.1,
+      "accurate_pass": 68.7
+    },
+    {
+      "Player": "Gabriel Jesus",
+      "mins_played": 9.0,
+      "minutes": 9,
+      "matches": 1,
+      "expected_goals": 0.1
+    },
+    {
+      "Player": "Gavi",
+      "mins_played": 44.0,
+      "minutes": 44,
+      "matches": 1
+    },
+    {
+      "Player": "Gerard Martín",
+      "rating": 7.45,
+      "minutes": 270,
+      "matches": 3,
+      "mins_played": 270.0,
+      "expected_goals": 0.1,
+      "accurate_pass": 77.0
+    },
+    {
+      "Player": "Hamza Abdelkarim",
+      "mins_played": 4.0,
+      "minutes": 4,
+      "matches": 1
+    },
+    {
+      "Player": "Joan García",
+      "rating": 7.38,
+      "minutes": 360,
+      "matches": 4,
+      "mins_played": 360.0,
+      "accurate_pass": 21.8
+    },
+    {
+      "Player": "João Cancelo",
+      "rating": 6.03,
+      "minutes": 28,
+      "matches": 3,
+      "mins_played": 28.0,
+      "expected_goals": 0.0
+    },
+    {
+      "Player": "Jules Koundé",
+      "rating": 6.62,
+      "minutes": 171,
+      "matches": 4,
+      "mins_played": 171.0,
+      "accurate_pass": 85.8
+    },
+    {
+      "Player": "Marc Bernal",
+      "goal_assist": 1.0,
+      "minutes": 235,
+      "matches": 4,
+      "rating": 7.53,
+      "mins_played": 235.0,
+      "expected_goals": 0.5,
+      "accurate_pass": 48.6
+    },
+    {
+      "Player": "Pau Cubarsí",
+      "rating": 7.3,
+      "minutes": 242,
+      "matches": 3,
+      "mins_played": 242.0,
+      "expected_goals": 0.5,
+      "accurate_pass": 95.6
+    },
+    {
+      "Player": "Rodri",
+      "rating": 6.91,
+      "minutes": 115,
+      "matches": 3,
+      "mins_played": 115.0,
+      "expected_goals": 0.1,
+      "accurate_pass": 105.7
+    },
+    {
+      "Player": "Xavi Espart",
+      "goal_assist": 2.0,
+      "minutes": 360,
+      "matches": 4,
+      "rating": 7.97,
+      "mins_played": 360.0,
+      "expected_goals": 0.1,
+      "accurate_pass": 41.5
+    }
+  ],
+  "squad": [
+    {
+      "Player": "Joan García",
+      "Pos": "GK",
+      "Age": 25,
+      "shirt": 1
+    },
+    {
+      "Player": "João Cancelo",
+      "Pos": "LB,RB",
+      "Age": 32,
+      "shirt": 2
+    },
+    {
+      "Player": "Pau Cubarsí",
+      "Pos": "CB",
+      "Age": 19,
+      "shirt": 5
+    },
+    {
+      "Player": "Andreas Christensen",
+      "Pos": "CB",
+      "Age": 30,
+      "shirt": 15
+    },
+    {
+      "Player": "Gerard Martín",
+      "Pos": "CB,LB",
+      "Age": 24,
+      "shirt": 18
+    },
+    {
+      "Player": "Jules Koundé",
+      "Pos": "RB",
+      "Age": 27,
+      "shirt": 23
+    },
+    {
+      "Player": "Eric García",
+      "Pos": "CB,RB,CDM",
+      "Age": 25,
+      "shirt": 24
+    },
+    {
+      "Player": "Fermín López",
+      "Pos": "CAM,LW,CM",
+      "Age": 23,
+      "shirt": 7
+    },
+    {
+      "Player": "Pedri",
+      "Pos": "CDM,CM",
+      "Age": 23,
+      "shirt": 8
+    },
+    {
+      "Player": "Xavi Espart",
+      "Pos": "CM,LB,RB,CDM",
+      "Age": 19,
+      "shirt": 12
+    },
+    {
+      "Player": "Karim Adeyemi",
+      "Pos": "CAM,RW,ST,LW",
+      "Age": 24,
+      "shirt": 14
+    },
+    {
+      "Player": "Rodri",
+      "Pos": "CDM,CM",
+      "Age": 30,
+      "shirt": 16
+    },
+    {
+      "Player": "Dani Olmo",
+      "Pos": "CAM,CM,LW",
+      "Age": 28,
+      "shirt": 20
+    },
+    {
+      "Player": "Marc Bernal",
+      "Pos": "CDM,CM",
+      "Age": 19,
+      "shirt": 22
+    },
+    {
+      "Player": "Lamine Yamal",
+      "Pos": "RW",
+      "Age": 19,
+      "shirt": 10
+    },
+    {
+      "Player": "Raphinha",
+      "Pos": "LW,ST,RW,CAM,LM",
+      "Age": 29,
+      "shirt": 11
+    },
+    {
+      "Player": "Anthony Gordon",
+      "Pos": "LW,ST",
+      "Age": 25,
+      "shirt": 17
+    }
+  ],
+  "team_stats": {
+    "possession_percentage_team": 66.7,
+    "goals_team_match": 4.3,
+    "expected_goals_team": 15.7
+  },
+  "fixtures": [
+    {
+      "id": 5793366,
+      "date": "2026-07-31T18:45:00.000Z",
+      "competition": "Club Friendlies",
+      "home": "Birmingham",
+      "away": "Barcelona",
+      "home_score": 5,
+      "away_score": 4
+    },
+    {
+      "id": 5997904,
+      "date": "2026-08-08T19:00:00.000Z",
+      "competition": "Club Friendlies",
+      "home": "Nottm Forest",
+      "away": "Barcelona",
+      "home_score": 0,
+      "away_score": 1
+    },
+    {
+      "id": 5997905,
+      "date": "2026-08-08T20:00:00.000Z",
+      "competition": "Club Friendlies",
+      "home": "Udinese",
+      "away": "Barcelona",
+      "home_score": 1,
+      "away_score": 0
+    },
+    {
+      "id": 6000973,
+      "date": "2026-08-16T14:30:00.000Z",
+      "competition": "Club Friendlies",
+      "home": "Basel",
+      "away": "Barcelona",
+      "home_score": 2,
+      "away_score": 5
+    },
+    {
+      "id": 5995928,
+      "date": "2026-08-19T18:00:00.000Z",
+      "competition": "Club Friendlies",
+      "home": "Barcelona",
+      "away": "Al Ahly SC",
+      "home_score": 2,
+      "away_score": 1
+    },
+    {
+      "id": 5868024,
+      "date": "2026-08-23T19:30:00.000Z",
+      "competition": "LaLiga",
+      "home": "Elche",
+      "away": "Barcelona",
+      "home_score": 0,
+      "away_score": 5
+    },
+    {
+      "id": 5868016,
+      "date": "2026-08-27T19:00:00.000Z",
+      "competition": "LaLiga",
+      "home": "Barcelona",
+      "away": "Athletic Club",
+      "home_score": 2,
+      "away_score": 0
+    },
+    {
+      "id": 5868034,
+      "date": "2026-08-31T19:30:00.000Z",
+      "competition": "LaLiga",
+      "home": "Barcelona",
+      "away": "Rayo Vallecano",
+      "home_score": 5,
+      "away_score": 2
+    },
+    {
+      "id": 5868049,
+      "date": "2026-09-06T14:15:00.000Z",
+      "competition": "LaLiga",
+      "home": "Valencia",
+      "away": "Barcelona",
+      "home_score": 0,
+      "away_score": 5
+    },
+    {
+      "id": 6106264,
+      "date": "2026-09-09T16:45:00.000Z",
+      "competition": "Champions League",
+      "home": "Barcelona",
+      "away": "Feyenoord",
+      "home_score": 5,
+      "away_score": 1
+    }
+  ]
+}

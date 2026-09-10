@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
-                  load_understat, metric_cards, portrait_map, position_map,
+                  load_current_snapshot, load_understat, metric_cards, portrait_map, position_map,
                   sb_names, setup)
 
 seasons = load_seasons()
@@ -85,6 +85,15 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+live = load_current_snapshot()
+if live:
+    current = pd.DataFrame(live.get("players", []))
+    st.markdown('<div class="section">2026/27 진행 중 · 일일 갱신</div>', unsafe_allow_html=True)
+    if not current.empty:
+        current = current.rename(columns={"goals": "골", "goal_assist": "도움", "matches": "경기"})
+        st.dataframe(current[[c for c in ["Player", "경기", "골", "도움"] if c in current]].sort_values(["도움", "골"], ascending=False), hide_index=True, width="stretch")
+    st.info("현재 시즌의 선수별 골·도움은 갱신하지만, 무료 원천에는 ‘누가 누구에게 도움했는지’ 연결 정보가 없어 네트워크 그래프는 과거 이벤트 데이터 범위까지만 표시합니다.")
 
 if raw.empty:
     st.warning("어시스트 데이터가 없습니다. `python fetch_understat.py` 와 "

@@ -27,12 +27,13 @@ jobs:
         run: |
           python tools/update_results.py
           python tools/update_leaders.py
+          python tools/update_current_snapshot.py
           if git diff --quiet -- data/raw/SP1_2627.csv; then
             echo "raw_changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "raw_changed=true" >> "$GITHUB_OUTPUT"
           fi
-          if git diff --quiet -- data/raw/SP1_2627.csv data/processed/current_leaders.json; then
+          if git diff --quiet -- data/raw/SP1_2627.csv data/processed/current_leaders.json data/processed/current_2627.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -46,6 +47,7 @@ jobs:
         run: |
           python tools/test_update_results.py
           python tools/test_update_leaders.py
+          python tools/test_update_current_snapshot.py
           python tools/audit.py
       - name: Commit changed data
         if: steps.results.outputs.changed == 'true'

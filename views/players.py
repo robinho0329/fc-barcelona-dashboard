@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, PROCESSED, b64, load_dir,
-                  load_parquet, load_seasons, metric_cards, portrait_map, setup)
+                  load_current_snapshot, load_parquet, load_seasons, metric_cards, portrait_map, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -26,6 +26,17 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+live = load_current_snapshot()
+if live:
+    current = pd.DataFrame(live.get("players", []))
+    if not current.empty:
+        squad = pd.DataFrame(live.get("squad", []))[["Player", "Pos", "Age"]]
+        current = current.merge(squad, on="Player", how="left")
+        current = current.rename(columns={"goals": "골", "goal_assist": "도움", "matches": "경기", "minutes": "출전분", "rating": "평점", "expected_goals": "xG"})
+        st.markdown('<div class="section">2026/27 진행 중 · 일일 갱신</div>', unsafe_allow_html=True)
+        st.dataframe(current[[c for c in ["Player", "Pos", "Age", "경기", "출전분", "골", "도움", "xG", "평점"] if c in current]], hide_index=True, width="stretch")
+        st.caption("FotMob 라리가 선수 집계. 역대 FBref 아카이브와 별도로 진행 중 시즌을 표시한다.")
 
 if LIGA.empty and ALL.empty:
     st.warning("선수 데이터가 없습니다. `python crawl_fbref.py` 후 `python build_players.py`를 "

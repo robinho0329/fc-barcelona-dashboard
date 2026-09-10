@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (sb_names, BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
-                  metric_cards, pitch_layout, pitch_shapes, setup)
+                  load_current_snapshot, metric_cards, pitch_layout, pitch_shapes, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -45,6 +45,13 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+live = load_current_snapshot()
+if live:
+    team = live.get("team_stats", {})
+    st.markdown('<div class="section">2026/27 진행 중 · 일일 갱신</div>', unsafe_allow_html=True)
+    st.markdown(metric_cards([("점유율", f"{team.get('possession_percentage_team', 0):.1f}%", "FotMob 라리가"), ("완료 경기", f"{len(live.get('fixtures', []))}", "전 대회 공개 결과")]), unsafe_allow_html=True)
+    st.info("무료 원천은 현재 시즌 전체 패스의 시작·종료 좌표를 제공하지 않는다. 아래 패스 맵은 StatsBomb 공개 이벤트가 있는 과거 시즌만 표시한다.")
 
 if passes.empty:
     st.warning("StatsBomb 이벤트 데이터가 없습니다. `python fetch_statsbomb.py`를 먼저 실행하세요.")

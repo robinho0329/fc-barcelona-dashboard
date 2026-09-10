@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, WHITE, b64, load_dir,
-                  load_sb, load_seasons, metric_cards, setup)
+                  load_current_snapshot, load_sb, load_seasons, metric_cards, setup)
 
 seasons = load_seasons()
 setup(seasons)
@@ -118,6 +118,13 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+live = load_current_snapshot()
+if live:
+    team = live.get("team_stats", {})
+    st.markdown('<div class="section">2026/27 진행 중 · 일일 갱신</div>', unsafe_allow_html=True)
+    st.markdown(metric_cards([("점유율", f"{team.get('possession_percentage_team', 0):.1f}%", "FotMob 라리가"), ("경기당 득점", f"{team.get('goals_team_match', 0):.1f}", "라리가"), ("누적 xG", f"{team.get('expected_goals_team', 0):.1f}", "라리가")]), unsafe_allow_html=True)
+    st.caption("무료 원천에는 패스 좌표·짧은 패스 비율이 없어 2026/27 티키타카 지수는 산출하지 않는다.")
 
 if idx.empty:
     st.warning("패스 데이터가 없습니다. `python fetch_statsbomb.py`를 먼저 실행하세요.")

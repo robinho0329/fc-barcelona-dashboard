@@ -113,6 +113,11 @@ def load_json(path: Path) -> dict:
     return _json_cached(str(path), stamp)
 
 
+def load_current_snapshot() -> dict:
+    """무료 원천으로 매일 갱신하는 진행 중 시즌의 집계 스냅샷."""
+    return load_json(PROCESSED / "current_2627.json")
+
+
 def load_credits() -> dict:
     return load_json(ASSETS / "credits.json")
 

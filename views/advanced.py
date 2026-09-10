@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from _lib import (BLAU, GOLD, GRANA, GRID, PLOT, b64, load_sb, load_seasons,
-                  metric_cards, portrait_map, position_map, setup)
+                  load_current_snapshot, metric_cards, portrait_map, position_map, setup)
 from views._advanced_metrics import per_appearance, rate_label
 
 seasons = load_seasons()
@@ -23,6 +23,15 @@ st.markdown(f"""
   <div class="accent-rule"></div>
 </div>
 """, unsafe_allow_html=True)
+
+live = load_current_snapshot()
+if live:
+    current = pd.DataFrame(live.get("players", []))
+    if not current.empty:
+        current = current.rename(columns={"goals": "골", "goal_assist": "도움", "matches": "경기", "minutes": "출전분", "rating": "평점", "expected_goals": "xG", "accurate_pass": "정확 패스/90"})
+        st.markdown('<div class="section">2026/27 진행 중 · 무료 고급 집계</div>', unsafe_allow_html=True)
+        st.dataframe(current[[c for c in ["Player", "경기", "출전분", "골", "도움", "xG", "평점", "정확 패스/90"] if c in current]], hide_index=True, width="stretch")
+        st.caption("FotMob의 라리가 선수 집계다. 압박·드리블·패스 좌표 등 StatsBomb 이벤트 지표는 공개되지 않는다.")
 
 if pm.empty:
     st.warning("StatsBomb 이벤트 데이터가 없습니다. `python fetch_statsbomb.py`를 먼저 실행하세요.")
