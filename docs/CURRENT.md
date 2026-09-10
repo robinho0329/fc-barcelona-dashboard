@@ -11,7 +11,8 @@
   Cloud advanced/network/coverage/passes 변경 화면 확인 완료.
 - 최신 마감 항목은 docs/RELEASE_CHECKLIST.md. 사진은 사용자 요청으로 유지하며 사용 근거는 사용자가 확인한다.
 - 시대 라벨 수정: 2012/13~2013/14 티토·마르티노, 2014/15~2016/17 MSN으로 분리.
-- 다음: 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
+- 진행 중 시즌 라리가 결과의 매일 KST 09:00 자동 갱신을 구현 중. GitHub Actions 최초 실행 확인 대기.
+- 다음: 자동 갱신 최초 실행 확인 후 로드맵 4, 주요 필터·차트 상호작용과 접근성 정밀 검수.
 - Python: D:\workspace\EPL project\.venv\Scripts\python.exe
 - 작업 규칙: AGENTS.md. 역할별 지시문: docs/AGENT_PROMPTS.md.
 - GitHub master push → Streamlit 자동 배포. HTTP 200만으로 새 코드 반영 단정 금지.
