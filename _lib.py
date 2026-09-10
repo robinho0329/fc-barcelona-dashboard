@@ -330,6 +330,7 @@ section[data-testid="stSidebar"]{background:linear-gradient(180deg,#061829,#0410
 .era-photo{width:100%;aspect-ratio:16/9;object-fit:cover!important;
       object-position:center!important;
       display:block;background:#081426;}
+.era-photo-vilanova{object-position:center 24%!important;}
 .era-body{padding:1rem 1.15rem 1.1rem;flex:1;}
 .era-caption{color:var(--gold);font-size:.68rem;letter-spacing:.08em;margin-top:.65rem;
       text-transform:uppercase;font-weight:700;}

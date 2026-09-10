@@ -73,7 +73,8 @@ for name, a, b, color, photo, caption, desc in ERAS:
     part = seasons[seasons["시대"] == name]
     titles = title_count(part)
     src = b64(photo)
-    img = (f'<img class="era-photo" src="{src}" alt="{caption}">' if src else "")
+    photo_class = " era-photo-vilanova" if photo == "managers/manual-vilanova.jpg" else ""
+    img = (f'<img class="era-photo{photo_class}" src="{src}" alt="{caption}">' if src else "")
     cards += (
         f'<div class="era-card" style="border-left:5px solid {color}">{img}'
         f'<div class="era-body">'
