@@ -31,7 +31,7 @@ MISSING = [
     # 공식 구단 감독 역사: 2003년 2월 아틀레티코전 한 경기의 임시 감독.
     # https://www.fcbarcelona.com/en/club/history/coaches
     {"name": "Jesús Antonio de la Cruz", "tm_id": "manual-de-la-cruz",
-     "file": "", "born": "07/05/1947",
+     "file": "manual-de-la-cruz.jpg", "born": "07/05/1947",
      "appointed": "01/02/2003", "left": "01/02/2003"},
     {"name": "Carles Rexach", "tm_id": "manual-rexach",
      "file": "manual-rexach.jpg",

@@ -29,7 +29,11 @@ def load_matches() -> pd.DataFrame:
 
 
 mg = load_parquet(PROCESSED / "managers.parquet")
-mg["대수"] = range(1, len(mg) + 1)
+# 구단 공식 감독 연표 기준(1993년 이후 데이터에 앞선 감독도 포함) 순번.
+# 중간 대행·재임을 별도 감독으로 세는 방식이며, 현재 parquet 행 순서와 맞춘다.
+_official_ordinals = [54, 56, 57, 58, 59, 60, 61, 62, 63, 64,
+                      65, 66, 67, 68, 69, 70, 71, 72, 73]
+mg["대수"] = _official_ordinals[:len(mg)]
 
 st.markdown(f"""
 <div class="hero">
