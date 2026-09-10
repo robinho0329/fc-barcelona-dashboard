@@ -197,18 +197,24 @@ if "legend" not in st.session_state:
 
 # ---------------------------------------------------------------- 인물 선택
 st.markdown('<div class="section">인물을 고르세요</div>', unsafe_allow_html=True)
-legend_options = {
-    f'{item["name"]} · {item["years"]}': item["key"] for item in LEGENDS
-}
-current_label = next(
-    label for label, key in legend_options.items() if key == st.session_state.legend
-)
-selected_label = st.selectbox(
-    "레전드 선택",
-    list(legend_options),
-    index=list(legend_options).index(current_label),
-)
-st.session_state.legend = legend_options[selected_label]
+cols = st.columns(5, gap="small")
+for i, lg in enumerate(LEGENDS):
+    with cols[i % 5]:
+        src = b64(lg["photo"])
+        img = (f'<img src="{src}" alt="{lg["name"]}">' if src
+               else '<div class="legend-noimg">사진 없음</div>')
+        selected = "legend-card-on" if st.session_state.legend == lg["key"] else ""
+        st.markdown(
+            f'<div class="legend-card {selected}">{img}'
+            f'<div class="legend-cap"><b>{lg["name"]}</b>'
+            f'<span>{lg["years"].split(" ")[0]}</span></div></div>',
+            unsafe_allow_html=True,
+        )
+        label = "선택됨" if st.session_state.legend == lg["key"] else "자세히"
+        if st.button(label, key=f"legend_{lg['key']}", use_container_width=True,
+                     disabled=st.session_state.legend == lg["key"]):
+            st.session_state.legend = lg["key"]
+            st.rerun()
 
 # ---------------------------------------------------------------- 상세
 lg = BY_KEY[st.session_state.legend]
