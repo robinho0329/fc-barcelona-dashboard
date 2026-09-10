@@ -42,7 +42,7 @@ def validate_update(old: bytes, new: bytes) -> tuple[int, int]:
     return len(old_rows), len(new_rows)
 
 
-def download(url: str, attempts: int = 3) -> bytes:
+def download(url: str, attempts: int = 5) -> bytes:
     error = None
     for attempt in range(attempts):
         try:
@@ -52,7 +52,7 @@ def download(url: str, attempts: int = 3) -> bytes:
         except Exception as exc:  # network errors must fail the workflow, not corrupt data
             error = exc
             if attempt + 1 < attempts:
-                time.sleep(2 ** attempt)
+                time.sleep(min(15 * (2 ** attempt), 60))
     raise RuntimeError(f"결과 다운로드 {attempts}회 실패: {error}") from error
 
 
