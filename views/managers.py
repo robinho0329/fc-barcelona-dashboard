@@ -73,19 +73,25 @@ def initials(name: str) -> str:
 
 
 st.markdown('<div class="section">감독을 고르세요</div>', unsafe_allow_html=True)
-manager_options = {
-    f'{r["표시명"]} · {r["첫시즌"]}~{r["끝시즌"]} · {r["role"]} 감독': int(idx)
-    for idx, r in mg.iterrows()
-}
-current_label = next(
-    label for label, idx in manager_options.items() if idx == st.session_state.manager
-)
-selected_label = st.selectbox(
-    "감독 선택",
-    list(manager_options),
-    index=list(manager_options).index(current_label),
-)
-st.session_state.manager = manager_options[selected_label]
+PER_ROW = 6
+for start in range(0, len(mg), PER_ROW):
+    chunk = mg.iloc[start:start + PER_ROW]
+    cols = st.columns(PER_ROW, gap="small")
+    for col, (idx, r) in zip(cols, chunk.iterrows()):
+        with col:
+            src = b64(f"managers/{r['file']}") if r["file"] else ""
+            sel = "legend-card-on" if st.session_state.manager == idx else ""
+            img = (f'<img src="{src}" alt="{r["name"]}">' if src
+                   else f'<div class="legend-noimg mg-initial">{initials(r["name"])}</div>')
+            tag = ' · 임시' if r["role"] == "임시" else ""
+            st.markdown(f'''<div class="legend-card mg-card {sel}">{img}
+<div class="legend-cap"><b>{r['name']}</b>
+<span>{r['첫시즌'][:4]}~{r['끝시즌'][:4]}{tag}</span></div></div>''', unsafe_allow_html=True)
+            label = "선택됨" if st.session_state.manager == idx else "자세히"
+            if st.button(label, key=f"mg_{idx}", use_container_width=True,
+                         disabled=st.session_state.manager == idx):
+                st.session_state.manager = idx
+                st.rerun()
 
 # ---------------------------------------------------------------- 상세
 r = mg.loc[st.session_state.manager]
