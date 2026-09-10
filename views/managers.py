@@ -29,6 +29,7 @@ def load_matches() -> pd.DataFrame:
 
 
 mg = load_parquet(PROCESSED / "managers.parquet")
+mg["대수"] = range(1, len(mg) + 1)
 
 st.markdown(f"""
 <div class="hero">
@@ -86,7 +87,7 @@ for start in range(0, len(mg), PER_ROW):
             tag = ' · 임시' if r["role"] == "임시" else ""
             st.markdown(f'''<div class="legend-card mg-card {sel}">{img}
 <div class="legend-cap"><b>{r['name']}</b>
-<span>{r['첫시즌'][:4]}~{r['끝시즌'][:4]}{tag}</span></div></div>''', unsafe_allow_html=True)
+<span>제{int(r['대수'])}대 · {r['첫시즌'][:4]}~{r['끝시즌'][:4]}{tag}</span></div></div>''', unsafe_allow_html=True)
             label = "선택됨" if st.session_state.manager == idx else "자세히"
             if st.button(label, key=f"mg_{idx}", use_container_width=True,
                          disabled=st.session_state.manager == idx):
@@ -97,7 +98,7 @@ for start in range(0, len(mg), PER_ROW):
 r = mg.loc[st.session_state.manager]
 part = manager_matches(matches, r["start"], r["end"], r["tm_id"])
 
-st.markdown(f'<div class="section">{r["표시명"]} · {r["첫시즌"]} ~ {r["끝시즌"]}</div>',
+st.markdown(f'<div class="section">제{int(r["대수"])}대 감독 · {r["표시명"]} · {r["첫시즌"]} ~ {r["끝시즌"]}</div>',
             unsafe_allow_html=True)
 c1, c2 = st.columns([1, 2.3], gap="medium")
 with c1:
