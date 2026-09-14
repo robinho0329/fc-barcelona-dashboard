@@ -3,6 +3,10 @@
   "source": "FotMob",
   "goals": [
     {
+      "Player": "Lamine Yamal",
+      "value": 6
+    },
+    {
       "Player": "Raphinha",
       "value": 6
     },
@@ -11,12 +15,8 @@
       "value": 4
     },
     {
-      "Player": "Lamine Yamal",
-      "value": 4
-    },
-    {
       "Player": "Karim Adeyemi",
-      "value": 1
+      "value": 2
     },
     {
       "Player": "Pedri",
@@ -29,6 +29,10 @@
       "value": 4
     },
     {
+      "Player": "Raphinha",
+      "value": 3
+    },
+    {
       "Player": "Dani Olmo",
       "value": 2
     },
@@ -37,12 +41,8 @@
       "value": 2
     },
     {
-      "Player": "Xavi Espart",
+      "Player": "Marc Bernal",
       "value": 2
-    },
-    {
-      "Player": "Karim Adeyemi",
-      "value": 1
     }
   ]
 }
