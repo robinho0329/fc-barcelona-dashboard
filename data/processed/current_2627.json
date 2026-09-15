@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-09-14T03:31:17.226111+00:00",
+  "updated_at": "2026-09-15T03:32:35.153674+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -208,6 +208,12 @@
       "shirt": 5
     },
     {
+      "Player": "Xavi Espart",
+      "Pos": "LB,CM,RB,CDM",
+      "Age": 19,
+      "shirt": 12
+    },
+    {
       "Player": "Andreas Christensen",
       "Pos": "CB",
       "Age": 30,
@@ -233,7 +239,7 @@
     },
     {
       "Player": "Fermín López",
-      "Pos": "CAM,LW,CM",
+      "Pos": "CAM,CM,LW",
       "Age": 23,
       "shirt": 7
     },
@@ -242,12 +248,6 @@
       "Pos": "CDM,CM",
       "Age": 23,
       "shirt": 8
-    },
-    {
-      "Player": "Xavi Espart",
-      "Pos": "CM,LB,RB,CDM",
-      "Age": 19,
-      "shirt": 12
     },
     {
       "Player": "Karim Adeyemi",
