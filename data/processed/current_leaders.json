@@ -3,12 +3,12 @@
   "source": "FotMob",
   "goals": [
     {
-      "Player": "Lamine Yamal",
-      "value": 6
+      "Player": "Raphinha",
+      "value": 9
     },
     {
-      "Player": "Raphinha",
-      "value": 6
+      "Player": "Lamine Yamal",
+      "value": 7
     },
     {
       "Player": "Fermín López",
@@ -19,7 +19,7 @@
       "value": 2
     },
     {
-      "Player": "Pedri",
+      "Player": "Gabriel Jesus",
       "value": 1
     }
   ],
@@ -29,19 +29,19 @@
       "value": 4
     },
     {
-      "Player": "Raphinha",
+      "Player": "Dani Olmo",
       "value": 3
     },
     {
-      "Player": "Dani Olmo",
-      "value": 2
+      "Player": "Raphinha",
+      "value": 3
     },
     {
       "Player": "Fermín López",
       "value": 2
     },
     {
-      "Player": "Marc Bernal",
+      "Player": "Karim Adeyemi",
       "value": 2
     }
   ]
