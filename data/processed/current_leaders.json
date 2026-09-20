@@ -4,7 +4,7 @@
   "goals": [
     {
       "Player": "Raphinha",
-      "value": 9
+      "value": 12
     },
     {
       "Player": "Lamine Yamal",
@@ -29,6 +29,10 @@
       "value": 4
     },
     {
+      "Player": "Lamine Yamal",
+      "value": 4
+    },
+    {
       "Player": "Dani Olmo",
       "value": 3
     },
@@ -38,10 +42,6 @@
     },
     {
       "Player": "Fermín López",
-      "value": 2
-    },
-    {
-      "Player": "Karim Adeyemi",
       "value": 2
     }
   ]
