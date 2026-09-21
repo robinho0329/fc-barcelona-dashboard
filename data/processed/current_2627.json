@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-09-20T03:33:19.639408+00:00",
+  "updated_at": "2026-09-21T03:28:27.609214+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -12,7 +12,7 @@
       "goal_assist": 3.0,
       "rating": 9.01,
       "mins_played": 555.0,
-      "expected_goals": 8.9,
+      "expected_goals": 8.8,
       "accurate_pass": 25.9
     },
     {
@@ -24,7 +24,7 @@
       "rating": 8.73,
       "mins_played": 581.0,
       "expected_goals": 6.1,
-      "accurate_pass": 43.4
+      "accurate_pass": 43.2
     },
     {
       "Player": "Fermín López",
@@ -32,7 +32,7 @@
       "minutes": 447,
       "matches": 6,
       "goal_assist": 2.0,
-      "rating": 7.75,
+      "rating": 7.73,
       "mins_played": 447.0,
       "expected_goals": 2.7,
       "accurate_pass": 36.8
@@ -61,7 +61,7 @@
       "goals": 1.0,
       "minutes": 206,
       "matches": 6,
-      "rating": 6.72,
+      "rating": 6.7,
       "mins_played": 206.0,
       "expected_goals": 0.1,
       "accurate_pass": 62.5
@@ -72,10 +72,10 @@
       "minutes": 502,
       "matches": 7,
       "goal_assist": 1.0,
-      "rating": 7.62,
+      "rating": 7.63,
       "mins_played": 502.0,
       "expected_goals": 0.5,
-      "accurate_pass": 69.7
+      "accurate_pass": 70.1
     },
     {
       "Player": "Xavi Espart",
@@ -99,20 +99,20 @@
       "goal_assist": 1.0,
       "minutes": 402,
       "matches": 6,
-      "rating": 7.07,
+      "rating": 7.06,
       "mins_played": 402.0,
       "expected_goals": 0.5,
-      "accurate_pass": 75.2
+      "accurate_pass": 75.4
     },
     {
       "Player": "Anthony Gordon",
       "goal_assist": 4.0,
       "minutes": 397,
       "matches": 6,
-      "rating": 7.52,
+      "rating": 7.51,
       "mins_played": 397.0,
-      "expected_goals": 1.9,
-      "accurate_pass": 26.3
+      "expected_goals": 2.1,
+      "accurate_pass": 26.1
     },
     {
       "Player": "Dani Olmo",
@@ -132,7 +132,7 @@
     },
     {
       "Player": "Eric García",
-      "rating": 7.39,
+      "rating": 7.4,
       "minutes": 469,
       "matches": 6,
       "mins_played": 469.0,
@@ -188,21 +188,21 @@
     },
     {
       "Player": "Pau Cubarsí",
-      "rating": 7.35,
+      "rating": 7.34,
       "minutes": 422,
       "matches": 5,
       "mins_played": 422.0,
       "expected_goals": 0.5,
-      "accurate_pass": 97.7
+      "accurate_pass": 97.3
     },
     {
       "Player": "Rodri",
-      "rating": 7.51,
+      "rating": 7.52,
       "minutes": 356,
       "matches": 6,
       "mins_played": 356.0,
-      "expected_goals": 0.7,
-      "accurate_pass": 92.8
+      "expected_goals": 0.8,
+      "accurate_pass": 93.0
     },
     {
       "Player": "Wojciech Szczęsny",
@@ -232,7 +232,7 @@
     },
     {
       "Player": "Xavi Espart",
-      "Pos": "LB,RB",
+      "Pos": "LB,CM,RB",
       "Age": 19,
       "shirt": 12
     },
@@ -318,7 +318,7 @@
   "team_stats": {
     "possession_percentage_team": 68.6,
     "goals_team_match": 4.4,
-    "expected_goals_team": 28.3
+    "expected_goals_team": 28.5
   },
   "fixtures": [
     {
