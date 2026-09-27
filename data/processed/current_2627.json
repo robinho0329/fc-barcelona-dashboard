@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-09-26T03:40:51.255834+00:00",
+  "updated_at": "2026-09-27T03:49:53.323231+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -32,7 +32,7 @@
       "minutes": 447,
       "matches": 6,
       "goal_assist": 2.0,
-      "rating": 7.73,
+      "rating": 7.72,
       "mins_played": 447.0,
       "expected_goals": 2.7,
       "accurate_pass": 36.8
@@ -273,12 +273,6 @@
       "shirt": 8
     },
     {
-      "Player": "Karim Adeyemi",
-      "Pos": "CAM,RW,LW,ST",
-      "Age": 24,
-      "shirt": 14
-    },
-    {
       "Player": "Rodri",
       "Pos": "CDM,CM",
       "Age": 30,
@@ -304,9 +298,15 @@
     },
     {
       "Player": "Raphinha",
-      "Pos": "LW,ST,RW,CAM,LM",
+      "Pos": "LW,ST,CAM,RW,LM",
       "Age": 29,
       "shirt": 11
+    },
+    {
+      "Player": "Karim Adeyemi",
+      "Pos": "CAM,RW,LW,ST",
+      "Age": 24,
+      "shirt": 14
     },
     {
       "Player": "Anthony Gordon",
