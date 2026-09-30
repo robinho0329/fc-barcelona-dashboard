@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-09-29T04:24:21.660636+00:00",
+  "updated_at": "2026-09-30T04:07:26.628841+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -273,6 +273,12 @@
       "shirt": 8
     },
     {
+      "Player": "Karim Adeyemi",
+      "Pos": "CAM,RW,LW,ST",
+      "Age": 24,
+      "shirt": 14
+    },
+    {
       "Player": "Rodri",
       "Pos": "CDM,CM",
       "Age": 30,
@@ -301,12 +307,6 @@
       "Pos": "LW,ST,CAM,RW,LM",
       "Age": 29,
       "shirt": 11
-    },
-    {
-      "Player": "Karim Adeyemi",
-      "Pos": "CAM,RW,LW,ST",
-      "Age": 24,
-      "shirt": 14
     },
     {
       "Player": "Anthony Gordon",
