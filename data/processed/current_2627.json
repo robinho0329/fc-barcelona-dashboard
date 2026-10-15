@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-10-14T03:39:50.639405+00:00",
+  "updated_at": "2026-10-15T03:20:37.508597+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -285,7 +285,7 @@
     },
     {
       "Player": "Dani Olmo",
-      "Pos": "CAM,CM,LW",
+      "Pos": "CAM,CM,LW,ST",
       "Age": 28,
       "shirt": 20
     },
@@ -309,7 +309,7 @@
     },
     {
       "Player": "Karim Adeyemi",
-      "Pos": "CAM,RW,LW,ST",
+      "Pos": "CAM,RW,ST,LW",
       "Age": 24,
       "shirt": 14
     },
