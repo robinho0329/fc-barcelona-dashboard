@@ -8,7 +8,7 @@
     },
     {
       "Player": "Lamine Yamal",
-      "value": 7
+      "value": 8
     },
     {
       "Player": "Fermín López",
@@ -16,7 +16,7 @@
     },
     {
       "Player": "Gabriel Jesus",
-      "value": 2
+      "value": 3
     },
     {
       "Player": "Karim Adeyemi",
@@ -26,7 +26,7 @@
   "assists": [
     {
       "Player": "Lamine Yamal",
-      "value": 5
+      "value": 6
     },
     {
       "Player": "Anthony Gordon",
@@ -37,12 +37,12 @@
       "value": 3
     },
     {
-      "Player": "Raphinha",
+      "Player": "Fermín López",
       "value": 3
     },
     {
-      "Player": "Fermín López",
-      "value": 2
+      "Player": "Raphinha",
+      "value": 3
     }
   ]
 }
