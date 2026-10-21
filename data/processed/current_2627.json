@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-10-20T03:32:23.786074+00:00",
+  "updated_at": "2026-10-21T03:26:08.132847+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -476,6 +476,15 @@
       "away": "Barcelona",
       "home_score": 2,
       "away_score": 5
+    },
+    {
+      "id": 6106234,
+      "date": "2026-10-20T19:00:00.000Z",
+      "competition": "Champions League",
+      "home": "PSG",
+      "away": "Barcelona",
+      "home_score": 4,
+      "away_score": 2
     }
   ]
 }
