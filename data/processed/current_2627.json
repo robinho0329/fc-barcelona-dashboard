@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-10-23T03:30:46.578268+00:00",
+  "updated_at": "2026-10-24T03:24:43.171707+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -166,12 +166,10 @@
     },
     {
       "Player": "Gavi",
-      "rating": 6.78,
+      "mins_played": 145.0,
       "minutes": 145,
       "matches": 4,
-      "mins_played": 145.0,
-      "expected_goals": 0.1,
-      "accurate_pass": 77.0
+      "expected_goals": 0.1
     },
     {
       "Player": "Gerard Martín",
@@ -285,12 +283,6 @@
       "shirt": 8
     },
     {
-      "Player": "Karim Adeyemi",
-      "Pos": "CAM,RW,LW,ST",
-      "Age": 24,
-      "shirt": 14
-    },
-    {
       "Player": "Rodri",
       "Pos": "CDM,CM",
       "Age": 30,
@@ -319,6 +311,12 @@
       "Pos": "LW,ST,CAM,RW,LM",
       "Age": 29,
       "shirt": 11
+    },
+    {
+      "Player": "Karim Adeyemi",
+      "Pos": "CAM,RW,LW,ST",
+      "Age": 24,
+      "shirt": 14
     },
     {
       "Player": "Anthony Gordon",
