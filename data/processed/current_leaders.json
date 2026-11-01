@@ -4,29 +4,33 @@
   "goals": [
     {
       "Player": "Raphinha",
-      "value": 13
+      "value": 15
     },
     {
       "Player": "Lamine Yamal",
-      "value": 8
+      "value": 10
     },
     {
       "Player": "Fermín López",
-      "value": 4
+      "value": 5
     },
     {
       "Player": "Gabriel Jesus",
       "value": 3
     },
     {
-      "Player": "Karim Adeyemi",
+      "Player": "Anthony Gordon",
       "value": 2
     }
   ],
   "assists": [
     {
       "Player": "Lamine Yamal",
-      "value": 6
+      "value": 7
+    },
+    {
+      "Player": "Fermín López",
+      "value": 5
     },
     {
       "Player": "Anthony Gordon",
@@ -34,10 +38,6 @@
     },
     {
       "Player": "Dani Olmo",
-      "value": 3
-    },
-    {
-      "Player": "Fermín López",
       "value": 3
     },
     {

@@ -1,72 +1,73 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-10-31T04:13:01.719758+00:00",
+  "updated_at": "2026-11-01T04:32:56.920465+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
       "Player": "Raphinha",
-      "goals": 13.0,
-      "minutes": 661,
-      "matches": 9,
+      "goals": 15.0,
+      "minutes": 723,
+      "matches": 10,
       "goal_assist": 3.0,
-      "rating": 8.6,
-      "mins_played": 661.0,
-      "expected_goals": 9.2,
-      "accurate_pass": 25.7
+      "rating": 8.62,
+      "mins_played": 723.0,
+      "expected_goals": 11.0,
+      "accurate_pass": 25.1
     },
     {
       "Player": "Lamine Yamal",
-      "goals": 8.0,
-      "minutes": 831,
-      "matches": 10,
-      "goal_assist": 6.0,
-      "rating": 8.51,
-      "mins_played": 831.0,
-      "expected_goals": 7.0,
-      "accurate_pass": 40.4
+      "goals": 10.0,
+      "minutes": 905,
+      "matches": 11,
+      "goal_assist": 7.0,
+      "rating": 8.59,
+      "mins_played": 905.0,
+      "expected_goals": 7.8,
+      "accurate_pass": 41.6
     },
     {
       "Player": "Fermín López",
-      "goals": 4.0,
-      "minutes": 612,
-      "matches": 9,
-      "goal_assist": 3.0,
-      "rating": 7.48,
-      "mins_played": 612.0,
+      "goals": 5.0,
+      "minutes": 702,
+      "matches": 10,
+      "goal_assist": 5.0,
+      "rating": 7.66,
+      "mins_played": 702.0,
       "expected_goals": 3.0,
-      "accurate_pass": 38.7
+      "accurate_pass": 42.3
     },
     {
       "Player": "Gabriel Jesus",
       "goals": 3.0,
-      "minutes": 199,
-      "matches": 6,
-      "mins_played": 199.0,
+      "minutes": 227,
+      "matches": 7,
+      "goal_assist": 1.0,
+      "mins_played": 227.0,
       "expected_goals": 1.8,
       "accurate_pass": 28.9
     },
     {
-      "Player": "Karim Adeyemi",
+      "Player": "Anthony Gordon",
       "goals": 2.0,
-      "minutes": 328,
+      "minutes": 597,
       "matches": 10,
-      "goal_assist": 2.0,
-      "rating": 7.12,
-      "mins_played": 328.0,
-      "expected_goals": 4.2,
-      "accurate_pass": 31.6
+      "goal_assist": 4.0,
+      "rating": 7.51,
+      "mins_played": 597.0,
+      "expected_goals": 3.0,
+      "accurate_pass": 31.8
     },
     {
-      "Player": "Anthony Gordon",
-      "goals": 1.0,
-      "minutes": 581,
-      "matches": 9,
-      "goal_assist": 4.0,
-      "rating": 7.52,
-      "mins_played": 581.0,
-      "expected_goals": 2.6,
-      "accurate_pass": 32.1
+      "Player": "Karim Adeyemi",
+      "goals": 2.0,
+      "minutes": 418,
+      "matches": 11,
+      "goal_assist": 2.0,
+      "rating": 7.12,
+      "mins_played": 418.0,
+      "expected_goals": 4.5,
+      "accurate_pass": 31.7
     },
     {
       "Player": "Dani Olmo",
@@ -92,12 +93,13 @@
     {
       "Player": "João Cancelo",
       "goals": 1.0,
-      "minutes": 296,
-      "matches": 7,
-      "rating": 6.87,
-      "mins_played": 296.0,
+      "minutes": 358,
+      "matches": 8,
+      "goal_assist": 1.0,
+      "rating": 6.98,
+      "mins_played": 358.0,
       "expected_goals": 0.1,
-      "accurate_pass": 59.6
+      "accurate_pass": 57.6
     },
     {
       "Player": "Jules Koundé",
@@ -113,23 +115,24 @@
     {
       "Player": "Pedri",
       "goals": 1.0,
-      "minutes": 711,
-      "matches": 10,
+      "minutes": 756,
+      "matches": 11,
       "goal_assist": 2.0,
-      "rating": 7.62,
-      "mins_played": 711.0,
+      "rating": 7.55,
+      "mins_played": 756.0,
       "expected_goals": 0.6,
-      "accurate_pass": 78.2
+      "accurate_pass": 77.6
     },
     {
       "Player": "Rodri",
       "goals": 1.0,
-      "minutes": 607,
-      "matches": 9,
-      "rating": 7.66,
-      "mins_played": 607.0,
+      "minutes": 697,
+      "matches": 10,
+      "goal_assist": 1.0,
+      "rating": 7.69,
+      "mins_played": 697.0,
       "expected_goals": 1.0,
-      "accurate_pass": 103.3
+      "accurate_pass": 105.9
     },
     {
       "Player": "Xavi Espart",
@@ -144,9 +147,9 @@
     },
     {
       "Player": "Alejandro Balde",
-      "mins_played": 72.0,
-      "minutes": 72,
-      "matches": 2
+      "mins_played": 100.0,
+      "minutes": 100,
+      "matches": 3
     },
     {
       "Player": "Andreas Christensen",
@@ -159,6 +162,12 @@
       "accurate_pass": 75.4
     },
     {
+      "Player": "Brian Fariñas",
+      "mins_played": 90.0,
+      "minutes": 90,
+      "matches": 1
+    },
+    {
       "Player": "Dominik Livaković",
       "mins_played": 90.0,
       "minutes": 90,
@@ -166,9 +175,9 @@
     },
     {
       "Player": "Frenkie de Jong",
-      "mins_played": 16.0,
-      "minutes": 16,
-      "matches": 1,
+      "mins_played": 98.0,
+      "minutes": 98,
+      "matches": 2,
       "expected_goals": 0.1
     },
     {
@@ -181,9 +190,9 @@
     {
       "Player": "Gerard Martín",
       "rating": 7.17,
-      "minutes": 661,
-      "matches": 9,
-      "mins_played": 661.0,
+      "minutes": 669,
+      "matches": 10,
+      "mins_played": 669.0,
       "expected_goals": 0.2,
       "accurate_pass": 79.2
     },
@@ -195,31 +204,31 @@
     },
     {
       "Player": "Joan García",
-      "rating": 7.18,
-      "minutes": 765,
-      "matches": 9,
-      "mins_played": 765.0,
-      "accurate_pass": 19.6
+      "rating": 7.17,
+      "minutes": 855,
+      "matches": 10,
+      "mins_played": 855.0,
+      "accurate_pass": 19.8
     },
     {
       "Player": "Marc Bernal",
       "goal_assist": 2.0,
-      "minutes": 311,
-      "matches": 8,
-      "rating": 7.15,
-      "mins_played": 311.0,
+      "minutes": 356,
+      "matches": 9,
+      "rating": 7.1,
+      "mins_played": 356.0,
       "expected_goals": 0.6,
-      "accurate_pass": 54.7
+      "accurate_pass": 55.1
     },
     {
       "Player": "Pau Cubarsí",
       "goal_assist": 2.0,
-      "minutes": 602,
-      "matches": 7,
-      "rating": 7.39,
-      "mins_played": 602.0,
+      "minutes": 692,
+      "matches": 8,
+      "rating": 7.43,
+      "mins_played": 692.0,
       "expected_goals": 0.5,
-      "accurate_pass": 94.9
+      "accurate_pass": 97.8
     },
     {
       "Player": "Wojciech Szczęsny",
@@ -333,9 +342,9 @@
     }
   ],
   "team_stats": {
-    "possession_percentage_team": 69.4,
-    "goals_team_match": 4.0,
-    "expected_goals_team": 34.8
+    "possession_percentage_team": 70.1,
+    "goals_team_match": 4.2,
+    "expected_goals_team": 38.0
   },
   "fixtures": [
     {
@@ -499,6 +508,15 @@
       "away": "Real Madrid",
       "home_score": 1,
       "away_score": 2
+    },
+    {
+      "id": 5868115,
+      "date": "2026-10-31T20:00:00.000Z",
+      "competition": "LaLiga",
+      "home": "Barcelona",
+      "away": "Deportivo Alavés",
+      "home_score": 6,
+      "away_score": 1
     }
   ]
 }
