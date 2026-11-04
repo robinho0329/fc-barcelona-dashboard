@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-11-03T05:28:19.899544+00:00",
+  "updated_at": "2026-11-04T04:56:44.819981+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -282,7 +282,7 @@
     },
     {
       "Player": "Eric García",
-      "Pos": "CB,RB,CDM",
+      "Pos": "RB,CB,CDM",
       "Age": 25,
       "shirt": 24
     },
@@ -517,6 +517,15 @@
       "away": "Deportivo Alavés",
       "home_score": 6,
       "away_score": 1
+    },
+    {
+      "id": 6106263,
+      "date": "2026-11-03T20:00:00.000Z",
+      "competition": "Champions League",
+      "home": "Barcelona",
+      "away": "Aston Villa",
+      "home_score": 3,
+      "away_score": 0
     }
   ]
 }
