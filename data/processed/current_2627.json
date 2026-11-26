@@ -1,7 +1,7 @@
 {
   "season": "2026/27",
   "source": "FotMob",
-  "updated_at": "2026-11-25T07:06:53.964158+00:00",
+  "updated_at": "2026-11-26T06:57:50.490652+00:00",
   "scope": "무료 집계 데이터: 선수·팀·경기 결과. 패스 좌표와 전체 이벤트는 포함하지 않음.",
   "players": [
     {
@@ -540,6 +540,15 @@
       "away": "Villarreal",
       "home_score": 3,
       "away_score": 2
+    },
+    {
+      "id": 6106421,
+      "date": "2026-11-25T17:45:00.000Z",
+      "competition": "Champions League",
+      "home": "Sabah FK",
+      "away": "Barcelona",
+      "home_score": 1,
+      "away_score": 4
     }
   ]
 }
